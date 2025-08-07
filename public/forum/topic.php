@@ -27,38 +27,45 @@ if ($can_moderate) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['lock']) && $can_moderate) {
+    if (isset($_POST['lock'])) {
+        forum_require_permission($topic['forum_id'], 'can_moderate');
         topic_lock($topicId, $_SESSION['userId']);
         header('Location: topic.php?id=' . $topicId);
         exit;
     }
-    if (isset($_POST['unlock']) && $can_moderate) {
+    if (isset($_POST['unlock'])) {
+        forum_require_permission($topic['forum_id'], 'can_moderate');
         topic_unlock($topicId, $_SESSION['userId']);
         header('Location: topic.php?id=' . $topicId);
         exit;
     }
-    if (isset($_POST['sticky']) && $can_moderate) {
+    if (isset($_POST['sticky'])) {
+        forum_require_permission($topic['forum_id'], 'can_moderate');
         topic_sticky($topicId, $_SESSION['userId']);
         header('Location: topic.php?id=' . $topicId);
         exit;
     }
-    if (isset($_POST['unsticky']) && $can_moderate) {
+    if (isset($_POST['unsticky'])) {
+        forum_require_permission($topic['forum_id'], 'can_moderate');
         topic_unsticky($topicId, $_SESSION['userId']);
         header('Location: topic.php?id=' . $topicId);
         exit;
     }
-    if (isset($_POST['move']) && $can_moderate) {
+    if (isset($_POST['move'])) {
+        forum_require_permission($topic['forum_id'], 'can_moderate');
         $new_forum_id = (int)$_POST['new_forum_id'];
         topic_move($topicId, $new_forum_id, $_SESSION['userId']);
         header('Location: topic.php?id=' . $topicId . '&moved=1');
         exit;
     }
-    if (isset($_POST['delete_post']) && $can_moderate) {
+    if (isset($_POST['delete_post'])) {
+        forum_require_permission($topic['forum_id'], 'can_moderate');
         post_soft_delete((int)$_POST['delete_post'], $_SESSION['userId']);
         header('Location: topic.php?id=' . $topicId);
         exit;
     }
-    if (isset($_POST['restore_post']) && $can_moderate) {
+    if (isset($_POST['restore_post'])) {
+        forum_require_permission($topic['forum_id'], 'can_moderate');
         post_restore((int)$_POST['restore_post'], $_SESSION['userId']);
         header('Location: topic.php?id=' . $topicId);
         exit;
