@@ -9,6 +9,9 @@
     <meta name="description" content="An Open Source social network">
     <link rel="stylesheet" href="static/css/normalize.min.css">
     <link rel="stylesheet" href="/static/css/style.min.css">
+    <?php if (isset($pageCSS)): ?>
+    <link rel="stylesheet" href="<?= $pageCSS ?>">
+    <?php endif; ?>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">

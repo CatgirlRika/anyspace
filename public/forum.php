@@ -7,6 +7,8 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
+$pageCSS = "static/css/forum.css";
+
 ?>
 <?php require("header.php"); ?>
 
