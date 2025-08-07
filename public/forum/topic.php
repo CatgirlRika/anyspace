@@ -30,6 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: topic.php?id=' . $topicId);
         exit;
     }
+    if (isset($_POST['delete_post']) && $can_moderate) {
+        post_soft_delete((int)$_POST['delete_post'], $_SESSION['userId']);
+        header('Location: topic.php?id=' . $topicId);
+        exit;
+    }
+    if (isset($_POST['restore_post']) && $can_moderate) {
+        post_restore((int)$_POST['restore_post'], $_SESSION['userId']);
+        header('Location: topic.php?id=' . $topicId);
+        exit;
+    }
     if (isset($_POST['body'])) {
         forum_require_permission($topic['forum_id'], 'can_post');
         $result = forum_add_post($topicId, $_SESSION['userId'], $_POST['body']);
@@ -41,6 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$stmt = $conn->prepare('SELECT p.id, p.user_id, p.body, p.created_at, p.deleted, u.username FROM forum_posts p JOIN users u ON p.user_id = u.id WHERE p.topic_id = :id' . ($can_moderate ? '' : ' AND p.deleted = 0') . ' ORDER BY p.created_at ASC');
+$stmt->execute([':id' => $topicId]);
+$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $pageCSS = "../static/css/forum.css";
 ?>
@@ -61,6 +75,26 @@ $pageCSS = "../static/css/forum.css";
     <?php if ($error): ?>
         <div class="alert"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
+
+    <?php foreach ($posts as $post): ?>
+        <div class="forum-post">
+            <p><strong><?= htmlspecialchars($post['username']) ?></strong> <?= htmlspecialchars($post['created_at']) ?></p>
+            <?php if ($post['deleted']): ?>
+                <p><em>Post deleted.</em></p>
+            <?php else: ?>
+                <p><?= nl2br(htmlspecialchars($post['body'])) ?></p>
+            <?php endif; ?>
+            <?php if ($can_moderate): ?>
+                <form method="post" style="display:inline">
+                    <?php if ($post['deleted']): ?>
+                        <button type="submit" name="restore_post" value="<?= $post['id'] ?>">Restore</button>
+                    <?php else: ?>
+                        <button type="submit" name="delete_post" value="<?= $post['id'] ?>">Delete</button>
+                    <?php endif; ?>
+                </form>
+            <?php endif; ?>
+        </div>
+    <?php endforeach; ?>
 
     <?php if (!$topic['locked'] && $can_post): ?>
     <form method="post">
