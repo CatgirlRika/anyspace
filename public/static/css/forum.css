@@ -17,3 +17,20 @@ body {
     background-image: linear-gradient(to bottom, var(--logo-blue), var(--light-orange));
     color: #fff;
 }
+
+.forum-post .avatar {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.forum-post .avatar-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.forum-post .online-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
