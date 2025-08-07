@@ -30,6 +30,28 @@ function forum_update_forum(int $id, int $category_id, string $name, string $des
 
 function forum_delete_forum(int $id): void {
     global $conn;
+
+    // delete child forums first
+    $childStmt = $conn->prepare('SELECT id FROM forums WHERE parent_forum_id = :id');
+    $childStmt->execute([':id' => $id]);
+    $children = $childStmt->fetchAll(PDO::FETCH_COLUMN);
+    foreach ($children as $childId) {
+        forum_delete_forum((int)$childId);
+    }
+
+    // remove posts and topics belonging to this forum
+    $postDel = $conn->prepare('DELETE FROM forum_posts WHERE topic_id IN (SELECT id FROM forum_topics WHERE forum_id = :id)');
+    $postDel->execute([':id' => $id]);
+    $topicDel = $conn->prepare('DELETE FROM forum_topics WHERE forum_id = :id');
+    $topicDel->execute([':id' => $id]);
+
+    // remove moderator assignments and permissions
+    $modDel = $conn->prepare('DELETE FROM forum_moderators WHERE forum_id = :id');
+    $modDel->execute([':id' => $id]);
+    $permDel = $conn->prepare('DELETE FROM forum_permissions WHERE forum_id = :id');
+    $permDel->execute([':id' => $id]);
+
+    // finally delete the forum itself
     $stmt = $conn->prepare('DELETE FROM forums WHERE id = :id');
     $stmt->execute([':id' => $id]);
 }
