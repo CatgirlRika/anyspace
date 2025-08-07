@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL auto_increment,
-  `rank` tinyint(4) NOT NULL default '0',
+  `rank` tinyint(4) NOT NULL default '0' COMMENT '0=member,1=global_mod,2=admin',
   `username` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,

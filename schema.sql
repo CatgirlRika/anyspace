@@ -221,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL auto_increment,
-  `rank` tinyint(4) NOT NULL default '0',
+  `rank` tinyint(4) NOT NULL default '0' COMMENT '0=member,1=global_mod,2=admin',
   `username` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -283,7 +283,25 @@ CREATE TABLE IF NOT EXISTS `forum_permissions` (
 
 -- --------------------------------------------------------
 --
+-- Table structure for table `forum_moderators`
+--
+CREATE TABLE IF NOT EXISTS `forum_moderators` (
+  `id` int(11) NOT NULL auto_increment,
+  `forum_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`forum_id`) REFERENCES `forums` (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
 -- Seed data for forum testing
 --
 INSERT INTO `forum_categories` (`name`, `position`) VALUES ('General', 1);
 INSERT INTO `forums` (`category_id`, `parent_forum_id`, `name`, `description`, `position`) VALUES (1, NULL, 'General Discussion', 'General topics and conversations', 1);
+
+INSERT INTO `users` (`id`, `rank`, `username`, `email`, `password`, `date`, `bio`, `interests`, `css`, `music`, `pfp`, `currentgroup`, `status`, `private`, `views`, `lastactive`, `lastlogon`)
+VALUES (1, 1, 'globalmod', 'globalmod@example.com', '$2y$12$ocAW8xAoEHay8ElZLzsFOuP5EM9t1YyGdslYQD/EXcNLLU1VmVGSS', NOW(), '', ' ', '', 'default.mp3', 'default.jpg', 'None', '', 0, 0, NOW(), NOW());
+
+INSERT INTO `forum_moderators` (`forum_id`, `user_id`) VALUES (1, 1);
