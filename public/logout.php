@@ -2,6 +2,7 @@
 session_start(); // Start or resume the session
 
 // Unset all session variables
+unset($_SESSION['user'], $_SESSION['userId'], $_SESSION['rank']);
 $_SESSION = array();
 
 // If it's desired to kill the session, also delete the session cookie
