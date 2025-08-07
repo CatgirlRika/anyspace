@@ -171,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 "CREATE TABLE IF NOT EXISTS `users` (
                     `id` int(11) NOT NULL AUTO_INCREMENT,
-                    `rank` tinyint(4) NOT NULL DEFAULT '0',
+                    `rank` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=member,1=global_mod,2=admin',
                     `username` varchar(255) NOT NULL,
                     `email` varchar(255) NOT NULL,
                     `password` varchar(255) NOT NULL,
