@@ -4,6 +4,7 @@ require_once("../../core/settings.php");
 require_once("../../core/forum.php");
 require_once("../../core/forum/topic.php");
 require_once("../../core/forum/post.php");
+require_once("../../core/helper.php");
 
 $topicId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $stmt = $conn->prepare('SELECT id, forum_id, title, locked FROM forum_topics WHERE id = :id');
@@ -82,7 +83,7 @@ $pageCSS = "../static/css/forum.css";
             <?php if ($post['deleted']): ?>
                 <p><em>Post deleted.</em></p>
             <?php else: ?>
-                <p><?= nl2br(htmlspecialchars($post['body'])) ?></p>
+                <p><?= nl2br(replaceBBcodes($post['body'])) ?></p>
             <?php endif; ?>
             <?php if ($can_moderate): ?>
                 <form method="post" style="display:inline">
@@ -92,6 +93,9 @@ $pageCSS = "../static/css/forum.css";
                         <button type="submit" name="delete_post" value="<?= $post['id'] ?>">Delete</button>
                     <?php endif; ?>
                 </form>
+            <?php endif; ?>
+            <?php if ($can_post): ?>
+                <a href="reply.php?topic_id=<?= $topicId ?>&quote_post_id=<?= $post['id'] ?>">Quote</a>
             <?php endif; ?>
         </div>
     <?php endforeach; ?>
