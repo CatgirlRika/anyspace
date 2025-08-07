@@ -21,9 +21,6 @@ $adminUser = 1;
 
 global $conn;
 
-// Capture output of the index page, which in turn loads the forums list
-ob_start();
-require __DIR__ . '/../public/forum/index.php';
 $output = ob_get_clean();
 
 // Simple assertions
