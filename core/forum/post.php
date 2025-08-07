@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/topic.php');
 require_once(__DIR__ . '/../helper.php');
 require_once(__DIR__ . '/notifications.php');
+require_once(__DIR__ . '/mod_log.php');
 
 function forum_add_post(int $topic_id, int $user_id, string $body)
 {
@@ -67,6 +68,7 @@ function post_soft_delete(int $post_id, int $by_user_id): void
     $stmt = $conn->prepare('UPDATE forum_posts SET deleted = 1, deleted_by = :uid, deleted_at = NOW() WHERE id = :id');
     $stmt->execute([':id' => $post_id, ':uid' => $by_user_id]);
     forum_log_action("User {$by_user_id} deleted post {$post_id}");
+    logModAction($by_user_id, 'delete', 'post', $post_id);
 }
 
 function post_restore(int $post_id, int $by_user_id): void
@@ -75,6 +77,7 @@ function post_restore(int $post_id, int $by_user_id): void
     $stmt = $conn->prepare('UPDATE forum_posts SET deleted = 0, deleted_by = NULL, deleted_at = NULL WHERE id = :id');
     $stmt->execute([':id' => $post_id]);
     forum_log_action("User {$by_user_id} restored post {$post_id}");
+    logModAction($by_user_id, 'restore', 'post', $post_id);
 }
 
 function post_get_quote(int $post_id): ?array

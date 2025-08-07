@@ -366,3 +366,18 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `mod_log`
+--
+CREATE TABLE IF NOT EXISTS `mod_log` (
+  `id` int(11) NOT NULL auto_increment,
+  `moderator_id` int(11) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `target_type` varchar(255) NOT NULL,
+  `target_id` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`moderator_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
