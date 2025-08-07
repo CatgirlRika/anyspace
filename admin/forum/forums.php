@@ -3,12 +3,7 @@ require("../../core/conn.php");
 require_once("../../core/settings.php");
 require("../../core/config.php");
 require_once("../../core/forum/forum.php");
-
-login_check();
-if (!isset($_SESSION['userId']) || $_SESSION['userId'] != ADMIN_USER) {
-    header("Location: ../index.php?msg=" . urlencode('Admin access required'));
-    exit;
-}
+admin_only();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add forum
