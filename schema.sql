@@ -351,3 +351,18 @@ CREATE TABLE IF NOT EXISTS `forum_user_settings` (
   PRIMARY KEY (`user_id`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `notifications`
+--
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` int(11) NOT NULL auto_increment,
+  `user_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `is_read` tinyint(1) NOT NULL default '0',
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

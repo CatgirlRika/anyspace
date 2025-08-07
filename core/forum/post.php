@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/topic.php');
 require_once(__DIR__ . '/../helper.php');
+require_once(__DIR__ . '/notifications.php');
 
 function forum_add_post(int $topic_id, int $user_id, string $body)
 {
@@ -13,8 +14,37 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
         return ['error' => 'Topic is locked'];
     }
     $sanitizedBody = validateContentHTML($body);
-    $insert = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at) VALUES (:tid, :uid, :body, NOW())');
+    $insert = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at) VALUES (:tid, :uid, :body, CURRENT_TIMESTAMP)');
     $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $sanitizedBody]);
+    $postId = (int)$conn->lastInsertId();
+
+    $notified = [];
+
+    $ownerStmt = $conn->prepare('SELECT user_id FROM forum_posts WHERE topic_id = :tid ORDER BY id ASC LIMIT 1');
+    $ownerStmt->execute([':tid' => $topic_id]);
+    $topicOwner = (int)$ownerStmt->fetchColumn();
+    if ($topicOwner && $topicOwner !== $user_id) {
+        notifications_add($topicOwner, $postId);
+        $notified[] = $topicOwner;
+    }
+
+    if (preg_match_all('/@([A-Za-z0-9_]+)/', $sanitizedBody, $matches)) {
+        $usernames = array_unique($matches[1]);
+        if ($usernames) {
+            $placeholders = implode(',', array_fill(0, count($usernames), '?'));
+            $stmt = $conn->prepare('SELECT id FROM users WHERE username IN (' . $placeholders . ')');
+            $stmt->execute($usernames);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $uid = (int)$row['id'];
+                if ($uid !== $user_id && !in_array($uid, $notified, true)) {
+                    notifications_add($uid, $postId);
+                    $notified[] = $uid;
+                }
+            }
+        }
+    }
+
     return ['success' => true];
 }
 
