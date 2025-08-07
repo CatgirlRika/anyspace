@@ -1,0 +1,19 @@
+/* Forum theme stylesheet */
+/* Provides blue/orange gradients, tiled backgrounds, and small Verdana/Arial fonts. */
+
+body {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 10pt;
+    background-color: var(--light-gray);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--even-lighter-blue) 0 20px,
+        var(--even-lighter-orange) 20px 40px
+    );
+}
+
+.forum-header,
+.forum-post {
+    background-image: linear-gradient(to bottom, var(--logo-blue), var(--light-orange));
+    color: #fff;
+}
