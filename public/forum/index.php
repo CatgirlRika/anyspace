@@ -1,10 +1,19 @@
 <?php
 require("../../core/conn.php");
 require_once("../../core/settings.php");
+require_once("../../core/forum.php");
 
-if (!isset($_SESSION['user'])) {
-    header("Location: ../login.php");
-    exit;
+$forumId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+forum_require_permission($forumId, 'can_view');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    forum_require_permission($forumId, 'can_post');
+    // process post submission here
+}
+
+if (isset($_GET['moderate'])) {
+    forum_require_permission($forumId, 'can_moderate');
+    // process moderation actions here
 }
 
 $pageCSS = "../static/css/forum.css";
