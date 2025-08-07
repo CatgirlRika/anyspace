@@ -18,6 +18,43 @@ body {
     color: #fff;
 }
 
+/* Generic forum tables */
+.forum-table,
+.post-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+
+.forum-table th,
+.forum-table td,
+.post-table th,
+.post-table td {
+    padding: 8px;
+    border: 1px solid var(--light-gray);
+}
+
+.forum-table tr:nth-child(even),
+.post-table tr:nth-child(even) {
+    background-color: var(--even-lighter-blue);
+}
+
+.forum-table tr:nth-child(odd),
+.post-table tr:nth-child(odd) {
+    background-color: var(--even-lighter-orange);
+}
+
+/* Vintage thread icon */
+.forum-table .icon-cell {
+    width: 20px;
+    text-align: center;
+}
+
+.forum-table .icon-cell img {
+    width: 16px;
+    height: 16px;
+}
+
 .forum-post .avatar {
     width: 50px;
     height: 50px;
@@ -33,4 +70,30 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
+}
+
+/* Post table avatar column */
+.post-table .avatar-cell {
+    width: 70px;
+    vertical-align: top;
+}
+
+.post-table .avatar-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.post-table .avatar {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    display: block;
+}
+
+.post-table .online-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
 }
