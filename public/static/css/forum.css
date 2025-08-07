@@ -97,3 +97,9 @@ body {
     width: 16px;
     height: 16px;
 }
+
+/* Forum search input */
+.forum-search input[type="text"] {
+    padding: 4px;
+    border: 1px solid var(--light-gray);
+}
