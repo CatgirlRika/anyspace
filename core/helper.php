@@ -4,6 +4,14 @@ function login_check() {
         header("Location: /login.php");
         exit;
     }
+
+    require_once __DIR__ . '/users/user.php';
+    if (isset($_SESSION['userId']) && isUserBanned($_SESSION['userId'])) {
+        session_unset();
+        session_destroy();
+        header("Location: /login.php?msg=" . urlencode('Account banned'));
+        exit;
+    }
 }
 
 function admin_only() {

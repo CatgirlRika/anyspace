@@ -178,6 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     `date` datetime NOT NULL,
                     `lastactive` datetime NULL DEFAULT NULL,
                     `lastlogon` datetime NULL DEFAULT NULL,
+                    `banned_until` datetime DEFAULT NULL,
                     `bio` varchar(500) NOT NULL DEFAULT '',
                     `interests` varchar(500) NOT NULL DEFAULT ' ',
                     `css` blob NOT NULL,

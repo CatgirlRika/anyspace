@@ -22,16 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         $password = $_POST['password'];
 
 
-        $stmt = $conn->prepare("SELECT id, username, password, rank FROM users WHERE email = ?");
+        $stmt = $conn->prepare("SELECT id, username, password, rank, banned_until FROM users WHERE email = ?");
         $stmt->execute(array($email));
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user['password']) && (empty($user['banned_until']) || strtotime($user['banned_until']) <= time())) {
             $_SESSION['user'] = $user['username'];
             $_SESSION['userId'] = $user['id'];
             $_SESSION['rank'] = $user['rank'];
             header("Location: home.php");
             exit;
+        } elseif ($user && !empty($user['banned_until']) && strtotime($user['banned_until']) > time()) {
+            echo '<p>Account banned until ' . htmlspecialchars($user['banned_until']) . '</p><hr>';
         } else {
             echo '<p>Login information doesn\'t exist or incorrect password.</p><hr>';
         }
