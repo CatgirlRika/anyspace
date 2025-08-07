@@ -239,3 +239,51 @@ CREATE TABLE IF NOT EXISTS `users` (
   `lastlogon` datetime NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `forum_categories`
+--
+CREATE TABLE IF NOT EXISTS `forum_categories` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `position` int(11) NOT NULL default '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `forums`
+--
+CREATE TABLE IF NOT EXISTS `forums` (
+  `id` int(11) NOT NULL auto_increment,
+  `category_id` int(11) NOT NULL,
+  `parent_forum_id` int(11) default NULL,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(500) NOT NULL,
+  `position` int(11) NOT NULL default '0',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`category_id`) REFERENCES `forum_categories` (`id`),
+  FOREIGN KEY (`parent_forum_id`) REFERENCES `forums` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `forum_permissions`
+--
+CREATE TABLE IF NOT EXISTS `forum_permissions` (
+  `forum_id` int(11) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  `can_view` tinyint(1) NOT NULL default '0',
+  `can_post` tinyint(1) NOT NULL default '0',
+  `can_moderate` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY (`forum_id`, `role`),
+  FOREIGN KEY (`forum_id`) REFERENCES `forums` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Seed data for forum testing
+--
+INSERT INTO `forum_categories` (`name`, `position`) VALUES ('General', 1);
+INSERT INTO `forums` (`category_id`, `parent_forum_id`, `name`, `description`, `position`) VALUES (1, NULL, 'General Discussion', 'General topics and conversations', 1);
