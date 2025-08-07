@@ -2,8 +2,6 @@
 require("../../core/conn.php");
 require_once("../../core/settings.php");
 require("../../core/config.php");
-require_once("../../core/forum/forum.php");
-admin_only();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add forum
