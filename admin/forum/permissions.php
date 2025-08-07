@@ -1,11 +1,7 @@
 <?php
 require("../../core/conn.php");
 require_once("../../core/settings.php");
-
-if (!isset($_SESSION['user'])) {
-    header("Location: ../login.php");
-    exit;
-}
+admin_only();
 
 require("../../core/config.php");
 
