@@ -21,6 +21,10 @@ if (isset($_GET['moderate'])) {
     // process moderation actions here
 }
 
+$stmt = $conn->prepare('SELECT t.id, t.title, t.locked, t.sticky, t.moved_to, (SELECT COUNT(*) FROM forum_posts p WHERE p.topic_id = t.id) AS posts, (SELECT MAX(created_at) FROM forum_posts p WHERE p.topic_id = t.id) AS last_post FROM forum_topics t WHERE t.forum_id = :fid ORDER BY t.sticky DESC, t.id DESC');
+$stmt->execute([':fid' => $forumId]);
+$threads = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 $pageCSS = "../static/css/forum.css";
 ?>
 <?php require("../header.php"); ?>
@@ -46,13 +50,6 @@ body {
     <?php if (isset($_SESSION['userId'])): ?>
     <p><a href="settings.php">Customize Forum</a></p>
     <?php endif; ?>
-    <?php
-    $threads = [
-        ['status' => 'new', 'title' => 'Welcome to the forums', 'posts' => 3, 'last' => 'Aug 7 by Admin'],
-        ['status' => 'locked', 'title' => 'Read the rules before posting', 'posts' => 1, 'last' => 'Aug 6 by Admin'],
-        ['status' => 'new', 'title' => 'Introduce Yourself', 'posts' => 5, 'last' => 'Aug 5 by User1'],
-    ];
-    ?>
     <table class="forum-table">
         <tr>
             <th></th>
@@ -61,17 +58,21 @@ body {
             <th>Last Post</th>
         </tr>
         <?php foreach ($threads as $i => $t): ?>
+        <?php
+            $title = $t['moved_to'] ? 'Moved: ' . $t['title'] : $t['title'];
+            $linkId = $t['moved_to'] ? $t['moved_to'] : $t['id'];
+        ?>
         <tr<?php if ($i % 2 === 1) echo ' class="forum-row-alt"'; ?>>
             <td>
-                <?php if ($t['status'] === 'locked'): ?>
+                <?php if ($t['locked']): ?>
                     <img src="../static/icons/locked.gif" alt="Locked">
                 <?php else: ?>
                     <img src="../static/icons/new-post.gif" alt="New Post">
                 <?php endif; ?>
             </td>
-            <td><?= htmlspecialchars($t['title']) ?></td>
-            <td><?= $t['posts'] ?></td>
-            <td><?= htmlspecialchars($t['last']) ?></td>
+            <td><a href="topic.php?id=<?= $linkId ?>"><?= htmlspecialchars($title) ?></a></td>
+            <td><?= (int)$t['posts'] ?></td>
+            <td><?= htmlspecialchars($t['last_post']) ?></td>
         </tr>
         <?php endforeach; ?>
     </table>

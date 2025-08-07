@@ -276,6 +276,8 @@ CREATE TABLE IF NOT EXISTS `forum_topics` (
   `forum_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `locked` tinyint(1) NOT NULL default '0',
+  `sticky` TINYINT(1) DEFAULT 0,
+  `moved_to` INT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`forum_id`) REFERENCES `forums` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
