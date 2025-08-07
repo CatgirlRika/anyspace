@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/topic.php');
+require_once(__DIR__ . '/../helper.php');
 
 function forum_add_post(int $topic_id, int $user_id, string $body)
 {
@@ -11,9 +12,23 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
     if ($locked === 1) {
         return ['error' => 'Topic is locked'];
     }
+    $sanitizedBody = validateContentHTML($body);
     $insert = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at) VALUES (:tid, :uid, :body, NOW())');
-    $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $body]);
+    $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $sanitizedBody]);
     return ['success' => true];
+}
+
+function forum_get_posts(int $topic_id, bool $include_deleted = false): array
+{
+    global $conn;
+    $sql = 'SELECT p.id, p.user_id, p.body, p.created_at, p.deleted, u.username FROM forum_posts p JOIN users u ON p.user_id = u.id WHERE p.topic_id = :id';
+    if (!$include_deleted) {
+        $sql .= ' AND p.deleted = 0';
+    }
+    $sql .= ' ORDER BY p.created_at ASC';
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':id' => $topic_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function post_soft_delete(int $post_id, int $by_user_id): void
