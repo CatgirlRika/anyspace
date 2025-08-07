@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 
         if ($_POST['action'] == 'login') {
             // Prepare SQL statement for login
-            $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE email = ?");
+            $stmt = $conn->prepare("SELECT id, username, password, rank FROM users WHERE email = ?");
             $stmt->execute(array($email));
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
             if (($user && password_verify($password, $user['password'])) && $isAdmin) {
                 $_SESSION['user'] = $user['username'];
                 $_SESSION['userId'] = $user['id'];
+                $_SESSION['rank'] = $user['rank'];
 
                 header("Location: index.php");
                 exit;
