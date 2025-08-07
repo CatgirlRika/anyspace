@@ -67,7 +67,15 @@ $pageCSS = "../static/css/forum.css";
         <?php $linkId = $t['moved_to'] ? $t['moved_to'] : $t['id']; ?>
         <tr>
             <td class="icon-cell"><img src="../static/icons/comment.png" alt="Topic icon" loading="lazy"></td>
-            <td><a href="post.php?id=<?= $linkId ?>" aria-label="View topic <?= htmlspecialchars($t['title']) ?>" role="link"><?= htmlspecialchars($t['title']) ?></a></td>
+            <td><a href="post.php?id=<?= $linkId ?>" aria-label="View topic <?= htmlspecialchars($t['title']) ?>" role="link"><?= htmlspecialchars($t['title']) ?></a>
+                <?php if (isset($_SESSION['userId'])): ?>
+                <form method="post" action="report.php" style="display:inline">
+                    <input type="hidden" name="type" value="topic">
+                    <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                    <button type="submit" role="button">Report</button>
+                </form>
+                <?php endif; ?>
+            </td>
             <td><?= (int)$t['posts'] ?></td>
             <td><?= htmlspecialchars($t['last_post']) ?></td>
             <?php if ($can_moderate): ?>

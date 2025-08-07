@@ -125,6 +125,13 @@ $pageCSS = "../static/css/forum.css";
                     <?php if ($can_post): ?>
                         <a href="post.php?id=<?= $topicId ?>&quote=<?= $post['id'] ?>" aria-label="Quote this post" role="link">Quote</a>
                     <?php endif; ?>
+                      <?php if (isset($_SESSION['userId'])): ?>
+                      <form method="post" action="report.php" style="display:inline">
+                          <input type="hidden" name="type" value="post">
+                          <input type="hidden" name="id" value="<?= $post['id'] ?>">
+                          <button type="submit" role="button">Report</button>
+                      </form>
+                      <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($can_moderate): ?>
                     <form method="post" style="display:inline">
