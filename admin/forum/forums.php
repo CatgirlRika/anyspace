@@ -3,6 +3,7 @@ require("../../core/conn.php");
 require_once("../../core/settings.php");
 require("../../core/config.php");
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add forum
     if (isset($_POST['add'])) {
