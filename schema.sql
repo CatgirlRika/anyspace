@@ -282,6 +282,24 @@ CREATE TABLE IF NOT EXISTS `forum_topics` (
 
 -- --------------------------------------------------------
 --
+-- Table structure for table `forum_posts`
+--
+CREATE TABLE IF NOT EXISTS `forum_posts` (
+  `id` int(11) NOT NULL auto_increment,
+  `topic_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `body` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `deleted` TINYINT(1) DEFAULT 0,
+  `deleted_by` INT DEFAULT NULL,
+  `deleted_at` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`topic_id`) REFERENCES `forum_topics` (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
 -- Table structure for table `forum_permissions`
 --
 CREATE TABLE IF NOT EXISTS `forum_permissions` (
