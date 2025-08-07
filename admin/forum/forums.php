@@ -1,29 +1,9 @@
 <?php
 require("../../core/conn.php");
 require_once("../../core/settings.php");
-
-if (!isset($_SESSION['user'])) {
-    header("Location: ../login.php");
-    exit;
-}
-
 require("../../core/config.php");
-
-// Recursive deletion of forum and its subforums
-function deleteForum(PDO $conn, int $id): void {
-    // delete children first
-    $childStmt = $conn->prepare('SELECT id FROM forums WHERE parent_forum_id = :id');
-    $childStmt->execute([':id' => $id]);
-    $children = $childStmt->fetchAll(PDO::FETCH_COLUMN);
-    foreach ($children as $childId) {
-        deleteForum($conn, (int)$childId);
-    }
-    // delete permissions then this forum
-    $permDel = $conn->prepare('DELETE FROM forum_permissions WHERE forum_id = :id');
-    $permDel->execute([':id' => $id]);
-    $delStmt = $conn->prepare('DELETE FROM forums WHERE id = :id');
-    $delStmt->execute([':id' => $id]);
-}
+require_once("../../core/forum/forum.php");
+admin_only();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add forum
@@ -112,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete'])) {
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
         if ($id > 0) {
-            deleteForum($conn, $id);
+            forum_delete_forum($id);
             header('Location: forums.php?msg=' . urlencode('Forum deleted'));
             exit;
         }
