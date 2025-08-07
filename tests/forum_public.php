@@ -20,7 +20,8 @@ $domainName = 'example.com';
 $adminUser = 1;
 
 global $conn;
-
+ob_start();
+require __DIR__ . '/../public/forum/index.php';
 $output = ob_get_clean();
 
 // Simple assertions

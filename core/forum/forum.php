@@ -56,4 +56,11 @@ function forum_delete_forum(int $id): void {
     $stmt->execute([':id' => $id]);
 }
 
+function searchTopics(string $query): array {
+    global $conn;
+    $stmt = $conn->prepare('SELECT DISTINCT t.id, t.title FROM forum_topics t LEFT JOIN forum_posts p ON t.id = p.topic_id WHERE t.title LIKE :search OR p.body LIKE :search ORDER BY t.id DESC');
+    $stmt->execute([':search' => "%" . $query . "%"]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>
