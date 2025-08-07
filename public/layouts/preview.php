@@ -43,7 +43,7 @@
                 </div>
             </div>
             <ul class="links">
-                <li><a href="/index.php" >&nbsp;Home </a></li><li><a href="/browse.php" >&nbsp;Browse </a></li><li><a href="/search.php" >&nbsp;Search </a></li><li><a href="/futaba.php" >&nbsp;Board </a></li><li><a href="/messages.php" >&nbsp;Mail </a></li><li><a href="/blog/" >&nbsp;Blog </a></li><li><a href="/bulletins/bulletins.php" >&nbsp;Bulletins </a></li><li><a href="/forum.php" >&nbsp;Forum </a></li><li><a href="/groups/" >&nbsp;Groups </a></li><li><a href="/layouts/" >&nbsp;Layouts </a></li><li><a href="/favorites.php" >&nbsp;Favs </a></li><li><a href="https://github.com/superswan/anyspace" >&nbsp;Source </a></li><li><a href="/docs/help.html" >&nbsp;Help </a></li><li><a href="/about.php" >&nbsp;About </a></li>            </ul>
+                <li><a href="/index.php" >&nbsp;Home </a></li><li><a href="/browse.php" >&nbsp;Browse </a></li><li><a href="/search.php" >&nbsp;Search </a></li><li><a href="/futaba.php" >&nbsp;Board </a></li><li><a href="/messages.php" >&nbsp;Mail </a></li><li><a href="/blog/" >&nbsp;Blog </a></li><li><a href="/bulletins/bulletins.php" >&nbsp;Bulletins </a></li><li><a href="/forum/forums.php" >&nbsp;Forum </a></li><li><a href="/groups/" >&nbsp;Groups </a></li><li><a href="/layouts/" >&nbsp;Layouts </a></li><li><a href="/favorites.php" >&nbsp;Favs </a></li><li><a href="https://github.com/superswan/anyspace" >&nbsp;Source </a></li><li><a href="/docs/help.html" >&nbsp;Help </a></li><li><a href="/about.php" >&nbsp;About </a></li>            </ul>
         </nav>
 
 
