@@ -70,7 +70,7 @@ system.
 
 ```
 project-root/
-│
+    │
 ├───admin/                    # Administration tools and dashboards
 │
 ├───core/                     # Core application logic
@@ -96,12 +96,24 @@ project-root/
     │   ├───music/             # Music files
     │   └───pfp/               # Profile picture files
     │
-    └───static/                # Static assets
+        └───static/                # Static assets
         ├───css/               # CSS files
         ├───icons/             # Icon files
         └───img/               # Image files
 
 ```
+
+## Tests
+
+The `tests` directory contains standalone PHP scripts that exercise key forum
+features. To run the full test suite, execute the following from the project
+root:
+
+```bash
+for t in tests/*.php; do php "$t"; done
+```
+
+Each script uses an SQLite database and prints its status to the console.
 
 ## Quirks
 - Developed with PHP 5.3 compatibility in mind due to limitations of developer hardware
