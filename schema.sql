@@ -305,3 +305,16 @@ INSERT INTO `users` (`id`, `rank`, `username`, `email`, `password`, `date`, `bio
 VALUES (1, 1, 'globalmod', 'globalmod@example.com', '$2y$12$ocAW8xAoEHay8ElZLzsFOuP5EM9t1YyGdslYQD/EXcNLLU1VmVGSS', NOW(), '', ' ', '', 'default.mp3', 'default.jpg', 'None', '', 0, 0, NOW(), NOW());
 
 INSERT INTO `forum_moderators` (`forum_id`, `user_id`) VALUES (1, 1);
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `forum_user_settings`
+--
+CREATE TABLE IF NOT EXISTS `forum_user_settings` (
+  `user_id` int(11) NOT NULL,
+  `background_image_url` varchar(255) DEFAULT NULL,
+  `background_color` varchar(7) DEFAULT NULL,
+  `text_color` varchar(7) DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

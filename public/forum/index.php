@@ -6,6 +6,11 @@ require_once("../../core/forum.php");
 $forumId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 forum_require_permission($forumId, 'can_view');
 
+$userSettings = ['background_image_url' => '', 'background_color' => '', 'text_color' => ''];
+if (isset($_SESSION['userId'])) {
+    $userSettings = forum_get_user_settings($_SESSION['userId']);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     forum_require_permission($forumId, 'can_post');
     // process post submission here
@@ -20,8 +25,27 @@ $pageCSS = "../static/css/forum.css";
 ?>
 <?php require("../header.php"); ?>
 
+<?php if (!empty($userSettings['background_image_url']) || !empty($userSettings['background_color']) || !empty($userSettings['text_color'])): ?>
+<style>
+body {
+<?php if (!empty($userSettings['background_image_url'])): ?>
+    background-image: url('<?= htmlspecialchars($userSettings['background_image_url'], ENT_QUOTES) ?>');
+<?php endif; ?>
+<?php if (!empty($userSettings['background_color'])): ?>
+    background-color: <?= htmlspecialchars($userSettings['background_color'], ENT_QUOTES) ?>;
+<?php endif; ?>
+<?php if (!empty($userSettings['text_color'])): ?>
+    color: <?= htmlspecialchars($userSettings['text_color'], ENT_QUOTES) ?>;
+<?php endif; ?>
+}
+</style>
+<?php endif; ?>
+
 <div class="simple-container">
     <h1>Forums</h1>
+    <?php if (isset($_SESSION['userId'])): ?>
+    <p><a href="settings.php">Customize Forum</a></p>
+    <?php endif; ?>
     <?php
     $threads = [
         ['status' => 'new', 'title' => 'Welcome to the forums', 'posts' => 3, 'last' => 'Aug 7 by Admin'],
