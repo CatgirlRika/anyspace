@@ -62,5 +62,5 @@
 
 <body>
     <div class="master-container">
-        <?php require_once("../core/components/navbar.php"); ?>
+        <?php require_once __DIR__ . "/../core/components/navbar.php"; ?>
         <main>

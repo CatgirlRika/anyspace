@@ -1,14 +1,14 @@
 <?php
-require("../../core/conn.php");
-require_once("../../core/settings.php");
-require_once("../../core/forum/category.php");
-require_once("../../core/forum/forum.php");
-require_once("../../core/forum/permissions.php");
+require __DIR__ . "/../../core/conn.php";
+require_once __DIR__ . "/../../core/settings.php";
+require_once __DIR__ . "/../../core/forum/category.php";
+require_once __DIR__ . "/../../core/forum/forum.php";
+require_once __DIR__ . "/../../core/forum/permissions.php";
 
 $pageCSS = "../static/css/forum.css";
 $categories = forum_get_categories();
 ?>
-<?php require("../header.php"); ?>
+<?php require __DIR__ . "/../header.php"; ?>
 <div class="simple-container">
     <h1>Forums</h1>
     <?php foreach ($categories as $cat): ?>
@@ -16,4 +16,4 @@ $categories = forum_get_categories();
 
     <?php endforeach; ?>
 </div>
-<?php require("../footer.php"); ?>
+<?php require __DIR__ . "/../footer.php"; ?>

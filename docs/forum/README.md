@@ -7,8 +7,8 @@ This module provides a classic MySpace‑style discussion board with hierarchica
 ```
 admin/forum/           Admin pages for managing categories, forums, moderators, and permissions
 core/forum/            Reusable helpers for categories, forums, topics, posts, and permission checks
-public/forum/          (future) User‑facing forum pages
-tests/                 Regression tests for forum helpers
+public/forum/          User‑facing forum pages for browsing categories, topics, and posts
+tests/                 Regression and integration tests for forum helpers and pages
 ```
 
 ## Database Tables
@@ -60,18 +60,19 @@ Global moderators and forum‑specific moderators automatically gain `can_modera
 
 ## Testing
 
-Forum helpers ship with lightweight regression tests:
+Forum helpers ship with lightweight regression and integration tests:
 
 ```
 php tests/forum_permissions.php
 php tests/forum_delete.php
+php tests/forum_public.php
 ```
 
-These scripts run against in‑memory SQLite databases to verify permission handling and recursive deletions.
+These scripts run against SQLite databases via the `DB_DSN` environment variable to verify permission handling,
+recursive deletions, and rendering of the public forums page.
 
 ## Next Steps
 
-* Build user‑facing pages under `public/forum/` for browsing categories, viewing topics, and posting messages
-* Apply the planned MySpace‑style theme (`public/static/css/forum.css`)
-* Expand tests and add integration coverage once public pages exist
+* Broaden integration coverage to topic and post flows
+* Polish user‑facing pages and styling
 
