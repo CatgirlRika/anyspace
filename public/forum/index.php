@@ -13,7 +13,7 @@ $categories = forum_get_categories();
     <h1>Forums</h1>
     <form class="forum-search" action="search.php" method="get">
         <input type="text" name="q">
-        <button type="submit">Search</button>
+        <button type="submit" aria-label="Search forums" role="button">Search</button>
     </form>
     <?php foreach ($categories as $cat): ?>
         <h2><?= htmlspecialchars($cat['name']) ?></h2>

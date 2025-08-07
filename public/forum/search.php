@@ -16,13 +16,13 @@ if ($query !== '') {
     <h1>Forum Search</h1>
     <form class="forum-search" action="search.php" method="get">
         <input type="text" name="q" value="<?= htmlspecialchars($query) ?>">
-        <button type="submit">Search</button>
+        <button type="submit" aria-label="Search forums" role="button">Search</button>
     </form>
     <?php if ($query !== ''): ?>
         <?php if (!empty($results)): ?>
             <ul>
                 <?php foreach ($results as $topic): ?>
-                    <li><a href="topic.php?id=<?= $topic['id'] ?>"><?= htmlspecialchars($topic['title']) ?></a></li>
+                    <li><a href="topic.php?id=<?= $topic['id'] ?>" aria-label="View topic <?= htmlspecialchars($topic['title']) ?>" role="link"><?= htmlspecialchars($topic['title']) ?></a></li>
                 <?php endforeach; ?>
             </ul>
         <?php else: ?>

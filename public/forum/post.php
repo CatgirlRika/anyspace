@@ -88,11 +88,11 @@ $pageCSS = "../static/css/forum.css";
     <div class="mod-actions">
         <form method="post" style="display:inline">
             <input type="hidden" name="action" value="<?= $topic['locked'] ? 'unlock' : 'lock' ?>">
-            <button type="submit"><?= $topic['locked'] ? 'Unlock' : 'Lock' ?></button>
+            <button type="submit" aria-label="<?= $topic['locked'] ? 'Unlock topic' : 'Lock topic' ?>" role="button"><?= $topic['locked'] ? 'Unlock' : 'Lock' ?></button>
         </form>
         <form method="post" style="display:inline">
             <input type="hidden" name="action" value="<?= $topic['sticky'] ? 'unsticky' : 'sticky' ?>">
-            <button type="submit"><?= $topic['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
+            <button type="submit" aria-label="<?= $topic['sticky'] ? 'Unsticky topic' : 'Sticky topic' ?>" role="button"><?= $topic['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
         </form>
     </div>
     <?php endif; ?>
@@ -112,25 +112,25 @@ $pageCSS = "../static/css/forum.css";
         <tr class="forum-post">
             <td class="avatar-cell">
                 <div class="avatar-wrapper">
-                    <a href="<?= $profileLink ?>"><img class="avatar" src="<?= htmlspecialchars($avatarPath) ?>" alt="<?= htmlspecialchars($user['username']) ?>'s avatar" loading="lazy"></a>
+                    <a href="<?= $profileLink ?>" aria-label="View <?= htmlspecialchars($user['username']) ?>'s profile" role="link"><img class="avatar" src="<?= htmlspecialchars($avatarPath) ?>" alt="<?= htmlspecialchars($user['username']) ?>'s avatar" loading="lazy"></a>
                     <?= $badge ?>
                 </div>
             </td>
             <td class="post-body">
-                <p><strong><a class="username" href="<?= $profileLink ?>"><?= htmlspecialchars($user['username']) ?></a></strong> <?= htmlspecialchars($post['created_at']) ?></p>
+                <p><strong><a class="username" href="<?= $profileLink ?>" aria-label="View <?= htmlspecialchars($user['username']) ?>'s profile" role="link"><?= htmlspecialchars($user['username']) ?></a></strong> <?= htmlspecialchars($post['created_at']) ?></p>
                 <?php if ($post['deleted']): ?>
                     <p><em>Post deleted.</em></p>
                 <?php else: ?>
                     <p><?= nl2br(replaceBBcodes($post['body'])) ?></p>
                     <?php if ($can_post): ?>
-                        <a href="post.php?id=<?= $topicId ?>&quote=<?= $post['id'] ?>">Quote</a>
+                        <a href="post.php?id=<?= $topicId ?>&quote=<?= $post['id'] ?>" aria-label="Quote this post" role="link">Quote</a>
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($can_moderate): ?>
                     <form method="post" style="display:inline">
                         <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
                         <input type="hidden" name="action" value="<?= $post['deleted'] ? 'restore_post' : 'delete_post' ?>">
-                        <button type="submit"><?= $post['deleted'] ? 'Restore' : 'Delete' ?></button>
+                        <button type="submit" aria-label="<?= $post['deleted'] ? 'Restore post' : 'Delete post' ?>" role="button"><?= $post['deleted'] ? 'Restore' : 'Delete' ?></button>
                     </form>
                 <?php endif; ?>
             </td>
@@ -144,8 +144,8 @@ $pageCSS = "../static/css/forum.css";
 
     <?php if (!$topic['locked'] && $can_post): ?>
     <form method="post">
-        <textarea name="body"><?= htmlspecialchars($prefill) ?></textarea>
-        <button type="submit">Post</button>
+        <textarea name="body" aria-label="Post message"><?= htmlspecialchars($prefill) ?></textarea>
+        <button type="submit" aria-label="Submit reply" role="button">Post</button>
     </form>
     <?php elseif ($topic['locked']): ?>
         <p>This topic is locked.</p>
