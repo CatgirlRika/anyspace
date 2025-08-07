@@ -269,6 +269,19 @@ CREATE TABLE IF NOT EXISTS `forums` (
 
 -- --------------------------------------------------------
 --
+-- Table structure for table `forum_topics`
+--
+CREATE TABLE IF NOT EXISTS `forum_topics` (
+  `id` int(11) NOT NULL auto_increment,
+  `forum_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `locked` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`forum_id`) REFERENCES `forums` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
 -- Table structure for table `forum_permissions`
 --
 CREATE TABLE IF NOT EXISTS `forum_permissions` (
