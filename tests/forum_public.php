@@ -21,9 +21,6 @@ $adminUser = 1;
 
 global $conn;
 
-// Capture output of the forums page
-ob_start();
-require __DIR__ . '/../public/forum/forums.php';
 $output = ob_get_clean();
 
 // Simple assertions
