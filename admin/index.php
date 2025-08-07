@@ -36,11 +36,19 @@ require_once("../core/settings.php");
     }
 
 require("../core/config.php");
+
+// Quick stats
+$forumCount = $conn->query('SELECT COUNT(*) FROM forums')->fetchColumn();
+$postCount = $conn->query('SELECT COUNT(*) FROM blogs')->fetchColumn();
 ?>
 
 <?php require("header.php"); ?>
 
 <div class="simple-container">
+    <div class="quick-stats">
+        <p><strong>Forums:</strong> <?= $forumCount ?></p>
+        <p><strong>Posts:</strong> <?= $postCount ?></p>
+    </div>
     <div class="row edit-profile">
     <div class="col w-20 left">
         <!-- SIDEBAR CONTENT -->

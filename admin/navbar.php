@@ -48,6 +48,7 @@
         'Users' => 'users.php',
         'Search' => 'search.php',
         'Reports' => 'reports.php',
+        'Forums' => 'forum/categories.php',
         /*
         'Mail' => 'messages.php',
         'Blog' => 'blog/',
@@ -66,6 +67,9 @@
       );
 
       foreach ($navItems as $name => $page) {
+        if ($name === 'Forums' && !isset($_SESSION['user'])) {
+          continue;
+        }
         if ($name == 'Home' && $isHomePage) {
           $activeClass = 'class="active"';
         } else {
