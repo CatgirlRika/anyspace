@@ -15,7 +15,10 @@ if (!$topic) {
     exit;
 }
 
-$perms = forum_fetch_permissions($topic['forum_id']);
+$forumId = (int)$topic['forum_id'];
+forum_require_permission($forumId, 'can_view');
+
+$perms = forum_fetch_permissions($forumId);
 $can_post = !empty($perms['can_post']);
 $can_moderate = !empty($perms['can_moderate']);
 $error = '';
