@@ -66,7 +66,7 @@ $pageCSS = "../static/css/forum.css";
         <?php foreach ($topics as $t): ?>
         <?php $linkId = $t['moved_to'] ? $t['moved_to'] : $t['id']; ?>
         <tr>
-            <td class="icon-cell"><img src="../static/img/divider_o.png" alt="Thread" loading="lazy"></td>
+            <td class="icon-cell"><img src="../static/icons/comment.png" alt="Topic" loading="lazy"></td>
             <td><a href="post.php?id=<?= $linkId ?>"><?= htmlspecialchars($t['title']) ?></a></td>
             <td><?= (int)$t['posts'] ?></td>
             <td><?= htmlspecialchars($t['last_post']) ?></td>
