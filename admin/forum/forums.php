@@ -18,7 +18,9 @@ function deleteForum(PDO $conn, int $id): void {
     foreach ($children as $childId) {
         deleteForum($conn, (int)$childId);
     }
-    // delete this forum
+    // delete permissions then this forum
+    $permDel = $conn->prepare('DELETE FROM forum_permissions WHERE forum_id = :id');
+    $permDel->execute([':id' => $id]);
     $delStmt = $conn->prepare('DELETE FROM forums WHERE id = :id');
     $delStmt->execute([':id' => $id]);
 }
@@ -45,6 +47,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':description' => $description,
             ':position' => $position
         ]);
+
+        $forumId = (int)$conn->lastInsertId();
+        // determine available roles
+        $roles = ['guest', 'member', 'admin'];
+        $roleCheck = $conn->query("SHOW TABLES LIKE 'roles'");
+        if ($roleCheck && $roleCheck->rowCount() > 0) {
+            $roles = $conn->query('SELECT name FROM roles')->fetchAll(PDO::FETCH_COLUMN);
+        }
+        $defaults = [
+            'guest' => ['view' => 1, 'post' => 0, 'moderate' => 0],
+            'member' => ['view' => 1, 'post' => 1, 'moderate' => 0],
+            'admin' => ['view' => 1, 'post' => 1, 'moderate' => 1],
+        ];
+        $permStmt = $conn->prepare('INSERT INTO forum_permissions (forum_id, role, can_view, can_post, can_moderate) VALUES (:fid, :role, :view, :post, :moderate)');
+        foreach ($roles as $r) {
+            $d = $defaults[$r] ?? ['view' => 0, 'post' => 0, 'moderate' => 0];
+            $permStmt->execute([
+                ':fid' => $forumId,
+                ':role' => $r,
+                ':view' => $d['view'],
+                ':post' => $d['post'],
+                ':moderate' => $d['moderate'],
+            ]);
+        }
 
         header('Location: forums.php?msg=' . urlencode('Forum added'));
         exit;
@@ -130,6 +156,7 @@ function renderForumRows(array $forumsByParent, $parentId = 0, $level = 0) {
         echo '<td>' . $forum['position'] . '</td>';
         echo '<td>';
         echo '<a href="forums.php?edit=' . $forum['id'] . '">Edit</a> ';
+        echo '<a href="permissions.php?forum_id=' . $forum['id'] . '">Permissions</a> ';
         echo '<form method="post" style="display:inline" onsubmit="return confirm(\'Delete this forum and its subforums?\');">';
         echo '<input type="hidden" name="id" value="' . $forum['id'] . '">';
         echo '<button type="submit" name="delete">Delete</button>';
