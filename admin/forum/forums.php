@@ -18,6 +18,14 @@ function deleteForum(PDO $conn, int $id): void {
     foreach ($children as $childId) {
         deleteForum($conn, (int)$childId);
     }
+    // remove posts and topics belonging to this forum
+    $postDel = $conn->prepare('DELETE FROM forum_posts WHERE topic_id IN (SELECT id FROM forum_topics WHERE forum_id = :id)');
+    $postDel->execute([':id' => $id]);
+    $topicDel = $conn->prepare('DELETE FROM forum_topics WHERE forum_id = :id');
+    $topicDel->execute([':id' => $id]);
+    // remove moderator assignments for this forum
+    $modDel = $conn->prepare('DELETE FROM forum_moderators WHERE forum_id = :id');
+    $modDel->execute([':id' => $id]);
     // delete permissions then this forum
     $permDel = $conn->prepare('DELETE FROM forum_permissions WHERE forum_id = :id');
     $permDel->execute([':id' => $id]);
