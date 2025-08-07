@@ -121,11 +121,11 @@ CREATE TABLE IF NOT EXISTS `messages` (
 
 CREATE TABLE IF NOT EXISTS `reports` (
   `id` int(11) NOT NULL auto_increment,
-  `user_id` int(11) NOT NULL,
-  `creator_id` int(11) NOT NULL,
-  `date` datetime NOT NULL,
-  `content_type` int(11) NOT NULL,
-  `content_id` int(11) NOT NULL,
+  `reported_id` int(11) NOT NULL,
+  `type` varchar(20) NOT NULL,
+  `reason` text NOT NULL,
+  `reporter_id` int(11) NOT NULL,
+  `status` varchar(20) NOT NULL default 'open',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
