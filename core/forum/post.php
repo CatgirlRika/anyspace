@@ -32,4 +32,19 @@ function post_restore(int $post_id, int $by_user_id): void
     forum_log_action("User {$by_user_id} restored post {$post_id}");
 }
 
+function post_get_quote(int $post_id): ?array
+{
+    global $conn;
+    $stmt = $conn->prepare('SELECT p.body, u.username FROM forum_posts p JOIN users u ON p.user_id = u.id WHERE p.id = :id');
+    $stmt->execute([':id' => $post_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return null;
+    }
+    return [
+        'username' => $row['username'],
+        'body' => strip_tags($row['body']),
+    ];
+}
+
 ?>
