@@ -5,6 +5,7 @@ require_once("../../core/forum/topic.php");
 require_once("../../core/forum/post.php");
 require_once("../../core/forum/permissions.php");
 require_once("../../core/helper.php");
+require_once("../../core/site/user.php");
 
 $topicId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $stmt = $conn->prepare('SELECT id, forum_id, title, locked, sticky FROM forum_topics WHERE id = :id');
@@ -95,26 +96,47 @@ $pageCSS = "../static/css/forum.css";
         </form>
     </div>
     <?php endif; ?>
+    <table class="post-table">
     <?php foreach ($posts as $post): ?>
-        <div class="forum-post">
-            <p><strong><?= htmlspecialchars($post['username']) ?></strong> <?= htmlspecialchars($post['created_at']) ?></p>
-            <?php if ($post['deleted']): ?>
-                <p><em>Post deleted.</em></p>
-            <?php else: ?>
-                <p><?= nl2br(replaceBBcodes($post['body'])) ?></p>
-                <?php if ($can_post): ?>
-                    <a href="post.php?id=<?= $topicId ?>&quote=<?= $post['id'] ?>">Quote</a>
+        <?php $user = fetchUserInfo($post['user_id']);
+              $profileLink = '../profile.php?id=' . (int)$user['id'];
+              $avatarPath = '../media/pfp/' . $user['pfp'];
+              $badge = '';
+              if (!empty($user['lastactive'])) {
+                  $lastActive = strtotime($user['lastactive']);
+                  if ($lastActive !== false && (time() - $lastActive) <= 300) {
+                      $badge = '<img class="online-badge" src="../static/img/green_person.png" alt="Online Now" loading="lazy">';
+                  }
+              }
+        ?>
+        <tr class="forum-post">
+            <td class="avatar-cell">
+                <div class="avatar-wrapper">
+                    <a href="<?= $profileLink ?>"><img class="avatar" src="<?= htmlspecialchars($avatarPath) ?>" alt="<?= htmlspecialchars($user['username']) ?>'s avatar" loading="lazy"></a>
+                    <?= $badge ?>
+                </div>
+            </td>
+            <td class="post-body">
+                <p><strong><a class="username" href="<?= $profileLink ?>"><?= htmlspecialchars($user['username']) ?></a></strong> <?= htmlspecialchars($post['created_at']) ?></p>
+                <?php if ($post['deleted']): ?>
+                    <p><em>Post deleted.</em></p>
+                <?php else: ?>
+                    <p><?= nl2br(replaceBBcodes($post['body'])) ?></p>
+                    <?php if ($can_post): ?>
+                        <a href="post.php?id=<?= $topicId ?>&quote=<?= $post['id'] ?>">Quote</a>
+                    <?php endif; ?>
                 <?php endif; ?>
-            <?php endif; ?>
-            <?php if ($can_moderate): ?>
-                <form method="post" style="display:inline">
-                    <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
-                    <input type="hidden" name="action" value="<?= $post['deleted'] ? 'restore_post' : 'delete_post' ?>">
-                    <button type="submit"><?= $post['deleted'] ? 'Restore' : 'Delete' ?></button>
-                </form>
-            <?php endif; ?>
-        </div>
+                <?php if ($can_moderate): ?>
+                    <form method="post" style="display:inline">
+                        <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+                        <input type="hidden" name="action" value="<?= $post['deleted'] ? 'restore_post' : 'delete_post' ?>">
+                        <button type="submit"><?= $post['deleted'] ? 'Restore' : 'Delete' ?></button>
+                    </form>
+                <?php endif; ?>
+            </td>
+        </tr>
     <?php endforeach; ?>
+    </table>
 
     <?php if ($error): ?>
         <div class="alert"><?= htmlspecialchars($error) ?></div>

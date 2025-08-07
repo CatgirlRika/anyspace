@@ -26,7 +26,7 @@ function renderForumPost(array $post)
     if (!empty($user['lastactive'])) {
         $lastActive = strtotime($user['lastactive']);
         if ($lastActive !== false && (time() - $lastActive) <= 300) {
-            $badge = '<img class="online-badge" src="static/img/online_now.gif" alt="Online Now" loading="lazy">';
+            $badge = '<img class="online-badge" src="static/img/green_person.png" alt="Online Now" loading="lazy">';
         }
     }
 
