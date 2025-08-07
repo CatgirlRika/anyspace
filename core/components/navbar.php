@@ -50,7 +50,7 @@
         'Mail' => '/messages.php',
         'Blog' => '/blog/',
         'Bulletins' => '/bulletins/',
-        'Forum' => '/forum.php',
+        'Forum' => '/forum/forums.php',
         'Groups' => '#',
         'Layouts' => '#',
         'Favs' => '/favorites.php',
