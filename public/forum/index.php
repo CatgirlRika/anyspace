@@ -1,3 +1,2 @@
 <?php
-require __DIR__ . '/forums.php';
-?>
+require_once __DIR__ . '/forums.php';
