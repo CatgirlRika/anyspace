@@ -14,7 +14,7 @@ $favorites =json_decode($favoritesArray, true);
 <?php require("header.php"); ?>
 <div class="simple-container">
   <h1>Your Favorites</h1>
-  <p class="info">Click on <b><img src="static/icons/award_star_add.png" class="icon" aria-hidden="true" loading="lazy" alt=""> Add to Favorites</b> on any profile to add a user to this list.</p>
+  <p class="info">Click on <b><img src="static/icons/award_star_add.png" class="icon" aria-hidden="true" loading="lazy" alt="Add to favorites icon"> Add to Favorites</b> on any profile to add a user to this list.</p>
   <div class="new-people">
     <div class="top">
       <h4>Favorite Users</h4>

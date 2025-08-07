@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
 ?>
 <?php require("header.php"); ?>
 <div class="simple-container">
-  <h1><img src="static/icons/award_star_add.png" class="icon" aria-hidden="true" loading="lazy" alt=""> Add Favorite</h1>
+  <h1><img src="static/icons/award_star_add.png" class="icon" aria-hidden="true" loading="lazy" alt="Add to favorites icon"> Add Favorite</h1>
       <p>Do you want to add this user to your Favorites?</p>
     <form method="post">
       <button type="submit" name="submit">Add to Favorites</button>

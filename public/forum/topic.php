@@ -66,8 +66,8 @@ $pageCSS = "../static/css/forum.css";
         <?php foreach ($topics as $t): ?>
         <?php $linkId = $t['moved_to'] ? $t['moved_to'] : $t['id']; ?>
         <tr>
-            <td class="icon-cell"><img src="../static/icons/comment.png" alt="Topic" loading="lazy"></td>
-            <td><a href="post.php?id=<?= $linkId ?>"><?= htmlspecialchars($t['title']) ?></a></td>
+            <td class="icon-cell"><img src="../static/icons/comment.png" alt="Topic icon" loading="lazy"></td>
+            <td><a href="post.php?id=<?= $linkId ?>" aria-label="View topic <?= htmlspecialchars($t['title']) ?>" role="link"><?= htmlspecialchars($t['title']) ?></a></td>
             <td><?= (int)$t['posts'] ?></td>
             <td><?= htmlspecialchars($t['last_post']) ?></td>
             <?php if ($can_moderate): ?>
@@ -75,12 +75,12 @@ $pageCSS = "../static/css/forum.css";
                 <form method="post" style="display:inline">
                     <input type="hidden" name="topic_id" value="<?= $t['id'] ?>">
                     <input type="hidden" name="action" value="<?= $t['locked'] ? 'unlock' : 'lock' ?>">
-                    <button type="submit"><?= $t['locked'] ? 'Unlock' : 'Lock' ?></button>
+                    <button type="submit" aria-label="<?= $t['locked'] ? 'Unlock topic' : 'Lock topic' ?>" role="button"><?= $t['locked'] ? 'Unlock' : 'Lock' ?></button>
                 </form>
                 <form method="post" style="display:inline">
                     <input type="hidden" name="topic_id" value="<?= $t['id'] ?>">
                     <input type="hidden" name="action" value="<?= $t['sticky'] ? 'unsticky' : 'sticky' ?>">
-                    <button type="submit"><?= $t['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
+                    <button type="submit" aria-label="<?= $t['sticky'] ? 'Unsticky topic' : 'Sticky topic' ?>" role="button"><?= $t['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
                 </form>
             </td>
             <?php endif; ?>
@@ -95,9 +95,9 @@ $pageCSS = "../static/css/forum.css";
     <?php if ($can_post): ?>
     <h2>New Topic</h2>
     <form method="post">
-        <input type="text" name="title" placeholder="Title">
-        <textarea name="body"></textarea>
-        <button type="submit">Post</button>
+        <input type="text" name="title" placeholder="Title" aria-label="Topic title">
+        <textarea name="body" aria-label="Topic message"></textarea>
+        <button type="submit" aria-label="Post new topic" role="button">Post</button>
     </form>
     <?php endif; ?>
 </div>

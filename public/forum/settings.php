@@ -53,7 +53,7 @@ require("../header.php");
                 <input type="text" name="text_color" value="<?= htmlspecialchars($settings['text_color'] ?? '') ?>" placeholder="#000000">
             </label>
         </p>
-        <p><input type="submit" value="Save"></p>
+        <p><button type="submit" aria-label="Save forum settings" role="button">Save</button></p>
     </form>
 </div>
 <?php require("../footer.php"); ?>

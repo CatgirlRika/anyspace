@@ -96,13 +96,13 @@
                                         <a href="friends.php?action=add&id=1"
                                             rel="nofollow">
                                             <img src="static/icons/add.png" class="icon" aria-hidden="true" loading="lazy"
-                                                alt=""> Add to Friends
+                                                alt="Add friend icon"> Add to Friends
                                         </a>
                                     </div>
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/award_star_add.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Add to Favorites
+                                                loading="lazy" alt="Add to favorites icon"> Add to Favorites
                                         </a>
                                     </div>
                                 </div>
@@ -110,13 +110,13 @@
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/comment.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Send Message
+                                                loading="lazy" alt="Send message icon"> Send Message
                                         </a>
                                     </div>
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/arrow_right.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Forward to Friend
+                                                loading="lazy" alt="Forward to friend icon"> Forward to Friend
                                         </a>
                                     </div>
                                 </div>
@@ -124,13 +124,13 @@
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/email.png" class="icon" aria-hidden="true" loading="lazy"
-                                                alt=""> Instant Message
+                                                alt="Instant message icon"> Instant Message
                                         </a>
                                     </div>
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/exclamation.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Block User
+                                                loading="lazy" alt="Block user icon"> Block User
                                         </a>
                                     </div>
                                 </div>
@@ -138,13 +138,13 @@
                                     <div class="f-col">
                                         <a href="#">
                                             <img src="static/icons/group_add.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Add to Group
+                                                loading="lazy" alt="Add to group icon"> Add to Group
                                         </a>
                                     </div>
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/flag_red.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Report User
+                                                loading="lazy" alt="Report user icon"> Report User
                                         </a>
                                     </div>
                                 </div>
@@ -305,8 +305,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=28"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -337,8 +337,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=24"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -369,8 +369,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=23"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -401,8 +401,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=22"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -433,8 +433,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=21"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -465,8 +465,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=20"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -497,8 +497,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=19"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -529,8 +529,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=18"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -561,8 +561,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=17"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -593,8 +593,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=16"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -625,8 +625,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=15"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -657,8 +657,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=14"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -689,8 +689,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=13"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -721,8 +721,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=12"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -753,8 +753,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=11"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -785,8 +785,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=10"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -817,8 +817,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=9"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -849,8 +849,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=8"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -881,8 +881,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=7"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
@@ -913,8 +913,8 @@
                                                 <p class="report">
                                                     <a href="/report?type=comment&id=6"
                                                         rel="nofollow">
-                                                        <img src="/static/icons/flag_red.png"
-                                                            class="icon" aria-hidden="true" loading="lazy" alt=""> Report
+                                                        <img src="/static/icons/flag_red.png" alt="Red flag icon"
+                                                            class="icon" aria-hidden="true" loading="lazy" alt="Report user icon"> Report
                                                         Comment
                                                     </a>
                                                 </p>
