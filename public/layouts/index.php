@@ -64,7 +64,7 @@ require_once("../../core/settings.php");
         'Mail' => '../messages.php',
         'Blog' => '../blog/',
         'Bulletins' => '../bulletins/',
-        'Forum' => '../forum.php',
+        'Forum' => '../forum/forums.php',
         'Groups' => '#',
         'Layouts' => '../layouts/',
         'Favs' => '../favorites.php',

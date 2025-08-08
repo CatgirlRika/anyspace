@@ -262,6 +262,7 @@ $bulletins = fetchAllFriendBulletins($userId, 5);
                                             <td>
                                                 <p><b>Friend Request</b></p>
                                                 <form method="post">
+    <?= csrf_token_input(); ?>
                                                     <input type="hidden" name="type" value="friend-request">
                                                     <input type="hidden" name="request_id"
                                                         value="<?= htmlspecialchars($request['id']) ?>">

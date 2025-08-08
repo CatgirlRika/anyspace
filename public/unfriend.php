@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
 <div class="simple-container">
     <h1>Are you sure you want to unfriend <?= fetchName($friendId); ?>?</h1>
     <form method="POST" action="">
+    <?= csrf_token_input(); ?>
         <p>Type "DELETE" to remove friend:</p>
         <input type="text" name="confirmation" required>
         <button type="submit" name="submit">Delete</button>

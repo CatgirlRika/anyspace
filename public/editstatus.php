@@ -44,6 +44,7 @@ $you = $statusInfo['you'];
         <h1>Edit Your Status</h1>
         <p>All fields are optional and can be left empty if you want.</p>
         <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
             <button type="submit" name="submit">Save All</button>
             <br>
             <label for="category_status">

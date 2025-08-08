@@ -27,6 +27,7 @@
   <div class="right">
       <ul class="topnav signup">
         <?php if (isset($_SESSION['user'])): ?>
+          <?php include __DIR__ . '/../core/components/notifications_block.php'; ?>
           <a href="docs/help.html">Help</a> | <a href="logout.php">LogOut</a>
         <?php else: ?>
           <a href="docs/help.html">Help</a> |
@@ -51,7 +52,7 @@
         'Mail' => 'messages.php',
         'Blog' => 'blog/',
         'Bulletins' => 'bulletins/',
-        'Forum' => 'forum.php',
+        'Forum' => 'forum/forums.php',
         'Groups' => '#',
         'Layouts' => '#',
         'Favs' => 'favorites.php',

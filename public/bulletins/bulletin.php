@@ -66,11 +66,11 @@ $commentType = 'bulletin';
                 </p>
                 <p class="links">
                     <a href="userbulletins.php?id=<?= $authorId ?>">
-                        <img src="../static/icons/text_list_bullets.png" class="icon" aria-hidden="true" loading="lazy" alt=""> <span
+                        <img src="../static/icons/text_list_bullets.png" class="icon" aria-hidden="true" loading="lazy" alt="Bulletins icon"> <span
                             class="m-hide">View</span> Bulletins
                     </a>
                     <a href="https://<?= DOMAIN_NAME ?>../profile.php?id=<?= $authorId ?>">
-                        <img src="../static/icons/user.png" class="icon" aria-hidden="true" loading="lazy" alt=""> <span
+                        <img src="../static/icons/user.png" class="icon" aria-hidden="true" loading="lazy" alt="User profile icon"> <span
                             class="m-hide">View</span> Profile
                     </a>
 

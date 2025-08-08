@@ -11,19 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 
         if ($_POST['action'] == 'login') {
             // Prepare SQL statement for login
-            $stmt = $conn->prepare("SELECT id, username, password, rank FROM users WHERE email = ?");
+            $stmt = $conn->prepare("SELECT id, username, password, rank, banned_until FROM users WHERE email = ?");
             $stmt->execute(array($email));
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $isAdmin = ($user['id'] == $adminUser);
 
-            if (($user && password_verify($password, $user['password'])) && $isAdmin) {
+            $notBanned = (empty($user['banned_until']) || strtotime($user['banned_until']) <= time());
+            if (($user && password_verify($password, $user['password']) && $notBanned) && $isAdmin) {
                 $_SESSION['user'] = $user['username'];
                 $_SESSION['userId'] = $user['id'];
                 $_SESSION['rank'] = $user['rank'];
 
                 header("Location: index.php");
                 exit;
+            } elseif ($user && !$notBanned) {
+                echo '<p>Account banned until ' . htmlspecialchars($user['banned_until']) . '</p><hr>';
             } else {
                 echo '<p>Login information doesn\'t exist, incorrect password, or user does not have proper permission.</p><hr>';
             }
@@ -38,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
                     <!-- Login/Signup Form -->
                     <h4>Please login or signup to continue.</h4>
                     <form action="" method="post" name="theForm" id="theForm">
+    <?= csrf_token_input(); ?>
                         <input name="client_id" type="hidden" value="web">
                         <table>
                             <tbody>

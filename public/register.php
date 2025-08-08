@@ -87,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php if ($message)
                     echo $message; ?>
                 <form action="" method="post">
+    <?= csrf_token_input(); ?>
                     <input required placeholder="Username" type="text" name="username"><br>
                     <input required placeholder="E-Mail" type="email" name="email"><br>
                     <input required placeholder="Password" type="password" name="password"><br>

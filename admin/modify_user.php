@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="post" action="">
+    <?= csrf_token_input(); ?>
         <h2>User Information</h2>
         <p>Username: <?php echo htmlspecialchars(fetchName($userId)); ?></p>
         <p>Email: <?php echo htmlspecialchars(fetchEmail($userId)); ?></p>

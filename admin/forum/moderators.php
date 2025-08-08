@@ -86,6 +86,7 @@ $forums = $conn->query('SELECT id, name FROM forums ORDER BY position ASC')->fet
                         <?php foreach ($mods as $mod): ?>
                             <?= htmlspecialchars($mod['username']) ?> (ID: <?= $mod['user_id'] ?>)
                             <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                                 <input type="hidden" name="forum_id" value="<?= $forum['id'] ?>">
                                 <input type="hidden" name="user_id" value="<?= $mod['user_id'] ?>">
                                 <button type="submit" name="remove">Remove</button>
@@ -95,6 +96,7 @@ $forums = $conn->query('SELECT id, name FROM forums ORDER BY position ASC')->fet
                 </td>
                 <td>
                     <form method="post">
+    <?= csrf_token_input(); ?>
                         <input type="hidden" name="forum_id" value="<?= $forum['id'] ?>">
                         <input type="text" name="user" placeholder="Username or ID">
                         <button type="submit" name="add">Add</button>

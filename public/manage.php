@@ -20,9 +20,9 @@ if ($userInfo) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (@$_POST['interestset']) {
-        // This is probably an XSS vuln
+        // Sanitize each interest value to prevent XSS
         $sanitizedInterests = array_map(function ($interest) {
-            return $interest;
+            return htmlspecialchars($interest, ENT_QUOTES, 'UTF-8');
         }, $_POST['interests']);
         updateInterests($userId, $sanitizedInterests);
         header("Location: manage.php");
@@ -82,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h1>Change Name:</h1>
                     <br>
                     <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
                         <input size="77" type="text" name="newUsername" placeholder="New Username"
                             value="<?php echo htmlspecialchars($_SESSION['user']); ?>"><br>
                         <input name="usernameset" type="submit" value="Change Name" style="max-width: 20%;"> <small>max: 50
@@ -94,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h1>Profile Picture & Song:</h1>
                     <br>
                     <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
                         <small>Select photo:</small>
                         <input type="file" name="fileToUpload" id="fileToUpload">
                         <input type="submit" value="Upload Image" name="submit">
@@ -102,6 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <hr style="max-width: 80%;">
                     <br>
                     <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
                         <small>Select song:</small>
                         <input type="file" name="fileToUpload" id="fileToUpload">
                         <input type="submit" value="Upload Song" name="photoset">
@@ -112,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h1>Bio:</h1>
                     <br>
                     <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
                         <textarea required cols="58" placeholder="Bio" name="bio"><?php echo $bio; ?></textarea><br>
                         <input name="bioset" type="submit" value="Set"> <small>max limit: 500 characters | supports
                             bbcode</small>
@@ -120,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h1>Interests:</h1>
                     <br>
                     <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
                         <label for="general">General:</label>
                         <input type="text" id="general" name="interests[General]"
                             value="<?php echo htmlspecialchars($interests['General']); ?>">
@@ -160,6 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <small>what you would normally paste into the 'Blurbs' section. Include HTML tags.</small>
                     <br>
                     <form accept-charset="UTF-8" method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
                         <textarea required rows="15" cols="58" placeholder="Your code"
                             name="css"><?php echo $css; ?></textarea><br>
                         <input name="cssset" type="submit" value="Set"> <small>max limit: None</small>

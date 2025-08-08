@@ -1,6 +1,8 @@
 <?php
 
 require_once(__DIR__ . '/../helper.php');
+require_once(__DIR__ . '/mod_log.php');
+require_once(__DIR__ . '/word_filter.php');
 
 function forum_log_action(string $message): void {
     $logFile = __DIR__ . '/../../admin_logs.txt';
@@ -13,6 +15,7 @@ function topic_lock(int $topic_id, int $by_user_id): void {
     $stmt = $conn->prepare('UPDATE forum_topics SET locked = 1 WHERE id = :id');
     $stmt->execute([':id' => $topic_id]);
     forum_log_action("User {$by_user_id} locked topic {$topic_id}");
+    logModAction($by_user_id, 'lock', 'topic', $topic_id);
 }
 
 function topic_unlock(int $topic_id, int $by_user_id): void {
@@ -20,6 +23,7 @@ function topic_unlock(int $topic_id, int $by_user_id): void {
     $stmt = $conn->prepare('UPDATE forum_topics SET locked = 0 WHERE id = :id');
     $stmt->execute([':id' => $topic_id]);
     forum_log_action("User {$by_user_id} unlocked topic {$topic_id}");
+    logModAction($by_user_id, 'unlock', 'topic', $topic_id);
 }
 
 function topic_sticky(int $topic_id, int $by_user_id): void {
@@ -27,6 +31,7 @@ function topic_sticky(int $topic_id, int $by_user_id): void {
     $stmt = $conn->prepare('UPDATE forum_topics SET sticky = 1 WHERE id = :id');
     $stmt->execute([':id' => $topic_id]);
     forum_log_action("User {$by_user_id} stickied topic {$topic_id}");
+    logModAction($by_user_id, 'sticky', 'topic', $topic_id);
 }
 
 function topic_unsticky(int $topic_id, int $by_user_id): void {
@@ -34,6 +39,7 @@ function topic_unsticky(int $topic_id, int $by_user_id): void {
     $stmt = $conn->prepare('UPDATE forum_topics SET sticky = 0 WHERE id = :id');
     $stmt->execute([':id' => $topic_id]);
     forum_log_action("User {$by_user_id} unstickied topic {$topic_id}");
+    logModAction($by_user_id, 'unsticky', 'topic', $topic_id);
 }
 
 function topic_move(int $topic_id, int $new_forum_id, int $by_user_id): void {
@@ -61,6 +67,7 @@ function topic_move(int $topic_id, int $new_forum_id, int $by_user_id): void {
 
         $conn->commit();
         forum_log_action("User {$by_user_id} moved topic {$topic_id} from forum {$old_forum_id} to forum {$new_forum_id}");
+        logModAction($by_user_id, 'move', 'topic', $topic_id);
     } catch (Exception $e) {
         $conn->rollBack();
         throw $e;
@@ -74,10 +81,14 @@ function forum_get_topics(int $forum_id): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function forum_create_topic(int $forum_id, int $user_id, string $title, string $body): int {
+function forum_create_topic(int $forum_id, int $user_id, string $title, string $body) {
     global $conn;
+    $matches = array_unique(array_merge(isFiltered($title), isFiltered($body)));
     $sanitizedTitle = strip_tags($title);
     $sanitizedBody = validateContentHTML($body);
+    if (!empty($matches)) {
+        return ['warning' => 'Topic contains filtered words', 'filtered' => $matches];
+    }
     $conn->beginTransaction();
     $stmt = $conn->prepare('INSERT INTO forum_topics (forum_id, title) VALUES (:fid, :title)');
     $stmt->execute([':fid' => $forum_id, ':title' => $sanitizedTitle]);

@@ -101,6 +101,7 @@ th, td {
           </td>
           <td> 
             <form method="post" action="">
+    <?= csrf_token_input(); ?>
                 <input type="hidden" name="user_id" value="<?php echo $userId; ?>">
                 <?php if (!$isBanned): ?>
                     <button type="submit" name="ban_user">Ban</button>

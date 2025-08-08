@@ -4,6 +4,8 @@ require_once("../../core/settings.php");
 require_once("../../core/forum/forum.php");
 require_once("../../core/forum/topic.php");
 require_once("../../core/forum/permissions.php");
+require_once("../../core/forum/subscriptions.php");
+require_once("../../core/forum/polls.php");
 require_once("../../core/helper.php");
 
 $forumId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -14,6 +16,13 @@ $can_post = !empty($perms['can_post']);
 $can_moderate = !empty($perms['can_moderate']);
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['subscribe_topic'])) {
+        login_check();
+        $tid = (int)$_POST['subscribe_topic'];
+        subscribeTopic($_SESSION['userId'], $tid);
+        header('Location: topic.php?id=' . $forumId);
+        exit;
+    }
     login_check();
     if ($can_moderate && isset($_POST['action'], $_POST['topic_id'])) {
         forum_require_permission($forumId, 'can_moderate');
@@ -40,15 +49,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'] ?? '';
     $body = $_POST['body'] ?? '';
     if ($title !== '' && $body !== '') {
-        $topicId = forum_create_topic($forumId, $_SESSION['userId'], $title, $body);
-        header('Location: post.php?id=' . $topicId);
-        exit;
+        $result = forum_create_topic($forumId, $_SESSION['userId'], $title, $body);
+        if (is_array($result)) {
+            if (isset($result['warning'])) {
+                $error = $result['warning'] . ': ' . implode(', ', $result['filtered']);
+            } else {
+                $error = $result['error'] ?? 'Unable to create topic.';
+            }
+        } else {
+            $pollQuestion = trim($_POST['poll_question'] ?? '');
+            $pollOptions = trim($_POST['poll_options'] ?? '');
+            if ($pollQuestion !== '' && $pollOptions !== '') {
+                $opts = array_filter(array_map('trim', explode("\n", $pollOptions)));
+                if (count($opts) >= 2) {
+                    createPoll($result, $pollQuestion, $opts);
+                }
+            }
+            header('Location: post.php?id=' . $result);
+            exit;
+        }
     } else {
         $error = 'Title and body are required.';
     }
 }
 
 $topics = forum_get_topics($forumId);
+$subscribed = [];
+if (isset($_SESSION['userId'])) {
+    $subs = getUserSubscriptions($_SESSION['userId']);
+    $subscribed = array_column($subs, 'id');
+}
 
 $pageCSS = "../static/css/forum.css";
 ?>
@@ -66,21 +96,37 @@ $pageCSS = "../static/css/forum.css";
         <?php foreach ($topics as $t): ?>
         <?php $linkId = $t['moved_to'] ? $t['moved_to'] : $t['id']; ?>
         <tr>
-            <td class="icon-cell"><img src="../static/img/divider_o.png" alt="Thread" loading="lazy"></td>
-            <td><a href="post.php?id=<?= $linkId ?>"><?= htmlspecialchars($t['title']) ?></a></td>
+            <td class="icon-cell"><img src="../static/icons/comment.png" alt="Topic icon" loading="lazy"></td>
+            <td><a href="post.php?id=<?= $linkId ?>" aria-label="View topic <?= htmlspecialchars($t['title']) ?>" role="link"><?= htmlspecialchars($t['title']) ?></a>
+                <?php if (isset($_SESSION['userId'])): ?>
+                <form method="post" action="report.php" style="display:inline">
+    <?= csrf_token_input(); ?>
+                    <input type="hidden" name="type" value="topic">
+                    <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                    <button type="submit" role="button">Report</button>
+                </form>
+                <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
+                    <input type="hidden" name="subscribe_topic" value="<?= $t['id'] ?>">
+                    <button type="submit" role="button"><?= in_array($t['id'], $subscribed) ? 'Unsubscribe' : 'Subscribe' ?></button>
+                </form>
+                <?php endif; ?>
+            </td>
             <td><?= (int)$t['posts'] ?></td>
             <td><?= htmlspecialchars($t['last_post']) ?></td>
             <?php if ($can_moderate): ?>
             <td>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="topic_id" value="<?= $t['id'] ?>">
                     <input type="hidden" name="action" value="<?= $t['locked'] ? 'unlock' : 'lock' ?>">
-                    <button type="submit"><?= $t['locked'] ? 'Unlock' : 'Lock' ?></button>
+                    <button type="submit" aria-label="<?= $t['locked'] ? 'Unlock topic' : 'Lock topic' ?>" role="button"><?= $t['locked'] ? 'Unlock' : 'Lock' ?></button>
                 </form>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="topic_id" value="<?= $t['id'] ?>">
                     <input type="hidden" name="action" value="<?= $t['sticky'] ? 'unsticky' : 'sticky' ?>">
-                    <button type="submit"><?= $t['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
+                    <button type="submit" aria-label="<?= $t['sticky'] ? 'Unsticky topic' : 'Sticky topic' ?>" role="button"><?= $t['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
                 </form>
             </td>
             <?php endif; ?>
@@ -95,9 +141,13 @@ $pageCSS = "../static/css/forum.css";
     <?php if ($can_post): ?>
     <h2>New Topic</h2>
     <form method="post">
-        <input type="text" name="title" placeholder="Title">
-        <textarea name="body"></textarea>
-        <button type="submit">Post</button>
+    <?= csrf_token_input(); ?>
+        <input type="text" name="title" placeholder="Title" aria-label="Topic title">
+        <textarea name="body" aria-label="Topic message"></textarea>
+        <h3>Poll (optional)</h3>
+        <input type="text" name="poll_question" placeholder="Poll question" aria-label="Poll question">
+        <textarea name="poll_options" placeholder="One option per line" aria-label="Poll options"></textarea>
+        <button type="submit" aria-label="Post new topic" role="button">Post</button>
     </form>
     <?php endif; ?>
 </div>

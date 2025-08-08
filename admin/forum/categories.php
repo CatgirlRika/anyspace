@@ -81,6 +81,7 @@ if (isset($_GET['edit'])) {
                 <td>
                     <a href="categories.php?edit=<?= $cat['id'] ?>">Edit</a>
                     <form method="post" style="display:inline" onsubmit="return confirm('Delete this category?');">
+    <?= csrf_token_input(); ?>
                         <input type="hidden" name="id" value="<?= $cat['id'] ?>">
                         <button type="submit" name="delete">Delete</button>
                     </form>
@@ -93,6 +94,7 @@ if (isset($_GET['edit'])) {
     <?php if ($editCategory): ?>
     <h2>Edit Category</h2>
     <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
         <input type="hidden" name="id" value="<?= $editCategory['id'] ?>">
         <label>Name: <input type="text" name="name" value="<?= htmlspecialchars($editCategory['name']) ?>" required></label>
         <label>Position: <input type="number" name="position" value="<?= $editCategory['position'] ?>" required></label>
@@ -102,6 +104,7 @@ if (isset($_GET['edit'])) {
 
     <h2>Add Category</h2>
     <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
         <label>Name: <input type="text" name="name" required></label>
         <label>Position: <input type="number" name="position" value="<?= count($categories) + 1 ?>" required></label>
         <button type="submit" name="add">Add</button>
