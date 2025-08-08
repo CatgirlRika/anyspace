@@ -124,6 +124,13 @@ $pageCSS = "../static/css/forum.css";
                     <p><em>Post deleted.</em></p>
                 <?php else: ?>
                     <p><?= nl2br(replaceBBcodes($post['body'])) ?></p>
+<?php $attachments = forum_get_attachments($post['id']); if ($attachments): ?>
+<ul class="attachments">
+<?php foreach ($attachments as $att): ?>
+    <li><a href="../<?= htmlspecialchars($att['path']) ?>" aria-label="Attachment">Attachment</a></li>
+<?php endforeach; ?>
+</ul>
+<?php endif; ?>
                     <?php if ($can_post): ?>
                         <a href="post.php?id=<?= $topicId ?>&quote=<?= $post['id'] ?>" aria-label="Quote this post" role="link">Quote</a>
                     <?php endif; ?>

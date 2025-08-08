@@ -5,6 +5,7 @@ require_once(__DIR__ . '/../helper.php');
 require_once(__DIR__ . '/notifications.php');
 require_once(__DIR__ . '/mod_log.php');
 require_once(__DIR__ . '/word_filter.php');
+require_once(__DIR__ . '/../../lib/upload.php');
 
 function forum_add_post(int $topic_id, int $user_id, string $body)
 {
@@ -53,7 +54,7 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
         }
     }
 
-    return ['success' => true];
+    return ['success' => true, 'id' => $postId];
 }
 
 function forum_get_posts(int $topic_id, bool $include_deleted = false): array
@@ -102,4 +103,39 @@ function post_get_quote(int $post_id): ?array
     ];
 }
 
+
+function forum_get_attachments(int $post_id): array {
+    global $conn;
+    $stmt = $conn->prepare('SELECT id, path, mime_type, uploaded_at FROM attachments WHERE post_id = :pid');
+    $stmt->execute([':pid' => $post_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function forum_delete_attachment(int $attachment_id): void {
+    global $conn;
+    $stmt = $conn->prepare('SELECT path FROM attachments WHERE id = :id');
+    $stmt->execute([':id' => $attachment_id]);
+    $path = $stmt->fetchColumn();
+    if ($path) {
+        @unlink(__DIR__ . '/../../public/' . $path);
+        $del = $conn->prepare('DELETE FROM attachments WHERE id = :id');
+        $del->execute([':id' => $attachment_id]);
+    }
+}
+
+function uploadAttachment(int $post_id, array $file): bool {
+    $uploadDir = __DIR__ . '/../../public/uploads/forum/';
+    $result = upload_file($file, $uploadDir);
+    if (!$result) {
+        return false;
+    }
+    global $conn;
+    $stmt = $conn->prepare('INSERT INTO attachments (post_id, path, mime_type, uploaded_at) VALUES (:pid, :path, :mime, NOW())');
+    $stmt->execute([
+        ':pid' => $post_id,
+        ':path' => 'uploads/forum/' . $result['name'],
+        ':mime' => $result['mime']
+    ]);
+    return true;
+}
 ?>
