@@ -54,7 +54,7 @@ system.
 - [x] Friend System
 - [ ] Group System
 - [ ] Layout sharing feature
-- [ ] Private Messaging
+- [x] Private Messaging
 - [ ] Report System
 - [ ] Session Management
 - [x] User Browser
