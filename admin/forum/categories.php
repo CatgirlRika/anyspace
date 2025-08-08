@@ -4,6 +4,7 @@ require_once("../../core/settings.php");
 admin_only();
 
 require("../../core/config.php");
+require_once("../../core/forum/category.php");
 
 // Handle add, update, delete actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,8 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: categories.php?msg=' . urlencode('Name is required'));
             exit;
         }
-        $stmt = $conn->prepare('INSERT INTO forum_categories (name, position) VALUES (:name, :position)');
-        $stmt->execute([':name' => $name, ':position' => $position]);
+        forum_create_category($name, $position);
         header('Location: categories.php?msg=' . urlencode('Category added'));
         exit;
     }
@@ -30,8 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: categories.php?msg=' . urlencode('Invalid data'));
             exit;
         }
-        $stmt = $conn->prepare('UPDATE forum_categories SET name = :name, position = :position WHERE id = :id');
-        $stmt->execute([':name' => $name, ':position' => $position, ':id' => $id]);
+        forum_update_category($id, $name, $position);
         header('Location: categories.php?msg=' . urlencode('Category updated'));
         exit;
     }
@@ -40,8 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete'])) {
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
         if ($id > 0) {
-            $stmt = $conn->prepare('DELETE FROM forum_categories WHERE id = :id');
-            $stmt->execute([':id' => $id]);
+            forum_delete_category($id);
             header('Location: categories.php?msg=' . urlencode('Category deleted'));
             exit;
         }
@@ -49,16 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch categories for display
-$stmt = $conn->query('SELECT * FROM forum_categories ORDER BY position ASC');
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$categories = forum_get_categories();
 
 // Fetch category to edit if requested
 $editCategory = null;
 if (isset($_GET['edit'])) {
     $editId = (int)$_GET['edit'];
-    $stmt = $conn->prepare('SELECT * FROM forum_categories WHERE id = :id');
-    $stmt->execute([':id' => $editId]);
-    $editCategory = $stmt->fetch(PDO::FETCH_ASSOC);
+    $editCategory = forum_get_category($editId);
 }
 ?>
 <?php require("../header.php"); ?>
