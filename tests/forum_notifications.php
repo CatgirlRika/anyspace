@@ -15,6 +15,7 @@ $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username 
 $conn->exec('CREATE TABLE forum_topics (id INTEGER PRIMARY KEY AUTOINCREMENT, locked INTEGER DEFAULT 0)');
 $conn->exec('CREATE TABLE forum_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, topic_id INTEGER, user_id INTEGER, body TEXT, created_at DATETIME)');
 $conn->exec('CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, post_id INTEGER, is_read INTEGER DEFAULT 0, created_at DATETIME)');
+$conn->exec('CREATE TABLE topic_subscriptions (user_id INTEGER, topic_id INTEGER, PRIMARY KEY(user_id, topic_id))');
 
 $conn->exec("INSERT INTO users (username) VALUES ('owner'), ('replier'), ('mentioned')");
 $conn->exec("INSERT INTO forum_topics (id, locked) VALUES (1,0)");

@@ -315,6 +315,18 @@ CREATE TABLE IF NOT EXISTS `attachments` (
   FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+--
+-- Table structure for table `topic_subscriptions`
+--
+CREATE TABLE IF NOT EXISTS `topic_subscriptions` (
+  `user_id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`, `topic_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`topic_id`) REFERENCES `forum_topics` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- --------------------------------------------------------
 --

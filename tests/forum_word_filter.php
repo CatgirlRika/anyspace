@@ -20,6 +20,7 @@ $conn->exec('CREATE TABLE mod_log (id INTEGER PRIMARY KEY AUTOINCREMENT, moderat
 $conn->exec('CREATE TABLE forum_permissions (forum_id INTEGER, role TEXT, can_view INTEGER, can_post INTEGER, can_moderate INTEGER)');
 $conn->exec('CREATE TABLE forum_moderators (forum_id INTEGER, user_id INTEGER)');
 $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT)');
+$conn->exec('CREATE TABLE topic_subscriptions (user_id INTEGER, topic_id INTEGER, PRIMARY KEY(user_id, topic_id))');
 $conn->exec('CREATE TABLE bad_words (id INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT)');
 $conn->exec("INSERT INTO bad_words (word) VALUES ('badword')");
 $conn->exec("INSERT INTO forum_permissions (forum_id, role, can_view, can_post, can_moderate) VALUES (1, 'member', 1, 1, 0)");
