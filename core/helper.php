@@ -6,6 +6,13 @@ function login_check() {
     }
 }
 
+function admin_only() {
+    if (!isset($_SESSION['userId']) || (defined('ADMIN_USER') && $_SESSION['userId'] != ADMIN_USER)) {
+        header("Location: /admin/login.php?msg=" . urlencode('Admin access required'));
+        exit;
+    }
+}
+
 function validateContentHTML($validate) {
     // Whitelisted tags
     $allowedTags = '<a><b><big><blockquote><blink><br><center><code><del><details><div><em><font><h1><h2><h3><h4><h5><h6><hr><i><iframe><img><li><mark><marquee><ol><p><pre><small><span><strong><style><sub><summary><sup><table><td><th><time><tr><u><ul>';
