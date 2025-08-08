@@ -51,10 +51,10 @@ php tests/forum_delete.php
 - Blog, bulletins, and comments
 - Friend system
 - User profiles with custom HTML/CSS
+- Forum module
 
 ## Still in Progress
 
-- Forum module
 - Group system
 - Private messaging
 - Password reset and email verification
