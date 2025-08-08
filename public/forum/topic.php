@@ -4,6 +4,7 @@ require_once("../../core/settings.php");
 require_once("../../core/forum/forum.php");
 require_once("../../core/forum/topic.php");
 require_once("../../core/forum/permissions.php");
+require_once("../../core/forum/subscriptions.php");
 require_once("../../core/helper.php");
 
 $forumId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -14,6 +15,13 @@ $can_post = !empty($perms['can_post']);
 $can_moderate = !empty($perms['can_moderate']);
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['subscribe_topic'])) {
+        login_check();
+        $tid = (int)$_POST['subscribe_topic'];
+        subscribeTopic($_SESSION['userId'], $tid);
+        header('Location: topic.php?id=' . $forumId);
+        exit;
+    }
     login_check();
     if ($can_moderate && isset($_POST['action'], $_POST['topic_id'])) {
         forum_require_permission($forumId, 'can_moderate');
@@ -57,6 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $topics = forum_get_topics($forumId);
+$subscribed = [];
+if (isset($_SESSION['userId'])) {
+    $subs = getUserSubscriptions($_SESSION['userId']);
+    $subscribed = array_column($subs, 'id');
+}
 
 $pageCSS = "../static/css/forum.css";
 ?>
@@ -81,6 +94,10 @@ $pageCSS = "../static/css/forum.css";
                     <input type="hidden" name="type" value="topic">
                     <input type="hidden" name="id" value="<?= $t['id'] ?>">
                     <button type="submit" role="button">Report</button>
+                </form>
+                <form method="post" style="display:inline">
+                    <input type="hidden" name="subscribe_topic" value="<?= $t['id'] ?>">
+                    <button type="submit" role="button"><?= in_array($t['id'], $subscribed) ? 'Unsubscribe' : 'Subscribe' ?></button>
                 </form>
                 <?php endif; ?>
             </td>

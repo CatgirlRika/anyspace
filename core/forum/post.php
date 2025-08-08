@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/topic.php');
 require_once(__DIR__ . '/../helper.php');
 require_once(__DIR__ . '/notifications.php');
+require_once(__DIR__ . '/subscriptions.php');
 require_once(__DIR__ . '/mod_log.php');
 require_once(__DIR__ . '/word_filter.php');
 require_once(__DIR__ . '/../../lib/upload.php');
@@ -51,6 +52,17 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
                     $notified[] = $uid;
                 }
             }
+        }
+    }
+
+    $subStmt = $conn->prepare('SELECT user_id FROM topic_subscriptions WHERE topic_id = :tid');
+    $subStmt->execute([':tid' => $topic_id]);
+    $subs = $subStmt->fetchAll(PDO::FETCH_COLUMN);
+    foreach ($subs as $uid) {
+        $uid = (int)$uid;
+        if ($uid !== $user_id && !in_array($uid, $notified, true)) {
+            notifications_add($uid, $postId);
+            $notified[] = $uid;
         }
     }
 
