@@ -1,4 +1,6 @@
 <?php
+session_start();
+require_once("../core/helper.php");
 // Check if config already exists
 if (file_exists("../core/config.php")) {
     header("Location: index.php");
@@ -178,6 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     `date` datetime NOT NULL,
                     `lastactive` datetime NULL DEFAULT NULL,
                     `lastlogon` datetime NULL DEFAULT NULL,
+                    `banned_until` datetime DEFAULT NULL,
                     `bio` varchar(500) NOT NULL DEFAULT '',
                     `interests` varchar(500) NOT NULL DEFAULT ' ',
                     `css` blob NOT NULL,
@@ -279,6 +282,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <body>
         <h1>AnySpace Installation</h1>
         <form method="POST">
+    <?= csrf_token_input(); ?>
             <div class="section">
                 <h2>Database Configuration</h2>
                 <div class="form-group">

@@ -1,3 +1,6 @@
+<?php
+header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline';");
+?>
 <!DOCTYPE html>
 <html>
 
@@ -62,5 +65,5 @@
 
 <body>
     <div class="master-container">
-        <?php require_once("../core/components/navbar.php"); ?>
+        <?php require_once __DIR__ . "/../core/components/navbar.php"; ?>
         <main>

@@ -169,16 +169,17 @@ CREATE TABLE IF NOT EXISTS `layouts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `messages`
---
 
 CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(11) NOT NULL auto_increment,
-  `toid` int(11) NOT NULL,
-  `author` int(11) NOT NULL,
-  `msg` text NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `body` text NOT NULL,
+  `sent_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `read_at` datetime DEFAULT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -188,11 +189,11 @@ CREATE TABLE IF NOT EXISTS `messages` (
 
 CREATE TABLE IF NOT EXISTS `reports` (
   `id` int(11) NOT NULL auto_increment,
-  `user_id` int(11) NOT NULL,
-  `creator_id` int(11) NOT NULL,
-  `date` datetime NOT NULL,
-  `content_type` int(11) NOT NULL,
-  `content_id` int(11) NOT NULL,
+  `reported_id` int(11) NOT NULL,
+  `type` varchar(20) NOT NULL,
+  `reason` text NOT NULL,
+  `reporter_id` int(11) NOT NULL,
+  `status` varchar(20) NOT NULL default 'open',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -237,6 +238,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `views` int(11) NOT NULL default '0',
   `lastactive` datetime NOT NULL,
   `lastlogon` datetime NOT NULL,
+  `banned_until` datetime DEFAULT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -299,6 +301,70 @@ CREATE TABLE IF NOT EXISTS `forum_posts` (
   FOREIGN KEY (`topic_id`) REFERENCES `forum_topics` (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+--
+-- Table structure for table `polls`
+--
+CREATE TABLE IF NOT EXISTS `polls` (
+  `id` int(11) NOT NULL auto_increment,
+  `topic_id` int(11) NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `options` text NOT NULL,
+  `locked` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`topic_id`) REFERENCES `forum_topics` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+--
+-- Table structure for table `poll_votes`
+--
+CREATE TABLE IF NOT EXISTS `poll_votes` (
+  `poll_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `option_index` int(11) NOT NULL,
+  PRIMARY KEY (`poll_id`, `user_id`),
+  FOREIGN KEY (`poll_id`) REFERENCES `polls` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+--
+-- Table structure for table `attachments`
+--
+CREATE TABLE IF NOT EXISTS `attachments` (
+  `id` int(11) NOT NULL auto_increment,
+  `post_id` int(11) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  `mime_type` varchar(100) NOT NULL,
+  `uploaded_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `post_reactions`
+--
+CREATE TABLE IF NOT EXISTS `post_reactions` (
+  `post_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `reaction` varchar(20) NOT NULL,
+  UNIQUE KEY `post_user_unique` (`post_id`, `user_id`),
+  FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `topic_subscriptions`
+--
+CREATE TABLE IF NOT EXISTS `topic_subscriptions` (
+  `user_id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  PRIMARY KEY (`user_id`, `topic_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`topic_id`) REFERENCES `forum_topics` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- --------------------------------------------------------
 --
@@ -351,3 +417,45 @@ CREATE TABLE IF NOT EXISTS `forum_user_settings` (
   PRIMARY KEY (`user_id`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `notifications`
+--
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` int(11) NOT NULL auto_increment,
+  `user_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `is_read` tinyint(1) NOT NULL default '0',
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `mod_log`
+--
+CREATE TABLE IF NOT EXISTS `mod_log` (
+  `id` int(11) NOT NULL auto_increment,
+  `moderator_id` int(11) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `target_type` varchar(255) NOT NULL,
+  `target_id` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`moderator_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `bad_words`
+--
+CREATE TABLE IF NOT EXISTS `bad_words` (
+  `id` int(11) NOT NULL auto_increment,
+  `word` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `bad_words` (`word`) VALUES ('badword'), ('evil');

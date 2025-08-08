@@ -19,13 +19,13 @@ $highlightedEntry = 11;
       <ul>
         <!--
         <li><b><a href="/"><img src="/static/icons/asterisk_yellow.png" class="icon" aria-hidden="true" loading="lazy"
-                alt=""> Top Entries</a></b></li>
+                alt="Featured entries icon"> Top Entries</a></b></li>
 -->
-        <li><a href="/blog/"><img src="/static/icons/clock.png" class="icon" aria-hidden="true" loading="lazy" alt="">
+        <li><a href="/blog/"><img src="/static/icons/clock.png" class="icon" aria-hidden="true" loading="lazy" alt="Recent entries icon">
             <b>Recent Entries</b></a></li>
             <!--
         <li><a href="/subscriptions"><img src="/static/icons/world.png" class="icon" aria-hidden="true" loading="lazy"
-              alt=""> Subscriptions</a></li>
+              alt="Subscriptions icon"> Subscriptions</a></li>
 -->
       </ul>
       <b>Categories:</b>

@@ -34,14 +34,14 @@ function isFilterActive($filter, $friends = null) {
     Filter:
     <a href="browse.php" class="<?= isFilterActive('') ? 'filter-active' : '' ?>">
     <?php if (isFilterActive('')): ?>
-        <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="">
+        <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="Selected filter">
     <?php endif; ?>
     All Users
 </a>
 |
 <a href="browse.php?view=new" class="<?= isFilterActive('new') ? 'filter-active' : '' ?>">
     <?php if (isFilterActive('new')): ?>
-        <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="">
+        <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="Selected filter">
     <?php endif; ?>
     New People
 </a>
@@ -50,14 +50,14 @@ function isFilterActive($filter, $friends = null) {
     Friends:
     <a href="browse.php?view=active" class="<?= isFilterActive('') ? 'filter-active' : '' ?>">
         <?php if (!isset($_GET['friends'])): ?>
-            <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="">
+            <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="Selected filter">
         <?php endif; ?>
         Include Friends
     </a>
     |
     <a href="browse.php?view=active&friends=no" class="<?= isFilterActive('active', 'no') ? 'filter-active' : '' ?>">
         <?php if (isFilterActive('active', 'no')): ?>
-            <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="">
+            <img src="static/icons/tick.png" class="icon" aria-hidden="true" loading="lazy" alt="Selected filter">
         <?php endif; ?>
         Exclude Friends
     </a>

@@ -69,6 +69,7 @@ if (!$isUserAuthor) {
           <br>
 
           <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
             <label for="subject">Subject:</label>
             <input type="text" id="subject" name="subject" autocomplete="off" value="<?= $blogEntry['title'] ?>"
               required>

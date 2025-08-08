@@ -49,6 +49,7 @@ $acceptedFriends = array_merge(
                                     <?= count($pendingReceived); ?>
                                 </span> Open Friend Requests</b></p>
                         <form method="post">
+    <?= csrf_token_input(); ?>
                             <input type="hidden" name="type" value="accept_all_requests">
                             <button type="submit" name="submit">Accept All Requests</button>
                         </form>
@@ -81,6 +82,7 @@ $acceptedFriends = array_merge(
                                             <td>
                                                 <p><b>Friend Request</b></p>
                                                 <form method="post">
+    <?= csrf_token_input(); ?>
                                                     <input type="hidden" name="type" value="friend-request">
                                                     <input type="hidden" name="request_id"
                                                         value="<?= htmlspecialchars($request['id']); ?>">
@@ -140,6 +142,7 @@ $acceptedFriends = array_merge(
                                             <td>
                                                 <p><b>Sent Friend Request</b></p>
                                                 <form method="post">
+    <?= csrf_token_input(); ?>
                                                     <input type="hidden" name="type" value="friend-request">
                                                     <input type="hidden" name="request_id"
                                                         value="<?= htmlspecialchars($request['id']); ?>">

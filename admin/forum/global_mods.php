@@ -84,6 +84,7 @@ $mods = $modsStmt->fetchAll(PDO::FETCH_ASSOC);
                     <td>
                         <?php if ($mod['rank'] == 1): ?>
                         <form method="post" style="display:inline" onsubmit="return confirm('Demote this user?');">
+    <?= csrf_token_input(); ?>
                             <input type="hidden" name="user_id" value="<?= $mod['id'] ?>">
                             <button type="submit" name="demote">Demote</button>
                         </form>
@@ -98,6 +99,7 @@ $mods = $modsStmt->fetchAll(PDO::FETCH_ASSOC);
 
     <h2>Add Global Moderator</h2>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <input type="text" name="user" placeholder="Username or ID">
         <button type="submit" name="add">Promote</button>
     </form>

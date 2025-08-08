@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . "/../forum/permissions.php";
+if (isset($_SESSION['userId'])) {
+    require_once __DIR__ . "/../messages/pm.php";
+    $unreadMessages = pm_unread_count($_SESSION['userId']);
+} else {
+    $unreadMessages = 0;
+}
+?>
 <!-- BEGIN HEADER -->
 <header class="main-header">
   <nav class="">
@@ -6,9 +15,8 @@
         <a href="index.php">
             <?= SITE_NAME ?>
           </a> | <a href="index.php">Home</a>
-      </ul>
-    </div>
-    <div class="center">
+      </div>
+      <div class="center">
 
       <form>
 
@@ -47,10 +55,10 @@
         'Home' => '/index.php',
         'Browse' => '/browse.php',
         'Search' => '/search.php',
-        'Mail' => '/messages.php',
+        'Mail' => '/messages/inbox.php',
         'Blog' => '/blog/',
         'Bulletins' => '/bulletins/',
-        'Forum' => '/forum.php',
+        'Forum' => '/forum/forums.php',
         'Groups' => '#',
         'Layouts' => '#',
         'Favs' => '/favorites.php',
@@ -65,7 +73,15 @@
         } else {
           $activeClass = ($currentPage == basename($page)) ? 'class="active"' : '';
         }
-        echo "<li><a href=\"$page\" $activeClass>&nbsp;$name </a></li>";
+        $display = $name;
+        if ($name === 'Mail' && $unreadMessages > 0) {
+          $display .= ' (' . $unreadMessages . ')';
+        }
+        echo "<li><a href=\"$page\" $activeClass>&nbsp;$display </a></li>";
+      }
+      if (in_array(forum_user_role(), ['admin','global_mod'])) {
+        $activeClass = ($currentPage == 'dashboard.php') ? 'class="active"' : '';
+        echo "<li><a href=\"/forum/mod/dashboard.php\" $activeClass>Mod</a></li>";
       }
       ?>
     </ul>

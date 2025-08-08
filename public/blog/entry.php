@@ -69,11 +69,11 @@ $commentType = 'blog';
                 </p>
                 <p class="links">
                     <a href="user.php?id=<?= $authorId ?>">
-                        <img src="../static/icons/script.png" class="icon" aria-hidden="true" loading="lazy" alt=""> <span
+                        <img src="../static/icons/script.png" class="icon" aria-hidden="true" loading="lazy" alt="Blog icon"> <span
                             class="m-hide">View</span> Blog
                     </a>
                     <a href="https://<?= DOMAIN_NAME ?>../profile.php?id=<?= $authorId ?>">
-                        <img src="../static/icons/user.png" class="icon" aria-hidden="true" loading="lazy" alt=""> <span
+                        <img src="../static/icons/user.png" class="icon" aria-hidden="true" loading="lazy" alt="User profile icon"> <span
                             class="m-hide">View</span> Profile
                     </a>
 

@@ -163,7 +163,7 @@ $statusInfo = fetchUserStatus($profileId);
             'Mail' => 'messages.php',
             'Blog' => 'blog/',
             'Bulletins' => 'bulletins/',
-            'Forum' => 'forum.php',
+            'Forum' => 'forum/forums.php',
             'Groups' => '#',
             'Layouts' => 'layouts/',
             'Favs' => 'favorites.php',
@@ -257,26 +257,26 @@ $statusInfo = fetchUserStatus($profileId);
                                         <a href="unfriend.php?action=add&id=<?= htmlspecialchars($profileId); ?>"
                                             rel="nofollow">
                                             <img src="static/icons/delete.png" class="icon" aria-hidden="true" loading="lazy"
-                                                alt=""> Remove Friend
+                                                alt="Remove friend icon"> Remove Friend
                                         </a>
                                         <?php elseif ($isPendingFriend): ?>
                                         <a href="requests.php"
                                             rel="nofollow">
                                             <img src="static/icons/hourglass.png" class="icon" aria-hidden="true" loading="lazy"
-                                                alt=""> Pending Request
+                                                alt="Pending request icon"> Pending Request
                                         </a>
                                         <?php else: ?>
                                         <a href="friends.php?action=add&id=<?= htmlspecialchars($profileId); ?>"
                                             rel="nofollow">
                                             <img src="static/icons/add.png" class="icon" aria-hidden="true" loading="lazy"
-                                                alt=""> Add to Friends
+                                                alt="Add friend icon"> Add to Friends
                                         </a>
                                         <?php endif; ?>
                                     </div>
                                     <div class="f-col">
                                         <a href="addfavorite.php?id=<?= $profileId ?>" rel="nofollow">
                                             <img src="static/icons/award_star_add.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Add to Favorites
+                                                loading="lazy" alt="Add to favorites icon"> Add to Favorites
                                         </a>
                                     </div>
                                 </div>
@@ -284,13 +284,13 @@ $statusInfo = fetchUserStatus($profileId);
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/comment.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Send Message
+                                                loading="lazy" alt="Send message icon"> Send Message
                                         </a>
                                     </div>
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/arrow_right.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Forward to Friend
+                                                loading="lazy" alt="Forward to friend icon"> Forward to Friend
                                         </a>
                                     </div>
                                 </div>
@@ -298,13 +298,13 @@ $statusInfo = fetchUserStatus($profileId);
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/email.png" class="icon" aria-hidden="true" loading="lazy"
-                                                alt=""> Instant Message
+                                                alt="Instant message icon"> Instant Message
                                         </a>
                                     </div>
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/exclamation.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Block User
+                                                loading="lazy" alt="Block user icon"> Block User
                                         </a>
                                     </div>
                                 </div>
@@ -312,13 +312,13 @@ $statusInfo = fetchUserStatus($profileId);
                                     <div class="f-col">
                                         <a href="#">
                                             <img src="static/icons/group_add.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Add to Group
+                                                loading="lazy" alt="Add to group icon"> Add to Group
                                         </a>
                                     </div>
                                     <div class="f-col">
                                         <a href="#" rel="nofollow">
                                             <img src="static/icons/flag_red.png" class="icon" aria-hidden="true"
-                                                loading="lazy" alt=""> Report User
+                                                loading="lazy" alt="Report user icon"> Report User
                                         </a>
                                     </div>
                                 </div>
@@ -483,16 +483,16 @@ $statusInfo = fetchUserStatus($profileId);
                         <div class="inner">
                             <div class="section">
                                 <p itemprop="description">
-                                    <?= $userInfo['bio']; ?>
-                                    
-                                    
+                                    <?= htmlspecialchars($userInfo['bio'], ENT_QUOTES, 'UTF-8'); ?>
+
+
                                     <!-- USER STYLES -->
                                     <?php
                                     $stmt = $conn->prepare("SELECT * FROM `users` WHERE id = :id");
                                     $stmt->execute(array(':id' => $_GET['id']));
 
                                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                        echo $row['css'];
+                                        echo validateLayoutHTML($row['css']);
                                     }
                                     ?>
                                 </p>

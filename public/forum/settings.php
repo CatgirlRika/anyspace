@@ -38,6 +38,7 @@ require("../header.php");
     <p><?= htmlspecialchars($message) ?></p>
     <?php endif; ?>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <p>
             <label>Background Image URL:<br>
                 <input type="text" name="background_url" value="<?= htmlspecialchars($settings['background_image_url'] ?? '') ?>">
@@ -53,7 +54,7 @@ require("../header.php");
                 <input type="text" name="text_color" value="<?= htmlspecialchars($settings['text_color'] ?? '') ?>" placeholder="#000000">
             </label>
         </p>
-        <p><input type="submit" value="Save"></p>
+        <p><button type="submit" aria-label="Save forum settings" role="button">Save</button></p>
     </form>
 </div>
 <?php require("../footer.php"); ?>

@@ -39,6 +39,7 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
 <div class="simple-container">
   <h1>Account Settings</h1>
     <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
     <div class="setting-section">
       <div class="heading">
         <h4>Basic Details</h4>
@@ -117,6 +118,15 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
       </div>
     </div>
 
+    <div class="setting-section">
+      <div class="heading">
+        <h4>Display Options</h4>
+      </div>
+      <div class="inner">
+        <label><input type="checkbox" id="accessibilityToggle" aria-label="Enable dark mode and larger text"> Dark mode / larger text</label>
+      </div>
+    </div>
+
     <!-- 
     <div class="setting-section">
       <div class="heading">
@@ -144,6 +154,20 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
           -->
     <button type="submit" name="submit">Save All</button>
   </form>
+  <script>
+    const toggle=document.getElementById('accessibilityToggle');
+    const body=document.body;
+    const stored=localStorage.getItem('accessibilityMode')==='true';
+    if(stored){
+      body.classList.add('dark-mode','large-text');
+      toggle.checked=true;
+    }
+    toggle.addEventListener('change',()=>{
+      body.classList.toggle('dark-mode',toggle.checked);
+      body.classList.toggle('large-text',toggle.checked);
+      localStorage.setItem('accessibilityMode',toggle.checked);
+    });
+  </script>
   <br>
   <h4 style="margin-bottom: 5px;">More Options</h4>
   <!--

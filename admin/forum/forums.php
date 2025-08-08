@@ -2,9 +2,11 @@
 require("../../core/conn.php");
 require_once("../../core/settings.php");
 require("../../core/config.php");
+ su0k9s-codex/explain-codebase-structure-and-key-concepts
 require_once("../../core/forum/category.php");
 require_once("../../core/forum/forum.php");
 admin_only();
+ main
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add forum
@@ -118,7 +120,8 @@ function renderForumRows(array $forumsByParent, $parentId = 0, $level = 0) {
         echo '<td>';
         echo '<a href="forums.php?edit=' . $forum['id'] . '">Edit</a> ';
         echo '<a href="permissions.php?forum_id=' . $forum['id'] . '">Permissions</a> ';
-        echo '<form method="post" style="display:inline" onsubmit="return confirm(\'Delete this forum and its subforums?\');">';
+        echo '<form method="post" style="display:inline" onsubmit="return confirm(\'Delete this forum and its subforums?\');">
+    <?= csrf_token_input(); ?>';
         echo '<input type="hidden" name="id" value="' . $forum['id'] . '">';
         echo '<button type="submit" name="delete">Delete</button>';
         echo '</form>';
@@ -158,6 +161,7 @@ function renderForumRows(array $forumsByParent, $parentId = 0, $level = 0) {
     <?php if ($editForum): ?>
     <h2>Edit Forum</h2>
     <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
         <input type="hidden" name="id" value="<?= $editForum['id'] ?>">
         <label>Name: <input type="text" name="name" value="<?= htmlspecialchars($editForum['name']) ?>" required></label>
         <label>Description:<br><textarea name="description" required><?= htmlspecialchars($editForum['description']) ?></textarea></label>
@@ -184,6 +188,7 @@ function renderForumRows(array $forumsByParent, $parentId = 0, $level = 0) {
 
     <h2>Add Forum</h2>
     <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
         <label>Name: <input type="text" name="name" required></label>
         <label>Description:<br><textarea name="description" required></textarea></label>
         <label>Category:

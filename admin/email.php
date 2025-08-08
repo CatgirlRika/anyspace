@@ -23,6 +23,7 @@ require("header.php");
             <h1>Email Settings</h1>
             <p>Configure your site's email settings here</p>
             <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
                 <button type="submit" name="submit">Save All</button>
                 <br>
                 <label for="category_smtp_host">
