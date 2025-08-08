@@ -5,6 +5,7 @@ require_once("../../core/forum/forum.php");
 require_once("../../core/forum/topic.php");
 require_once("../../core/forum/permissions.php");
 require_once("../../core/forum/subscriptions.php");
+require_once("../../core/forum/polls.php");
 require_once("../../core/helper.php");
 
 $forumId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -56,6 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = $result['error'] ?? 'Unable to create topic.';
             }
         } else {
+            $pollQuestion = trim($_POST['poll_question'] ?? '');
+            $pollOptions = trim($_POST['poll_options'] ?? '');
+            if ($pollQuestion !== '' && $pollOptions !== '') {
+                $opts = array_filter(array_map('trim', explode("\n", $pollOptions)));
+                if (count($opts) >= 2) {
+                    createPoll($result, $pollQuestion, $opts);
+                }
+            }
             header('Location: post.php?id=' . $result);
             exit;
         }
@@ -130,6 +139,9 @@ $pageCSS = "../static/css/forum.css";
     <form method="post">
         <input type="text" name="title" placeholder="Title" aria-label="Topic title">
         <textarea name="body" aria-label="Topic message"></textarea>
+        <h3>Poll (optional)</h3>
+        <input type="text" name="poll_question" placeholder="Poll question" aria-label="Poll question">
+        <textarea name="poll_options" placeholder="One option per line" aria-label="Poll options"></textarea>
         <button type="submit" aria-label="Post new topic" role="button">Post</button>
     </form>
     <?php endif; ?>
