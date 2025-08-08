@@ -17,8 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute([':name' => $to]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row) {
-        pm_send($userId, (int)$row['id'], $subject, $body);
-        $message = 'Message sent!';
+        try {
+            pm_send($userId, (int)$row['id'], $subject, $body);
+            $message = 'Message sent!';
+        } catch (InvalidArgumentException $e) {
+            $message = $e->getMessage();
+        }
     } else {
         $message = 'User not found.';
     }
