@@ -14,11 +14,11 @@ $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 global $conn;
 
 $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT)');
-$conn->exec('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_id INTEGER, receiver_id INTEGER, subject TEXT, body TEXT, sent_at TEXT DEFAULT CURRENT_TIMESTAMP, read_at TEXT DEFAULT NULL)');
+$conn->exec('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_id INTEGER, receiver_id INTEGER, subject TEXT, body TEXT, sent_at TEXT DEFAULT CURRENT_TIMESTAMP, read_at TEXT DEFAULT NULL, sender_deleted INTEGER DEFAULT 0, receiver_deleted INTEGER DEFAULT 0)');
 $conn->exec("INSERT INTO users (id, username) VALUES (1, 'alice'), (2, 'bob')");
 
 echo "Send message...\n";
-pm_send(1, 2, 'Hi', 'Hello Bob');
+$messageId = pm_send(1, 2, 'Hi', 'Hello Bob');
 $inbox = pm_inbox(2);
 $outbox = pm_outbox(1);
 if (count($inbox) !== 1 || $inbox[0]['subject'] !== 'Hi') {
@@ -41,8 +41,8 @@ if ($unreadBefore !== 1) {
 }
 
 echo "Mark read...\n";
-pm_mark_read($inbox[0]['id'], 2);
-$read = $conn->query('SELECT read_at FROM messages WHERE id = ' . (int)$inbox[0]['id'])->fetchColumn();
+pm_mark_read($messageId, 2);
+$read = $conn->query('SELECT read_at FROM messages WHERE id = ' . (int)$messageId)->fetchColumn();
 if ($read) {
     echo "Message read\n";
 } else {
@@ -57,6 +57,35 @@ if ($unreadAfter !== 0) {
     exit(1);
 }
 echo "Unread count updated\n";
+
+echo "Delete message (receiver)...\n";
+pm_delete($messageId, 2);
+if (pm_inbox(2)) {
+    echo "Inbox delete failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+if (count(pm_outbox(1)) !== 1) {
+    echo "Outbox altered after receiver delete\n";
+    unlink($dbFile);
+    exit(1);
+}
+echo "Receiver delete OK\n";
+
+echo "Delete message (sender)...\n";
+pm_delete($messageId, 1);
+if (pm_outbox(1)) {
+    echo "Outbox delete failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+$count = $conn->query('SELECT COUNT(*) FROM messages')->fetchColumn();
+if ($count != 0) {
+    echo "Message not fully removed\n";
+    unlink($dbFile);
+    exit(1);
+}
+echo "Sender delete OK\n";
 
 echo "Validate inputs...\n";
 try {

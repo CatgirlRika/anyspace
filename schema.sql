@@ -178,6 +178,8 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `body` text NOT NULL,
   `sent_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `read_at` datetime DEFAULT NULL,
+  `sender_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `receiver_deleted` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
