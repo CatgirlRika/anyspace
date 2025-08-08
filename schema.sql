@@ -169,16 +169,17 @@ CREATE TABLE IF NOT EXISTS `layouts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `messages`
---
 
 CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(11) NOT NULL auto_increment,
-  `toid` int(11) NOT NULL,
-  `author` int(11) NOT NULL,
-  `msg` text NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `body` text NOT NULL,
+  `sent_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `read_at` datetime DEFAULT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
