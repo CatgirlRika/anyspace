@@ -120,10 +120,12 @@ $pageCSS = "../static/css/forum.css";
     <?php if ($can_moderate): ?>
     <div class="mod-actions">
         <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
             <input type="hidden" name="action" value="<?= $topic['locked'] ? 'unlock' : 'lock' ?>">
             <button type="submit" aria-label="<?= $topic['locked'] ? 'Unlock topic' : 'Lock topic' ?>" role="button"><?= $topic['locked'] ? 'Unlock' : 'Lock' ?></button>
         </form>
         <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
             <input type="hidden" name="action" value="<?= $topic['sticky'] ? 'unsticky' : 'sticky' ?>">
             <button type="submit" aria-label="<?= $topic['sticky'] ? 'Unsticky topic' : 'Sticky topic' ?>" role="button"><?= $topic['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
         </form>
@@ -134,6 +136,7 @@ $pageCSS = "../static/css/forum.css";
         <h2><?= htmlspecialchars($poll['question']) ?></h2>
         <?php if ($userVote === false && isset($_SESSION['userId'])): ?>
         <form method="post">
+    <?= csrf_token_input(); ?>
             <?php $opts = json_decode($poll['options'], true) ?: []; foreach ($opts as $i => $opt): ?>
             <div><label><input type="radio" name="poll_vote" value="<?= $i ?>"> <?= htmlspecialchars($opt) ?></label></div>
             <?php endforeach; ?>
@@ -184,6 +187,7 @@ $pageCSS = "../static/css/forum.css";
 <div class="reactions">
 <?php foreach ($availableReactions as $react): $count = $reactionCounts[$react] ?? 0; ?>
     <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
         <input type="hidden" name="reaction_action" value="add">
         <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
         <input type="hidden" name="reaction" value="<?= $react ?>">
@@ -192,6 +196,7 @@ $pageCSS = "../static/css/forum.css";
 <?php endforeach; ?>
 <?php if ($userReaction): ?>
     <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
         <input type="hidden" name="reaction_action" value="remove">
         <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
         <button type="submit" role="button">Remove (<?= htmlspecialchars($userReaction) ?>)</button>
@@ -203,6 +208,7 @@ $pageCSS = "../static/css/forum.css";
                     <?php endif; ?>
                       <?php if (isset($_SESSION['userId'])): ?>
                       <form method="post" action="report.php" style="display:inline">
+    <?= csrf_token_input(); ?>
                           <input type="hidden" name="type" value="post">
                           <input type="hidden" name="id" value="<?= $post['id'] ?>">
                           <button type="submit" role="button">Report</button>
@@ -211,6 +217,7 @@ $pageCSS = "../static/css/forum.css";
                 <?php endif; ?>
                 <?php if ($can_moderate): ?>
                     <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                         <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
                         <input type="hidden" name="action" value="<?= $post['deleted'] ? 'restore_post' : 'delete_post' ?>">
                         <button type="submit" aria-label="<?= $post['deleted'] ? 'Restore post' : 'Delete post' ?>" role="button"><?= $post['deleted'] ? 'Restore' : 'Delete' ?></button>
@@ -227,6 +234,7 @@ $pageCSS = "../static/css/forum.css";
 
     <?php if (!$topic['locked'] && $can_post): ?>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <textarea name="body" aria-label="Post message"><?= htmlspecialchars($prefill) ?></textarea>
         <button type="submit" aria-label="Submit reply" role="button">Post</button>
     </form>

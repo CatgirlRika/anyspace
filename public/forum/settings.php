@@ -38,6 +38,7 @@ require("../header.php");
     <p><?= htmlspecialchars($message) ?></p>
     <?php endif; ?>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <p>
             <label>Background Image URL:<br>
                 <input type="text" name="background_url" value="<?= htmlspecialchars($settings['background_image_url'] ?? '') ?>">

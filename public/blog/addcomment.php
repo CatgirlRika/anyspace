@@ -39,6 +39,7 @@ if (isset($_SESSION['user'], $_POST['submit'], $_POST['comment']) && !empty($_PO
     <h2>Add Comment</h2>
     <p>Be nice.</p>
         <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
       <label for="comment"><h4>Your Comment:</h4></label>
       <textarea class="big_textarea" id="comment" name="comment" required autofocus></textarea>
       <button type="submit" name="submit">Add Comment</button>

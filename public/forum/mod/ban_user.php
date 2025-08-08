@@ -25,6 +25,7 @@ $pageCSS = "../../static/css/forum.css";
 <div class="simple-container">
     <h1>Ban User</h1>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <label>User ID: <input type="number" name="user_id" required></label><br>
         <label>Ban Until (YYYY-MM-DD HH:MM:SS): <input type="text" name="ban_until"></label><br>
         <button type="submit">Submit</button>

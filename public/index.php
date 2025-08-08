@@ -142,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
                         <!-- Login/Signup Form -->
                         <h4>Member Login/Signup</h4>
                         <form action="" method="post" name="theForm" id="theForm">
+    <?= csrf_token_input(); ?>
                             <input name="client_id" type="hidden" value="web">
                             <table>
                                 <tbody>

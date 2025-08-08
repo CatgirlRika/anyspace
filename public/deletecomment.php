@@ -41,6 +41,7 @@ if (!$isUserAuthor) {
 <div class="simple-container">
     <h1>Confirm Deletion</h1>
     <form method="POST" action="">
+    <?= csrf_token_input(); ?>
         <p>Type "DELETE" to confirm the deletion of the comment:</p>
         <input type="text" name="confirmation" required>
         <button type="submit" name="submit">Delete</button>

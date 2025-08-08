@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="simple-container">
     <h1>Permissions for <?= htmlspecialchars($forum['name']) ?></h1>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <input type="hidden" name="forum_id" value="<?= $forumId ?>">
         <table class="bulletin-table">
             <thead>

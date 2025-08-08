@@ -31,6 +31,7 @@
                 }
             ?>
             <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
                 <input required placeholder="Name" size="90" type="text" name="groupname"><br>
 				<textarea required rows="10" cols="68" placeholder="Description" name="desc"></textarea><br>
 				<input name="submit" type="submit" value="Create"> <small>max limit: 500 characters</small>

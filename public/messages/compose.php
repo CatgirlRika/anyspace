@@ -1,10 +1,6 @@
 <?php
 require("../../core/conn.php");
 require_once("../../core/settings.php");
- 97xjcb-codex/create-messages-table-and-related-features
-require_once("../../core/helper.php");
-=======
- main
 require("../../core/messages/pm.php");
 
 login_check();
@@ -37,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p><?= htmlspecialchars($message) ?></p>
     <?php endif; ?>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <p><label>To: <input type="text" name="to" required></label></p>
         <p><label>Subject: <input type="text" name="subject" required></label></p>
         <p><label>Message:<br>
@@ -46,4 +43,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <?php require("../footer.php"); ?>
-

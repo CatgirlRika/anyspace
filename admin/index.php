@@ -57,6 +57,7 @@ $postCount = $conn->query('SELECT COUNT(*) FROM blogs')->fetchColumn();
         <h1>General Settings</h1>
         <p>Here you can change general site-wide settings</p>
         <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
             <button type="submit" name="submit">Save All</button>
             <br>
             <label for="category_status">
