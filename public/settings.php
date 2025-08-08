@@ -39,6 +39,7 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
 <div class="simple-container">
   <h1>Account Settings</h1>
     <form method="post" class="ctrl-enter-submit">
+    <?= csrf_token_input(); ?>
     <div class="setting-section">
       <div class="heading">
         <h4>Basic Details</h4>

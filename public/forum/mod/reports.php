@@ -35,21 +35,25 @@ $pageCSS = "../../static/css/forum.css";
             <td><?= $r['reporter_id'] ?></td>
             <td>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                     <input type="hidden" name="action" value="keep">
                     <button type="submit">Keep</button>
                 </form>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                     <input type="hidden" name="action" value="edit">
                     <button type="submit">Edit</button>
                 </form>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                     <input type="hidden" name="action" value="delete">
                     <button type="submit">Delete</button>
                 </form>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="report_id" value="<?= $r['id'] ?>">
                     <input type="hidden" name="action" value="ban">
                     <button type="submit">Ban</button>

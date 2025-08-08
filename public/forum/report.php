@@ -27,6 +27,7 @@ $pageCSS = "../static/css/forum.css";
 <div class="simple-container">
     <h1>Report</h1>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <input type="hidden" name="type" value="<?= htmlspecialchars($type) ?>">
         <input type="hidden" name="id" value="<?= $id ?>">
         <textarea name="reason" aria-label="Report reason"></textarea>

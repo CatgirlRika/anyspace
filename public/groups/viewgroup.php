@@ -47,6 +47,7 @@
                 <center>Comments</center>
             </div>
             <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
 				<textarea required rows="5" cols="80" placeholder="Comment" name="comment"></textarea><br>
 				<input name="submit" type="submit" value="Post"> <small>max limit: 500 characters</small>
             </form>

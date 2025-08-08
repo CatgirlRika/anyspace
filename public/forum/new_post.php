@@ -43,6 +43,7 @@ $pageCSS = "../static/css/forum.css";
     <?php if ($error): ?><div class="alert"><?= htmlspecialchars($error) ?></div><?php endif; ?>
     <?php if ($can_post): ?>
     <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
         <textarea name="body" aria-label="Post message"></textarea>
         <input type="file" name="attachment" aria-label="Attachment">
         <button type="submit" aria-label="Submit reply" role="button">Post</button>

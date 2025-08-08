@@ -21,8 +21,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
   <h1><img src="static/icons/award_star_add.png" class="icon" aria-hidden="true" loading="lazy" alt="Add to favorites icon"> Add Favorite</h1>
       <p>Do you want to add this user to your Favorites?</p>
     <form method="post">
+    <?= csrf_token_input(); ?>
       <button type="submit" name="submit">Add to Favorites</button>
       <form>
+    <?= csrf_token_input(); ?>
             <a href="profile.php?id=<?= $profileId ?>"><button type="button">Go Back</button></a>
 </div>
 

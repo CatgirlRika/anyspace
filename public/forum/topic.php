@@ -100,11 +100,13 @@ $pageCSS = "../static/css/forum.css";
             <td><a href="post.php?id=<?= $linkId ?>" aria-label="View topic <?= htmlspecialchars($t['title']) ?>" role="link"><?= htmlspecialchars($t['title']) ?></a>
                 <?php if (isset($_SESSION['userId'])): ?>
                 <form method="post" action="report.php" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="type" value="topic">
                     <input type="hidden" name="id" value="<?= $t['id'] ?>">
                     <button type="submit" role="button">Report</button>
                 </form>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="subscribe_topic" value="<?= $t['id'] ?>">
                     <button type="submit" role="button"><?= in_array($t['id'], $subscribed) ? 'Unsubscribe' : 'Subscribe' ?></button>
                 </form>
@@ -115,11 +117,13 @@ $pageCSS = "../static/css/forum.css";
             <?php if ($can_moderate): ?>
             <td>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="topic_id" value="<?= $t['id'] ?>">
                     <input type="hidden" name="action" value="<?= $t['locked'] ? 'unlock' : 'lock' ?>">
                     <button type="submit" aria-label="<?= $t['locked'] ? 'Unlock topic' : 'Lock topic' ?>" role="button"><?= $t['locked'] ? 'Unlock' : 'Lock' ?></button>
                 </form>
                 <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                     <input type="hidden" name="topic_id" value="<?= $t['id'] ?>">
                     <input type="hidden" name="action" value="<?= $t['sticky'] ? 'unsticky' : 'sticky' ?>">
                     <button type="submit" aria-label="<?= $t['sticky'] ? 'Unsticky topic' : 'Sticky topic' ?>" role="button"><?= $t['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
@@ -137,6 +141,7 @@ $pageCSS = "../static/css/forum.css";
     <?php if ($can_post): ?>
     <h2>New Topic</h2>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <input type="text" name="title" placeholder="Title" aria-label="Topic title">
         <textarea name="body" aria-label="Topic message"></textarea>
         <h3>Poll (optional)</h3>

@@ -26,6 +26,7 @@ $pageCSS = "../../static/css/forum.css";
 <div class="simple-container">
     <h1>Word Filter</h1>
     <form method="post">
+    <?= csrf_token_input(); ?>
         <input type="hidden" name="action" value="add">
         <input type="text" name="word" required>
         <button type="submit">Add</button>
@@ -37,6 +38,7 @@ $pageCSS = "../../static/css/forum.css";
     <?php foreach ($words as $w): ?>
         <li><?= htmlspecialchars($w) ?>
             <form method="post" style="display:inline">
+    <?= csrf_token_input(); ?>
                 <input type="hidden" name="action" value="delete">
                 <input type="hidden" name="word" value="<?= htmlspecialchars($w) ?>">
                 <button type="submit">Remove</button>

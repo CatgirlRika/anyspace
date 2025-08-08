@@ -50,6 +50,7 @@ $pageCSS = "../static/css/forum.css";
     <h1>Edit Post</h1>
     <?php if ($error): ?><div class="alert"><?= htmlspecialchars($error) ?></div><?php endif; ?>
     <form method="post" enctype="multipart/form-data">
+    <?= csrf_token_input(); ?>
         <textarea name="body" aria-label="Post message"><?= htmlspecialchars($post['body']) ?></textarea>
         <input type="file" name="attachment" aria-label="Attachment">
         <?php foreach ($attachments as $att): ?>

@@ -21,6 +21,28 @@ function admin_only() {
     }
 }
 
+function csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_token_input() {
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrf_token(), ENT_QUOTES) . '">';
+}
+
+function csrf_verify() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            die('Invalid CSRF token');
+        }
+        unset($_SESSION['csrf_token']);
+    }
+}
+
+csrf_verify();
+
 function validateContentHTML($validate) {
     // Whitelisted tags
     $allowedTags = '<a><b><big><blockquote><blink><br><center><code><del><details><div><em><font><h1><h2><h3><h4><h5><h6><hr><i><iframe><img><li><mark><marquee><ol><p><pre><small><span><strong><style><sub><summary><sup><table><td><th><time><tr><u><ul>';
