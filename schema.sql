@@ -301,6 +301,20 @@ CREATE TABLE IF NOT EXISTS `forum_posts` (
   FOREIGN KEY (`topic_id`) REFERENCES `forum_topics` (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+--
+-- Table structure for table `attachments`
+--
+CREATE TABLE IF NOT EXISTS `attachments` (
+  `id` int(11) NOT NULL auto_increment,
+  `post_id` int(11) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  `mime_type` varchar(100) NOT NULL,
+  `uploaded_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- --------------------------------------------------------
 --
