@@ -4,6 +4,7 @@ require_once("../../core/settings.php");
 require_once("../../core/forum/topic.php");
 require_once("../../core/forum/post.php");
 require_once("../../core/forum/permissions.php");
+require_once("../../core/forum/reactions.php");
 require_once("../../core/helper.php");
 require_once("../../core/site/user.php");
 
@@ -24,6 +25,7 @@ $can_post = !empty($perms['can_post']);
 $can_moderate = !empty($perms['can_moderate']);
 $error = '';
 $prefill = '';
+$availableReactions = ['like','love','laugh'];
 
 if (isset($_GET['quote'])) {
     $quote = post_get_quote((int)$_GET['quote']);
@@ -34,6 +36,19 @@ if (isset($_GET['quote'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     login_check();
+    if (isset($_POST['reaction_action'])) {
+        $pid = (int)($_POST['post_id'] ?? 0);
+        if ($_POST['reaction_action'] === 'add') {
+            $reaction = $_POST['reaction'] ?? '';
+            if (in_array($reaction, $availableReactions, true)) {
+                forum_add_reaction($pid, $_SESSION['userId'], $reaction);
+            }
+        } elseif ($_POST['reaction_action'] === 'remove') {
+            forum_remove_reaction($pid, $_SESSION['userId']);
+        }
+        header('Location: post.php?id=' . $topicId);
+        exit;
+    }
     if ($can_moderate && isset($_POST['action'])) {
         forum_require_permission($forumId, 'can_moderate');
         switch ($_POST['action']) {
@@ -131,6 +146,25 @@ $pageCSS = "../static/css/forum.css";
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>
+<?php $reactionCounts = forum_get_reaction_counts($post['id']);
+      $userReaction = isset($_SESSION['userId']) ? forum_get_user_reaction($post['id'], $_SESSION['userId']) : null; ?>
+<div class="reactions">
+<?php foreach ($availableReactions as $react): $count = $reactionCounts[$react] ?? 0; ?>
+    <form method="post" style="display:inline">
+        <input type="hidden" name="reaction_action" value="add">
+        <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+        <input type="hidden" name="reaction" value="<?= $react ?>">
+        <button type="submit" role="button"><?= ucfirst($react) ?> (<?= $count ?>)</button>
+    </form>
+<?php endforeach; ?>
+<?php if ($userReaction): ?>
+    <form method="post" style="display:inline">
+        <input type="hidden" name="reaction_action" value="remove">
+        <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+        <button type="submit" role="button">Remove (<?= htmlspecialchars($userReaction) ?>)</button>
+    </form>
+<?php endif; ?>
+</div>
                     <?php if ($can_post): ?>
                         <a href="post.php?id=<?= $topicId ?>&quote=<?= $post['id'] ?>" aria-label="Quote this post" role="link">Quote</a>
                     <?php endif; ?>
