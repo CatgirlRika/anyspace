@@ -483,16 +483,16 @@ $statusInfo = fetchUserStatus($profileId);
                         <div class="inner">
                             <div class="section">
                                 <p itemprop="description">
-                                    <?= $userInfo['bio']; ?>
-                                    
-                                    
+                                    <?= htmlspecialchars($userInfo['bio'], ENT_QUOTES, 'UTF-8'); ?>
+
+
                                     <!-- USER STYLES -->
                                     <?php
                                     $stmt = $conn->prepare("SELECT * FROM `users` WHERE id = :id");
                                     $stmt->execute(array(':id' => $_GET['id']));
 
                                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                        echo $row['css'];
+                                        echo validateLayoutHTML($row['css']);
                                     }
                                     ?>
                                 </p>
