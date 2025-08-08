@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . "/../forum/permissions.php"; ?>
 <!-- BEGIN HEADER -->
 <header class="main-header">
   <nav class="">
@@ -66,6 +67,10 @@
           $activeClass = ($currentPage == basename($page)) ? 'class="active"' : '';
         }
         echo "<li><a href=\"$page\" $activeClass>&nbsp;$name </a></li>";
+      }
+      if (in_array(forum_user_role(), ['admin','global_mod'])) {
+        $activeClass = ($currentPage == 'dashboard.php') ? 'class="active"' : '';
+        echo "<li><a href=\"/forum/mod/dashboard.php\" $activeClass>Mod</a></li>";
       }
       ?>
     </ul>
