@@ -6,6 +6,14 @@ function forum_get_categories(): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function forum_get_category(int $id): ?array {
+    global $conn;
+    $stmt = $conn->prepare('SELECT id, name, position FROM forum_categories WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    $cat = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $cat ?: null;
+}
+
 function forum_create_category(string $name, int $position = 0): int {
     global $conn;
     $stmt = $conn->prepare('INSERT INTO forum_categories (name, position) VALUES (:name, :pos)');

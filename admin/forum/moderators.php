@@ -1,12 +1,7 @@
 <?php
 require("../../core/conn.php");
 require_once("../../core/settings.php");
-
-login_check();
-if (!isset($_SESSION['userId']) || $_SESSION['userId'] != ADMIN_USER) {
-    header("Location: ../index.php?msg=" . urlencode('Admin access required'));
-    exit;
-}
+admin_only();
 
 require("../../core/config.php");
 

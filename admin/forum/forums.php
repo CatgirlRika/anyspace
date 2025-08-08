@@ -1,29 +1,10 @@
 <?php
 require("../../core/conn.php");
 require_once("../../core/settings.php");
-
-if (!isset($_SESSION['user'])) {
-    header("Location: ../login.php");
-    exit;
-}
-
 require("../../core/config.php");
-
-// Recursive deletion of forum and its subforums
-function deleteForum(PDO $conn, int $id): void {
-    // delete children first
-    $childStmt = $conn->prepare('SELECT id FROM forums WHERE parent_forum_id = :id');
-    $childStmt->execute([':id' => $id]);
-    $children = $childStmt->fetchAll(PDO::FETCH_COLUMN);
-    foreach ($children as $childId) {
-        deleteForum($conn, (int)$childId);
-    }
-    // delete permissions then this forum
-    $permDel = $conn->prepare('DELETE FROM forum_permissions WHERE forum_id = :id');
-    $permDel->execute([':id' => $id]);
-    $delStmt = $conn->prepare('DELETE FROM forums WHERE id = :id');
-    $delStmt->execute([':id' => $id]);
-}
+require_once("../../core/forum/category.php");
+require_once("../../core/forum/forum.php");
+admin_only();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add forum
@@ -39,16 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        $stmt = $conn->prepare('INSERT INTO forums (category_id, parent_forum_id, name, description, position) VALUES (:category_id, :parent_forum_id, :name, :description, :position)');
-        $stmt->execute([
-            ':category_id' => $category_id,
-            ':parent_forum_id' => $parent_forum_id,
-            ':name' => $name,
-            ':description' => $description,
-            ':position' => $position
-        ]);
-
-        $forumId = (int)$conn->lastInsertId();
+        $forumId = forum_create_forum($category_id, $name, $description, $position, $parent_forum_id);
         // determine available roles
         $roles = ['guest', 'member', 'admin'];
         $roleCheck = $conn->query("SHOW TABLES LIKE 'roles'");
@@ -94,15 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $parent_forum_id = null; // prevent forum being its own parent
         }
 
-        $stmt = $conn->prepare('UPDATE forums SET category_id=:category_id, parent_forum_id=:parent_forum_id, name=:name, description=:description, position=:position WHERE id=:id');
-        $stmt->execute([
-            ':category_id' => $category_id,
-            ':parent_forum_id' => $parent_forum_id,
-            ':name' => $name,
-            ':description' => $description,
-            ':position' => $position,
-            ':id' => $id
-        ]);
+        forum_update_forum($id, $category_id, $name, $description, $position, $parent_forum_id);
 
         header('Location: forums.php?msg=' . urlencode('Forum updated'));
         exit;
@@ -112,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete'])) {
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
         if ($id > 0) {
-            deleteForum($conn, $id);
+            forum_delete_forum($id);
             header('Location: forums.php?msg=' . urlencode('Forum deleted'));
             exit;
         }
@@ -120,12 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch categories
-$catStmt = $conn->query('SELECT * FROM forum_categories ORDER BY position ASC');
-$categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$categories = forum_get_categories();
 
 // Fetch all forums
-$forumStmt = $conn->query('SELECT * FROM forums ORDER BY position ASC');
-$allForums = $forumStmt->fetchAll(PDO::FETCH_ASSOC);
+$allForums = forum_get_all_forums();
 
 // Build structures for display and select options
 $forumsByCategory = [];
@@ -139,9 +102,7 @@ foreach ($allForums as $f) {
 $editForum = null;
 if (isset($_GET['edit'])) {
     $editId = (int)$_GET['edit'];
-    $stmt = $conn->prepare('SELECT * FROM forums WHERE id = :id');
-    $stmt->execute([':id' => $editId]);
-    $editForum = $stmt->fetch(PDO::FETCH_ASSOC);
+    $editForum = forum_get_forum($editId);
 }
 
 function renderForumRows(array $forumsByParent, $parentId = 0, $level = 0) {
