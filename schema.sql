@@ -180,7 +180,10 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `read_at` datetime DEFAULT NULL,
   `sender_deleted` tinyint(1) NOT NULL DEFAULT 0,
   `receiver_deleted` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `idx_messages_receiver` (`receiver_id`,`receiver_deleted`,`sent_at`),
+  KEY `idx_messages_sender` (`sender_id`,`sender_deleted`,`sent_at`),
+  FULLTEXT KEY `idx_messages_search` (`subject`,`body`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

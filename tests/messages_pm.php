@@ -15,6 +15,8 @@ global $conn;
 
 $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT)');
 $conn->exec('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_id INTEGER, receiver_id INTEGER, subject TEXT, body TEXT, sent_at TEXT DEFAULT CURRENT_TIMESTAMP, read_at TEXT DEFAULT NULL, sender_deleted INTEGER DEFAULT 0, receiver_deleted INTEGER DEFAULT 0)');
+$conn->exec('CREATE INDEX idx_messages_receiver ON messages(receiver_id, receiver_deleted, sent_at)');
+$conn->exec('CREATE INDEX idx_messages_sender ON messages(sender_id, sender_deleted, sent_at)');
 $conn->exec("INSERT INTO users (id, username) VALUES (1, 'alice'), (2, 'bob')");
 
 echo "Send message...\n";
@@ -113,6 +115,31 @@ try {
     // expected
 }
 echo "Validation passed\n";
+
+echo "Pagination and search...\n";
+pm_send(1, 2, 'First', 'Body one');
+pm_send(1, 2, 'Second keyword', 'Body two');
+pm_send(1, 2, 'Third', 'Body keyword three');
+$page1 = pm_inbox(2, 2, 0);
+$page2 = pm_inbox(2, 2, 2);
+if (count($page1) !== 2 || count($page2) !== 1) {
+    echo "Pagination failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+$filteredInbox = pm_inbox(2, 10, 0, 'keyword');
+if (count($filteredInbox) !== 2) {
+    echo "Inbox search failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+$filteredOutbox = pm_outbox(1, 10, 0, 'keyword');
+if (count($filteredOutbox) !== 2) {
+    echo "Outbox search failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+echo "Pagination and search passed\n";
 
 unlink($dbFile);
 ?>
