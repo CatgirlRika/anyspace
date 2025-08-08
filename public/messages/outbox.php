@@ -7,6 +7,11 @@ require("../../core/messages/pm.php");
 login_check();
 
 $userId = $_SESSION['userId'];
+if (isset($_GET['del'])) {
+    pm_delete((int)$_GET['del'], $userId);
+    header('Location: outbox.php');
+    exit;
+}
 $messages = pm_outbox($userId);
 ?>
 <?php require("../header.php"); ?>
@@ -26,6 +31,7 @@ $messages = pm_outbox($userId);
                     <?php if (empty($msg['read_at'])): ?>
                         <em>(unread)</em>
                     <?php endif; ?>
+                    <a href="?del=<?= $msg['id'] ?>" onclick="return confirm('Delete this message?');">Delete</a>
                     <div><?= nl2br(htmlspecialchars($msg['body'])) ?></div>
                 </li>
             <?php endforeach; ?>
