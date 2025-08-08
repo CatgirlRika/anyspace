@@ -15,9 +15,8 @@ if (isset($_SESSION['userId'])) {
         <a href="index.php">
             <?= SITE_NAME ?>
           </a> | <a href="index.php">Home</a>
-      </ul>
-    </div>
-    <div class="center">
+      </div>
+      <div class="center">
 
       <form>
 
