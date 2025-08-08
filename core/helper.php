@@ -44,26 +44,73 @@ function validateContentHTML($validate) {
     return $validated;
 }
 
-function validateLayoutHTML($validate) {
-    // Whitelisted tags
-    $allowedTags = '<style><img><div><iframe><a><h1><h2><h3><p><ul><ol><li><blockquote><code><em><strong><br>';
+function validateLayoutHTML($html) {
+    $allowedTags = [
+        'style', 'img', 'div', 'iframe', 'a', 'h1', 'h2', 'h3', 'p', 'ul',
+        'ol', 'li', 'blockquote', 'code', 'em', 'strong', 'br'
+    ];
+    $allowedAttrs = ['href', 'src', 'alt', 'title', 'style', 'width', 'height'];
 
-    // Remove script tags
-    $validated = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $validate);
-    
-    // Remove PHP blocks
-    $validated = preg_replace('/<\?php(.*?)\?>/is', '', $validated);
+    libxml_use_internal_errors(true);
+    $dom = new DOMDocument();
+    $dom->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    $xpath = new DOMXPath($dom);
 
-    // Remove any remaining PHP short tags
-    $validated = preg_replace('/<\?(?!php)(.*?)\?>/is', '', $validated);
-    
-    // Remove behavior: url()
-    $validated = str_replace("behavior: url", "", $validated);
-    
-    // Remove any remaining HTML tags except the allowed ones
-    $validated = strip_tags($validated, $allowedTags);
+    // Remove disallowed tags and attributes
+    foreach ($xpath->query('//*') as $node) {
+        if (!in_array($node->nodeName, $allowedTags)) {
+            $node->parentNode->removeChild($node);
+            continue;
+        }
 
-    return $validated;
+        if ($node->hasAttributes()) {
+            $attrsToRemove = [];
+            foreach ($node->attributes as $attr) {
+                $name  = strtolower($attr->nodeName);
+                $value = $attr->nodeValue;
+
+                // Remove event handlers or non-whitelisted attributes
+                if (strpos($name, 'on') === 0 || !in_array($name, $allowedAttrs)) {
+                    $attrsToRemove[] = $attr->nodeName;
+                    continue;
+                }
+
+                // Strip javascript: and data: URLs
+                if (in_array($name, ['href', 'src']) && preg_match('/^\s*(javascript|data):/i', $value)) {
+                    $attrsToRemove[] = $attr->nodeName;
+                    continue;
+                }
+
+                // Sanitize inline CSS
+                if ($name === 'style') {
+                    $clean = preg_replace('/@import/i', '', $value);
+                    $clean = preg_replace('/expression\s*\(/i', '', $clean);
+                    $clean = preg_replace_callback('/url\s*\(([^\)]+)\)/i', function ($matches) {
+                        $url = trim($matches[1], "'\" ");
+                        return preg_match('/^javascript:/i', $url) ? '' : 'url(' . $url . ')';
+                    }, $clean);
+                    $attr->nodeValue = $clean;
+                }
+            }
+
+            foreach ($attrsToRemove as $attrName) {
+                $node->removeAttribute($attrName);
+            }
+        }
+    }
+
+    // Sanitize contents of <style> tags
+    foreach ($xpath->query('//style') as $styleNode) {
+        $css = $styleNode->textContent;
+        $css = preg_replace('/@import[^;]*;/i', '', $css);
+        $css = preg_replace('/expression\s*\([^;]*\)/i', '', $css);
+        $css = preg_replace('/url\s*\(\s*javascript:[^\)]*\)/i', '', $css);
+        $styleNode->textContent = $css;
+    }
+
+    $safe = $dom->saveHTML();
+    libxml_clear_errors();
+    return $safe;
 }
 
 // thanks dzhaugasharov https://gist.github.com/afsalrahim/bc8caf497a4b54c5d75d
