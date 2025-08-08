@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../helper.php';
 
-function pm_send(int $sender_id, int $receiver_id, string $subject, string $body): int
+function pm_send(int $sender_id, int $receiver_id, string $subject, string $body, ?int $parent_id = null): int
 {
     global $conn;
     $cleanSubject = trim(strip_tags($subject));
@@ -14,51 +14,96 @@ function pm_send(int $sender_id, int $receiver_id, string $subject, string $body
         throw new InvalidArgumentException('Message body cannot be empty.');
     }
 
-    $stmt = $conn->prepare('INSERT INTO messages (sender_id, receiver_id, subject, body, sent_at) VALUES (:sid, :rid, :sub, :body, CURRENT_TIMESTAMP)');
-    $stmt->execute([':sid' => $sender_id, ':rid' => $receiver_id, ':sub' => $cleanSubject, ':body' => $cleanBody]);
-    return (int)$conn->lastInsertId();
+    $threadId = null;
+    if ($parent_id !== null) {
+        $stmt = $conn->prepare('SELECT thread_id FROM messages WHERE id = :pid');
+        $stmt->execute([':pid' => $parent_id]);
+        $threadId = $stmt->fetchColumn() ?: null;
+    }
+
+    $stmt = $conn->prepare('INSERT INTO messages (sender_id, receiver_id, subject, body, thread_id, sent_at) VALUES (:sid, :rid, :sub, :body, :tid, CURRENT_TIMESTAMP)');
+    $stmt->execute([':sid' => $sender_id, ':rid' => $receiver_id, ':sub' => $cleanSubject, ':body' => $cleanBody, ':tid' => $threadId ?? 0]);
+    $id = (int)$conn->lastInsertId();
+    if ($threadId === null) {
+        $threadId = $id;
+        $upd = $conn->prepare('UPDATE messages SET thread_id = :tid WHERE id = :id');
+        $upd->execute([':tid' => $threadId, ':id' => $id]);
+    }
+    return $id;
 }
 
 function pm_inbox(int $user_id, int $limit = 20, int $offset = 0, ?string $keyword = null): array
 {
     global $conn;
-    $sql = 'SELECT m.id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, u.username AS sender
-            FROM messages m JOIN users u ON m.sender_id = u.id
-            WHERE m.receiver_id = :uid AND m.receiver_deleted = 0';
+    $params = [':uid' => $user_id];
+    $sql = 'SELECT m.id, m.thread_id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, su.username AS sender, ru.username AS receiver
+            FROM messages m
+            JOIN users su ON m.sender_id = su.id
+            JOIN users ru ON m.receiver_id = ru.id
+            WHERE m.thread_id IN (SELECT thread_id FROM messages WHERE receiver_id = :uid AND receiver_deleted = 0)
+              AND ((m.sender_id = :uid AND m.sender_deleted = 0) OR (m.receiver_id = :uid AND m.receiver_deleted = 0))';
     if ($keyword !== null && $keyword !== '') {
         $sql .= ' AND (m.subject LIKE :kw OR m.body LIKE :kw)';
+        $params[':kw'] = '%' . $keyword . '%';
     }
-    $sql .= ' ORDER BY m.sent_at DESC LIMIT :lim OFFSET :off';
+    $sql .= ' ORDER BY m.thread_id, m.sent_at ASC';
     $stmt = $conn->prepare($sql);
-    $stmt->bindValue(':uid', $user_id, PDO::PARAM_INT);
-    $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
-    $stmt->bindValue(':off', $offset, PDO::PARAM_INT);
-    if ($keyword !== null && $keyword !== '') {
-        $stmt->bindValue(':kw', '%' . $keyword . '%', PDO::PARAM_STR);
+    foreach ($params as $k => $v) {
+        $stmt->bindValue($k, $v, is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
     }
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $threads = [];
+    foreach ($rows as $row) {
+        $tid = $row['thread_id'];
+        if (!isset($threads[$tid])) {
+            $threads[$tid] = ['thread_id' => $tid, 'messages' => []];
+        }
+        $threads[$tid]['messages'][] = $row;
+    }
+    $threads = array_values($threads);
+    usort($threads, function ($a, $b) {
+        return strcmp(end($b['messages'])['sent_at'], end($a['messages'])['sent_at']);
+    });
+    $threads = array_slice($threads, $offset, $limit);
+    return $threads;
 }
 
 function pm_outbox(int $user_id, int $limit = 20, int $offset = 0, ?string $keyword = null): array
 {
     global $conn;
-    $sql = 'SELECT m.id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, u.username AS receiver
-            FROM messages m JOIN users u ON m.receiver_id = u.id
-            WHERE m.sender_id = :uid AND m.sender_deleted = 0';
+    $params = [':uid' => $user_id];
+    $sql = 'SELECT m.id, m.thread_id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, su.username AS sender, ru.username AS receiver
+            FROM messages m
+            JOIN users su ON m.sender_id = su.id
+            JOIN users ru ON m.receiver_id = ru.id
+            WHERE m.thread_id IN (SELECT thread_id FROM messages WHERE sender_id = :uid AND sender_deleted = 0)
+              AND ((m.sender_id = :uid AND m.sender_deleted = 0) OR (m.receiver_id = :uid AND m.receiver_deleted = 0))';
     if ($keyword !== null && $keyword !== '') {
         $sql .= ' AND (m.subject LIKE :kw OR m.body LIKE :kw)';
+        $params[':kw'] = '%' . $keyword . '%';
     }
-    $sql .= ' ORDER BY m.sent_at DESC LIMIT :lim OFFSET :off';
+    $sql .= ' ORDER BY m.thread_id, m.sent_at ASC';
     $stmt = $conn->prepare($sql);
-    $stmt->bindValue(':uid', $user_id, PDO::PARAM_INT);
-    $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
-    $stmt->bindValue(':off', $offset, PDO::PARAM_INT);
-    if ($keyword !== null && $keyword !== '') {
-        $stmt->bindValue(':kw', '%' . $keyword . '%', PDO::PARAM_STR);
+    foreach ($params as $k => $v) {
+        $stmt->bindValue($k, $v, is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
     }
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $threads = [];
+    foreach ($rows as $row) {
+        $tid = $row['thread_id'];
+        if (!isset($threads[$tid])) {
+            $threads[$tid] = ['thread_id' => $tid, 'messages' => []];
+        }
+        $threads[$tid]['messages'][] = $row;
+    }
+    $threads = array_values($threads);
+    usort($threads, function ($a, $b) {
+        return strcmp(end($b['messages'])['sent_at'], end($a['messages'])['sent_at']);
+    });
+    $threads = array_slice($threads, $offset, $limit);
+    return $threads;
 }
 
 function pm_mark_read(int $message_id, int $user_id): void

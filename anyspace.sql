@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS `layouts` (
 
 CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(11) NOT NULL auto_increment,
+  `thread_id` int(11) NOT NULL,
   `toid` int(11) NOT NULL,
   `author` int(11) NOT NULL,
   `msg` text NOT NULL,
