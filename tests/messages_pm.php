@@ -20,12 +20,25 @@ $conn->exec("INSERT INTO users (id, username) VALUES (1, 'alice'), (2, 'bob')");
 echo "Send message...\n";
 pm_send(1, 2, 'Hi', 'Hello Bob');
 $inbox = pm_inbox(2);
+$outbox = pm_outbox(1);
 if (count($inbox) !== 1 || $inbox[0]['subject'] !== 'Hi') {
-    echo "Send failed\n";
+    echo "Inbox failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+if (count($outbox) !== 1 || $outbox[0]['subject'] !== 'Hi') {
+    echo "Outbox failed\n";
     unlink($dbFile);
     exit(1);
 }
 echo "Message received\n";
+
+$unreadBefore = pm_unread_count(2);
+if ($unreadBefore !== 1) {
+    echo "Unread count before read incorrect\n";
+    unlink($dbFile);
+    exit(1);
+}
 
 echo "Mark read...\n";
 pm_mark_read($inbox[0]['id'], 2);
@@ -37,6 +50,13 @@ if ($read) {
     unlink($dbFile);
     exit(1);
 }
+$unreadAfter = pm_unread_count(2);
+if ($unreadAfter !== 0) {
+    echo "Unread count after read incorrect\n";
+    unlink($dbFile);
+    exit(1);
+}
+echo "Unread count updated\n";
 
 echo "Validate inputs...\n";
 try {
