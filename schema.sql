@@ -317,6 +317,19 @@ CREATE TABLE IF NOT EXISTS `attachments` (
 
 -- --------------------------------------------------------
 --
+-- Table structure for table `post_reactions`
+--
+CREATE TABLE IF NOT EXISTS `post_reactions` (
+  `post_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `reaction` varchar(20) NOT NULL,
+  UNIQUE KEY `post_user_unique` (`post_id`, `user_id`),
+  FOREIGN KEY (`post_id`) REFERENCES `forum_posts` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
 -- Table structure for table `topic_subscriptions`
 --
 CREATE TABLE IF NOT EXISTS `topic_subscriptions` (
