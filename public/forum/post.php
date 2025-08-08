@@ -5,6 +5,7 @@ require_once("../../core/forum/topic.php");
 require_once("../../core/forum/post.php");
 require_once("../../core/forum/permissions.php");
 require_once("../../core/forum/reactions.php");
+require_once("../../core/forum/polls.php");
 require_once("../../core/helper.php");
 require_once("../../core/site/user.php");
 
@@ -19,6 +20,16 @@ if (!$topic) {
 
 $forumId = (int)$topic['forum_id'];
 forum_require_permission($forumId, 'can_view');
+
+$pollStmt = $conn->prepare('SELECT id, question, options FROM polls WHERE topic_id = :tid');
+$pollStmt->execute([':tid' => $topicId]);
+$poll = $pollStmt->fetch(PDO::FETCH_ASSOC);
+$userVote = false;
+if ($poll && isset($_SESSION['userId'])) {
+    $voteCheck = $conn->prepare('SELECT option_index FROM poll_votes WHERE poll_id = :pid AND user_id = :uid');
+    $voteCheck->execute([':pid' => $poll['id'], ':uid' => $_SESSION['userId']]);
+    $userVote = $voteCheck->fetchColumn();
+}
 
 $perms = forum_fetch_permissions($forumId);
 $can_post = !empty($perms['can_post']);
@@ -36,6 +47,11 @@ if (isset($_GET['quote'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     login_check();
+    if ($poll && isset($_POST['poll_vote']) && $userVote === false) {
+        votePoll($poll['id'], $_SESSION['userId'], (int)$_POST['poll_vote']);
+        header('Location: post.php?id=' . $topicId);
+        exit;
+    }
     if (isset($_POST['reaction_action'])) {
         $pid = (int)($_POST['post_id'] ?? 0);
         if ($_POST['reaction_action'] === 'add') {
@@ -111,6 +127,23 @@ $pageCSS = "../static/css/forum.css";
             <input type="hidden" name="action" value="<?= $topic['sticky'] ? 'unsticky' : 'sticky' ?>">
             <button type="submit" aria-label="<?= $topic['sticky'] ? 'Unsticky topic' : 'Sticky topic' ?>" role="button"><?= $topic['sticky'] ? 'Unsticky' : 'Sticky' ?></button>
         </form>
+    </div>
+    <?php endif; ?>
+    <?php if ($poll): ?>
+    <div class="poll">
+        <h2><?= htmlspecialchars($poll['question']) ?></h2>
+        <?php if ($userVote === false && isset($_SESSION['userId'])): ?>
+        <form method="post">
+            <?php $opts = json_decode($poll['options'], true) ?: []; foreach ($opts as $i => $opt): ?>
+            <div><label><input type="radio" name="poll_vote" value="<?= $i ?>"> <?= htmlspecialchars($opt) ?></label></div>
+            <?php endforeach; ?>
+            <button type="submit" role="button">Vote</button>
+        </form>
+        <?php else: ?>
+        <?php $results = getPollResults($poll['id']); foreach ($results as $res): ?>
+            <div><?= htmlspecialchars($res['option']) ?> - <?= (int)$res['votes'] ?></div>
+        <?php endforeach; ?>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
     <table class="post-table">

@@ -303,6 +303,31 @@ CREATE TABLE IF NOT EXISTS `forum_posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- --------------------------------------------------------
 --
+-- Table structure for table `polls`
+--
+CREATE TABLE IF NOT EXISTS `polls` (
+  `id` int(11) NOT NULL auto_increment,
+  `topic_id` int(11) NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `options` text NOT NULL,
+  `locked` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`topic_id`) REFERENCES `forum_topics` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+--
+-- Table structure for table `poll_votes`
+--
+CREATE TABLE IF NOT EXISTS `poll_votes` (
+  `poll_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `option_index` int(11) NOT NULL,
+  PRIMARY KEY (`poll_id`, `user_id`),
+  FOREIGN KEY (`poll_id`) REFERENCES `polls` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- --------------------------------------------------------
+--
 -- Table structure for table `attachments`
 --
 CREATE TABLE IF NOT EXISTS `attachments` (
