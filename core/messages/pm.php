@@ -5,7 +5,15 @@ function pm_send(int $sender_id, int $receiver_id, string $subject, string $body
 {
     global $conn;
     $cleanSubject = trim(strip_tags($subject));
+    if (mb_strlen($cleanSubject) === 0 || mb_strlen($cleanSubject) > 255) {
+        throw new InvalidArgumentException('Subject must be between 1 and 255 characters.');
+    }
+
     $cleanBody = validateContentHTML($body);
+    if (mb_strlen(trim(strip_tags($cleanBody))) === 0) {
+        throw new InvalidArgumentException('Message body cannot be empty.');
+    }
+
     $stmt = $conn->prepare('INSERT INTO messages (sender_id, receiver_id, subject, body, sent_at) VALUES (:sid, :rid, :sub, :body, CURRENT_TIMESTAMP)');
     $stmt->execute([':sid' => $sender_id, ':rid' => $receiver_id, ':sub' => $cleanSubject, ':body' => $cleanBody]);
     return (int)$conn->lastInsertId();

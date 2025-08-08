@@ -38,6 +38,33 @@ if ($read) {
     exit(1);
 }
 
+echo "Validate inputs...\n";
+try {
+    pm_send(1, 2, '', 'Body');
+    echo "Empty subject allowed\n";
+    unlink($dbFile);
+    exit(1);
+} catch (InvalidArgumentException $e) {
+    // expected
+}
+try {
+    pm_send(1, 2, str_repeat('a', 256), 'Body');
+    echo "Long subject allowed\n";
+    unlink($dbFile);
+    exit(1);
+} catch (InvalidArgumentException $e) {
+    // expected
+}
+try {
+    pm_send(1, 2, 'Sub', '');
+    echo "Empty body allowed\n";
+    unlink($dbFile);
+    exit(1);
+} catch (InvalidArgumentException $e) {
+    // expected
+}
+echo "Validation passed\n";
+
 unlink($dbFile);
 ?>
 
