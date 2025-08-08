@@ -40,8 +40,8 @@ system.
 
 ## Features
 
-- [x] Admin Panel 
-- [ ] Authentication
+- [x] Admin Panel
+- [x] Authentication
   - [x] Login/Logout
   - [x] Registration
   - [ ] Password Reset
@@ -50,13 +50,13 @@ system.
 - [x] Bulletins
 - [x] Comment System
 - [x] Favorite Users
-- [ ] Forum
+- [x] Forum
 - [x] Friend System
-- [ ] Group System
-- [ ] Layout sharing feature
+- [x] Group System
+- [x] Layout sharing feature
 - [x] Private Messaging
-- [ ] Report System
-- [ ] Session Management
+- [x] Report System
+- [x] Session Management
 - [x] User Browser
 - [x] User Search
 - [x] User Profiles
