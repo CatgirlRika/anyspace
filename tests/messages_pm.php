@@ -14,7 +14,8 @@ $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 global $conn;
 
 $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT)');
-$conn->exec('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_id INTEGER, receiver_id INTEGER, subject TEXT, body TEXT, sent_at TEXT DEFAULT CURRENT_TIMESTAMP, read_at TEXT DEFAULT NULL, sender_deleted INTEGER DEFAULT 0, receiver_deleted INTEGER DEFAULT 0)');
+$conn->exec('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, thread_id INTEGER, sender_id INTEGER, receiver_id INTEGER, subject TEXT, body TEXT, sent_at TEXT DEFAULT CURRENT_TIMESTAMP, read_at TEXT DEFAULT NULL, sender_deleted INTEGER DEFAULT 0, receiver_deleted INTEGER DEFAULT 0)');
+$conn->exec('CREATE INDEX idx_messages_thread ON messages(thread_id)');
 $conn->exec('CREATE INDEX idx_messages_receiver ON messages(receiver_id, receiver_deleted, sent_at)');
 $conn->exec('CREATE INDEX idx_messages_sender ON messages(sender_id, sender_deleted, sent_at)');
 $conn->exec("INSERT INTO users (id, username) VALUES (1, 'alice'), (2, 'bob')");
@@ -23,17 +24,40 @@ echo "Send message...\n";
 $messageId = pm_send(1, 2, 'Hi', 'Hello Bob');
 $inbox = pm_inbox(2);
 $outbox = pm_outbox(1);
-if (count($inbox) !== 1 || $inbox[0]['subject'] !== 'Hi') {
+if (count($inbox) !== 1 || $inbox[0]['messages'][0]['subject'] !== 'Hi') {
     echo "Inbox failed\n";
     unlink($dbFile);
     exit(1);
 }
-if (count($outbox) !== 1 || $outbox[0]['subject'] !== 'Hi') {
+if (count($outbox) !== 1 || $outbox[0]['messages'][0]['subject'] !== 'Hi') {
     echo "Outbox failed\n";
     unlink($dbFile);
     exit(1);
 }
 echo "Message received\n";
+
+echo "Replying...\n";
+$replyId = pm_send(2, 1, 'Re: Hi', 'Hello Alice', $messageId);
+$aliceInbox = pm_inbox(1);
+if (count($aliceInbox) !== 1 || count($aliceInbox[0]['messages']) !== 2) {
+    echo "Thread retrieval failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+$bobOutbox = pm_outbox(2);
+if (count($bobOutbox) !== 1 || count($bobOutbox[0]['messages']) !== 2) {
+    echo "Thread outbox retrieval failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+$origThread = $conn->query('SELECT thread_id FROM messages WHERE id = ' . (int)$messageId)->fetchColumn();
+$replyThread = $conn->query('SELECT thread_id FROM messages WHERE id = ' . (int)$replyId)->fetchColumn();
+if ($origThread != $messageId || $replyThread != $messageId) {
+    echo "Thread IDs incorrect\n";
+    unlink($dbFile);
+    exit(1);
+}
+echo "Threading works\n";
 
 $unreadBefore = pm_unread_count(2);
 if ($unreadBefore !== 1) {
@@ -81,7 +105,7 @@ if (pm_outbox(1)) {
     unlink($dbFile);
     exit(1);
 }
-$count = $conn->query('SELECT COUNT(*) FROM messages')->fetchColumn();
+$count = $conn->query('SELECT COUNT(*) FROM messages WHERE id = ' . (int)$messageId)->fetchColumn();
 if ($count != 0) {
     echo "Message not fully removed\n";
     unlink($dbFile);
