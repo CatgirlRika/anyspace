@@ -382,3 +382,15 @@ CREATE TABLE IF NOT EXISTS `mod_log` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`moderator_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `bad_words`
+--
+CREATE TABLE IF NOT EXISTS `bad_words` (
+  `id` int(11) NOT NULL auto_increment,
+  `word` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `bad_words` (`word`) VALUES ('badword'), ('evil');

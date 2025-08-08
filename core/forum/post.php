@@ -4,6 +4,7 @@ require_once(__DIR__ . '/topic.php');
 require_once(__DIR__ . '/../helper.php');
 require_once(__DIR__ . '/notifications.php');
 require_once(__DIR__ . '/mod_log.php');
+require_once(__DIR__ . '/word_filter.php');
 
 function forum_add_post(int $topic_id, int $user_id, string $body)
 {
@@ -14,7 +15,13 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
     if ($locked === 1) {
         return ['error' => 'Topic is locked'];
     }
+    $matches = isFiltered($body);
     $sanitizedBody = validateContentHTML($body);
+    if (!empty($matches)) {
+        $insert = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at, deleted) VALUES (:tid, :uid, :body, CURRENT_TIMESTAMP, 1)');
+        $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $sanitizedBody]);
+        return ['warning' => 'Post contains filtered words', 'filtered' => $matches];
+    }
     $insert = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at) VALUES (:tid, :uid, :body, CURRENT_TIMESTAMP)');
     $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $sanitizedBody]);
     $postId = (int)$conn->lastInsertId();

@@ -68,6 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = forum_add_post($topicId, $_SESSION['userId'], $body);
         if (isset($result['error'])) {
             $error = $result['error'];
+        } elseif (isset($result['warning'])) {
+            $error = $result['warning'] . ': ' . implode(', ', $result['filtered']);
         } else {
             header('Location: post.php?id=' . $topicId);
             exit;

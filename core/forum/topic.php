@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../helper.php');
 require_once(__DIR__ . '/mod_log.php');
+require_once(__DIR__ . '/word_filter.php');
 
 function forum_log_action(string $message): void {
     $logFile = __DIR__ . '/../../admin_logs.txt';
@@ -80,10 +81,14 @@ function forum_get_topics(int $forum_id): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function forum_create_topic(int $forum_id, int $user_id, string $title, string $body): int {
+function forum_create_topic(int $forum_id, int $user_id, string $title, string $body) {
     global $conn;
+    $matches = array_unique(array_merge(isFiltered($title), isFiltered($body)));
     $sanitizedTitle = strip_tags($title);
     $sanitizedBody = validateContentHTML($body);
+    if (!empty($matches)) {
+        return ['warning' => 'Topic contains filtered words', 'filtered' => $matches];
+    }
     $conn->beginTransaction();
     $stmt = $conn->prepare('INSERT INTO forum_topics (forum_id, title) VALUES (:fid, :title)');
     $stmt->execute([':fid' => $forum_id, ':title' => $sanitizedTitle]);
