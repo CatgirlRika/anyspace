@@ -19,19 +19,45 @@ function pm_send(int $sender_id, int $receiver_id, string $subject, string $body
     return (int)$conn->lastInsertId();
 }
 
-function pm_inbox(int $user_id): array
+function pm_inbox(int $user_id, int $limit = 20, int $offset = 0, ?string $keyword = null): array
 {
     global $conn;
-    $stmt = $conn->prepare('SELECT m.id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, u.username AS sender FROM messages m JOIN users u ON m.sender_id = u.id WHERE m.receiver_id = :uid AND m.receiver_deleted = 0 ORDER BY m.sent_at DESC');
-    $stmt->execute([':uid' => $user_id]);
+    $sql = 'SELECT m.id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, u.username AS sender
+            FROM messages m JOIN users u ON m.sender_id = u.id
+            WHERE m.receiver_id = :uid AND m.receiver_deleted = 0';
+    if ($keyword !== null && $keyword !== '') {
+        $sql .= ' AND (m.subject LIKE :kw OR m.body LIKE :kw)';
+    }
+    $sql .= ' ORDER BY m.sent_at DESC LIMIT :lim OFFSET :off';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(':uid', $user_id, PDO::PARAM_INT);
+    $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':off', $offset, PDO::PARAM_INT);
+    if ($keyword !== null && $keyword !== '') {
+        $stmt->bindValue(':kw', '%' . $keyword . '%', PDO::PARAM_STR);
+    }
+    $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function pm_outbox(int $user_id): array
+function pm_outbox(int $user_id, int $limit = 20, int $offset = 0, ?string $keyword = null): array
 {
     global $conn;
-    $stmt = $conn->prepare('SELECT m.id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, u.username AS receiver FROM messages m JOIN users u ON m.receiver_id = u.id WHERE m.sender_id = :uid AND m.sender_deleted = 0 ORDER BY m.sent_at DESC');
-    $stmt->execute([':uid' => $user_id]);
+    $sql = 'SELECT m.id, m.sender_id, m.receiver_id, m.subject, m.body, m.sent_at, m.read_at, u.username AS receiver
+            FROM messages m JOIN users u ON m.receiver_id = u.id
+            WHERE m.sender_id = :uid AND m.sender_deleted = 0';
+    if ($keyword !== null && $keyword !== '') {
+        $sql .= ' AND (m.subject LIKE :kw OR m.body LIKE :kw)';
+    }
+    $sql .= ' ORDER BY m.sent_at DESC LIMIT :lim OFFSET :off';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(':uid', $user_id, PDO::PARAM_INT);
+    $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':off', $offset, PDO::PARAM_INT);
+    if ($keyword !== null && $keyword !== '') {
+        $stmt->bindValue(':kw', '%' . $keyword . '%', PDO::PARAM_STR);
+    }
+    $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
