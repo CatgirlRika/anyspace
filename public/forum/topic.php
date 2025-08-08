@@ -40,9 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'] ?? '';
     $body = $_POST['body'] ?? '';
     if ($title !== '' && $body !== '') {
-        $topicId = forum_create_topic($forumId, $_SESSION['userId'], $title, $body);
-        header('Location: post.php?id=' . $topicId);
-        exit;
+        $result = forum_create_topic($forumId, $_SESSION['userId'], $title, $body);
+        if (is_array($result)) {
+            if (isset($result['warning'])) {
+                $error = $result['warning'] . ': ' . implode(', ', $result['filtered']);
+            } else {
+                $error = $result['error'] ?? 'Unable to create topic.';
+            }
+        } else {
+            header('Location: post.php?id=' . $result);
+            exit;
+        }
     } else {
         $error = 'Title and body are required.';
     }
