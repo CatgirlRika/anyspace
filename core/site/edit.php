@@ -4,7 +4,11 @@ require_once("../lib/sqUID.php"); // php sqUID implementation. generalize long o
 
 function updateInterests($userId, $interests) {
     global $conn;
-    $jsonInterests = json_encode($interests);
+    // Ensure all interests are sanitized before storing
+    $sanitizedInterests = array_map(function ($interest) {
+        return htmlspecialchars($interest, ENT_QUOTES, 'UTF-8');
+    }, $interests);
+    $jsonInterests = json_encode($sanitizedInterests);
     $stmt = $conn->prepare("UPDATE users SET interests = ? WHERE id = ?");
     $stmt->execute(array($jsonInterests, $userId));
 }

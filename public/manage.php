@@ -20,9 +20,9 @@ if ($userInfo) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (@$_POST['interestset']) {
-        // This is probably an XSS vuln
+        // Sanitize each interest value to prevent XSS
         $sanitizedInterests = array_map(function ($interest) {
-            return $interest;
+            return htmlspecialchars($interest, ENT_QUOTES, 'UTF-8');
         }, $_POST['interests']);
         updateInterests($userId, $sanitizedInterests);
         header("Location: manage.php");
