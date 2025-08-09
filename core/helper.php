@@ -2,7 +2,12 @@
 /**
  * Helper functions for AnySpace application
  * Provides authentication, CSRF protection, and input validation
+ * Enhanced with comprehensive security features
  */
+
+// Set security headers early
+require_once __DIR__ . '/security.php';
+setSecurityHeaders();
 
 /**
  * Check if user is logged in and redirect to login if not
@@ -87,7 +92,7 @@ csrf_verify();
 
 /**
  * Validate and sanitize HTML content for user posts
- * Removes dangerous scripts and tags while preserving safe formatting
+ * Enhanced with comprehensive XSS protection using DOMDocument
  * @param string $validate HTML content to validate
  * @return string Sanitized HTML content
  */
@@ -96,30 +101,20 @@ function validateContentHTML($validate) {
         return '';
     }
     
-    // Whitelisted tags
-    $allowedTags = '<a><b><big><blockquote><blink><br><center><code><del><details><div><em><font><h1><h2><h3><h4><h5><h6><hr><i><iframe><img><li><mark><marquee><ol><p><pre><small><span><strong><style><sub><summary><sup><table><td><th><time><tr><u><ul>';
-
-    // Remove script tags
-    $validated = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $validate);
+    // Use enhanced sanitization from security module
+    $allowedTags = array('a', 'b', 'big', 'blockquote', 'br', 'center', 'code', 'del', 
+                        'div', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 
+                        'i', 'img', 'li', 'mark', 'ol', 'p', 'pre', 'small', 'span', 
+                        'strong', 'sub', 'sup', 'table', 'td', 'th', 'time', 'tr', 'u', 'ul');
     
-    // Remove PHP blocks
-    $validated = preg_replace('/<\?php(.*?)\?>/is', '', $validated);
-
-    // Remove any remaining PHP short tags
-    $validated = preg_replace('/<\?(?!php)(.*?)\?>/is', '', $validated);
+    $allowedAttrs = array('href', 'src', 'alt', 'title', 'style', 'width', 'height', 'class');
     
-    // Remove behavior: url() and similar dangerous CSS
-    $validated = str_replace(array("behavior: url", "javascript:", "vbscript:", "data:"), "", $validated);
-    
-    // Remove any remaining HTML tags except the allowed ones
-    $validated = strip_tags($validated, $allowedTags);
-
-    return $validated;
+    return InputSanitizer::sanitizeHTML($validate, $allowedTags, $allowedAttrs);
 }
 
 /**
  * Validate and sanitize HTML for user profile layouts
- * More restrictive than content validation to prevent layout abuse
+ * Enhanced with comprehensive security validation
  * @param string $html HTML content to validate
  * @return string Sanitized HTML content
  */
@@ -128,80 +123,11 @@ function validateLayoutHTML($html) {
         return '';
     }
     
-    $allowedTags = [
-        'style', 'img', 'div', 'iframe', 'a', 'h1', 'h2', 'h3', 'p', 'ul',
-        'ol', 'li', 'blockquote', 'code', 'em', 'strong', 'br'
-    ];
-    $allowedAttrs = ['href', 'src', 'alt', 'title', 'style', 'width', 'height'];
+    $allowedTags = array('style', 'img', 'div', 'a', 'h1', 'h2', 'h3', 'p', 'ul',
+                        'ol', 'li', 'blockquote', 'code', 'em', 'strong', 'br', 'span');
+    $allowedAttrs = array('href', 'src', 'alt', 'title', 'style', 'width', 'height', 'class');
 
-    libxml_use_internal_errors(true);
-    $dom = new DOMDocument();
-    
-    // Suppress warnings and handle encoding properly
-    $loadResult = @$dom->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-    
-    if (!$loadResult) {
-        error_log('Failed to parse HTML in validateLayoutHTML');
-        return strip_tags($html); // Fallback to simple strip_tags
-    }
-    
-    $xpath = new DOMXPath($dom);
-
-    // Remove disallowed tags and attributes
-    foreach ($xpath->query('//*') as $node) {
-        if (!in_array($node->nodeName, $allowedTags)) {
-            $node->parentNode->removeChild($node);
-            continue;
-        }
-
-        if ($node->hasAttributes()) {
-            $attrsToRemove = [];
-            foreach ($node->attributes as $attr) {
-                $name  = strtolower($attr->nodeName);
-                $value = $attr->nodeValue;
-
-                // Remove event handlers or non-whitelisted attributes
-                if (strpos($name, 'on') === 0 || !in_array($name, $allowedAttrs)) {
-                    $attrsToRemove[] = $attr->nodeName;
-                    continue;
-                }
-
-                // Strip javascript: and data: URLs
-                if (in_array($name, ['href', 'src']) && preg_match('/^\s*(javascript|data):/i', $value)) {
-                    $attrsToRemove[] = $attr->nodeName;
-                    continue;
-                }
-
-                // Sanitize inline CSS
-                if ($name === 'style') {
-                    $clean = preg_replace('/@import/i', '', $value);
-                    $clean = preg_replace('/expression\s*\(/i', '', $clean);
-                    $clean = preg_replace_callback('/url\s*\(([^\)]+)\)/i', function ($matches) {
-                        $url = trim($matches[1], "'\" ");
-                        return preg_match('/^javascript:/i', $url) ? '' : 'url(' . $url . ')';
-                    }, $clean);
-                    $attr->nodeValue = $clean;
-                }
-            }
-
-            foreach ($attrsToRemove as $attrName) {
-                $node->removeAttribute($attrName);
-            }
-        }
-    }
-
-    // Sanitize contents of <style> tags
-    foreach ($xpath->query('//style') as $styleNode) {
-        $css = $styleNode->textContent;
-        $css = preg_replace('/@import[^;]*;/i', '', $css);
-        $css = preg_replace('/expression\s*\([^;]*\)/i', '', $css);
-        $css = preg_replace('/url\s*\(\s*javascript:[^\)]*\)/i', '', $css);
-        $styleNode->textContent = $css;
-    }
-
-    $safe = $dom->saveHTML();
-    libxml_clear_errors();
-    return $safe;
+    return InputSanitizer::sanitizeHTML($html, $allowedTags, $allowedAttrs);
 }
 
 // thanks dzhaugasharov https://gist.github.com/afsalrahim/bc8caf497a4b54c5d75d
