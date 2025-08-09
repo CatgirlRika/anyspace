@@ -1,81 +1,32 @@
 <?php
 require("../core/conn.php");
 require_once("../core/settings.php");
-require_once("../core/security.php");
 require("../lib/password.php"); // compatibility library for PHP 5.3
-
-// Initialize security components
-$securityLogger = new SecurityAuditLogger($conn);
-$rateLimiter = new RateLimiter($conn);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'login') {
-        // Get client IP for rate limiting
-        $clientIP = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
-        
-        // Check rate limiting
-        $rateCheck = $rateLimiter->checkRateLimit($clientIP, 'login');
-        if (!$rateCheck['allowed']) {
-            $lockoutEnd = isset($rateCheck['lockoutEnd']) ? date('H:i:s', $rateCheck['lockoutEnd']) : 'unknown';
-            
-            $securityLogger->logEvent(
-                SecurityAuditLogger::RATE_LIMIT_EXCEEDED,
-                SecurityAuditLogger::RISK_HIGH,
-                null,
-                array('action' => 'login', 'ip' => $clientIP)
-            );
-            
-            echo '<p>Too many failed login attempts. Please try again after ' . $lockoutEnd . '.</p><hr>';
-        } else {
-            // Sanitize input
-            $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-            $password = $_POST['password'];
+        // Sanitize input
+        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'];
 
-            // Validate email format
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                echo '<p>Invalid email format.</p><hr>';
+        if ($_POST['action'] == 'login') {
+            // Prepare SQL statement for login
+            $stmt = $conn->prepare("SELECT id, username, password, rank FROM users WHERE email = ?");
+            $stmt->execute(array($email));
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user'] = $user['username'];
+                $_SESSION['userId'] = $user['id'];
+                $_SESSION['rank'] = $user['rank'];
+
+                header("Location: home.php");
+                exit;
             } else {
-                // Prepare SQL statement for login
-                $stmt = $conn->prepare("SELECT id, username, password, rank FROM users WHERE email = ?");
-                $stmt->execute(array($email));
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                if ($user && password_verify($password, $user['password'])) {
-                    // Successful login
-                    $_SESSION['user'] = $user['username'];
-                    $_SESSION['userId'] = $user['id'];
-                    $_SESSION['rank'] = $user['rank'];
-
-                    // Record successful login
-                    $rateLimiter->recordAttempt($clientIP, 'login', true);
-                    
-                    $securityLogger->logEvent(
-                        SecurityAuditLogger::AUTH_SUCCESS,
-                        SecurityAuditLogger::RISK_LOW,
-                        $user['id'],
-                        array('action' => 'login', 'email' => $email)
-                    );
-
-                    // Update last login time
-                    $stmt = $conn->prepare("UPDATE users SET last_login_at = NOW() WHERE id = ?");
-                    $stmt->execute(array($user['id']));
-
-                    header("Location: home.php");
-                    exit;
-                } else {
-                    // Failed login
-                    $rateLimiter->recordAttempt($clientIP, 'login', false);
-                    
-                    $securityLogger->logEvent(
-                        SecurityAuditLogger::AUTH_FAILURE,
-                        SecurityAuditLogger::RISK_MEDIUM,
-                        $user ? $user['id'] : null,
-                        array('action' => 'login', 'email' => $email, 'reason' => 'Invalid credentials')
-                    );
-                    
-                    echo '<p>Login information doesn\'t exist or incorrect password.</p><hr>';
-                }
+                echo '<p>Login information doesn\'t exist or incorrect password.</p><hr>';
             }
+
         }
     }
 }
