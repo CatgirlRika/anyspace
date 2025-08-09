@@ -37,3 +37,7 @@ Thumbs.db
 
 # User uploads
 public/uploads/*
+
+# Cache directory
+cache/*
+*.db

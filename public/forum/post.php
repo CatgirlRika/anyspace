@@ -233,11 +233,19 @@ $pageCSS = "../static/css/forum.css";
     <?php endif; ?>
 
     <?php if (!$topic['locked'] && $can_post): ?>
-    <form method="post">
-    <?= csrf_token_input(); ?>
-        <textarea name="body" aria-label="Post message"><?= htmlspecialchars($prefill) ?></textarea>
-        <button type="submit" aria-label="Submit reply" role="button">Post</button>
-    </form>
+    <div class="quick-reply-section">
+        <h3>Quick Reply</h3>
+        <form method="post" class="quick-reply-form">
+        <?= csrf_token_input(); ?>
+            <div class="reply-controls">
+                <textarea name="body" aria-label="Post message" placeholder="Write your reply..." rows="5"><?= htmlspecialchars($prefill) ?></textarea>
+                <div class="reply-buttons">
+                    <button type="submit" aria-label="Submit reply" role="button" class="reply-submit">Post Reply</button>
+                    <button type="button" onclick="document.querySelector('[name=body]').value=''" class="reply-clear">Clear</button>
+                </div>
+            </div>
+        </form>
+    </div>
     <?php elseif ($topic['locked']): ?>
         <p>This topic is locked.</p>
     <?php endif; ?>

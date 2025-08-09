@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../helper.php');
 require_once(__DIR__ . '/mod_log.php');
 require_once(__DIR__ . '/word_filter.php');
+require_once(__DIR__ . '/forum.php');
 
 function forum_log_action(string $message): void {
     $logFile = __DIR__ . '/../../admin_logs.txt';
@@ -81,6 +82,27 @@ function forum_get_topics(int $forum_id): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function forum_get_topic_preview(int $topic_id): ?array {
+    global $conn;
+    $stmt = $conn->prepare('SELECT p.body, u.username FROM forum_posts p JOIN users u ON p.user_id = u.id WHERE p.topic_id = :tid ORDER BY p.created_at ASC LIMIT 1');
+    $stmt->execute([':tid' => $topic_id]);
+    $post = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$post) {
+        return null;
+    }
+    
+    // Strip HTML tags and limit to 150 characters for preview
+    $preview = strip_tags($post['body']);
+    if (strlen($preview) > 150) {
+        $preview = substr($preview, 0, 150) . '...';
+    }
+    
+    return [
+        'body' => $preview,
+        'username' => $post['username']
+    ];
+}
+
 function forum_create_topic(int $forum_id, int $user_id, string $title, string $body) {
     global $conn;
     $matches = array_unique(array_merge(isFiltered($title), isFiltered($body)));
@@ -96,6 +118,11 @@ function forum_create_topic(int $forum_id, int $user_id, string $title, string $
     $post = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at) VALUES (:tid, :uid, :body, NOW())');
     $post->execute([':tid' => $topicId, ':uid' => $user_id, ':body' => $sanitizedBody]);
     $conn->commit();
+    
+    // Clear cache when topic is created
+    forum_clear_stats_cache($forum_id);
+    forum_clear_stats_cache(0); // Clear global cache too
+    
     return $topicId;
 }
 

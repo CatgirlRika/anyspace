@@ -69,4 +69,110 @@ function searchTopics(string $query): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+/**
+ * Get cached forum statistics or compute them if cache is expired
+ * @param int $forum_id Forum ID (0 for global stats)
+ * @return array Statistics array
+ */
+function forum_get_cached_stats(int $forum_id = 0): array {
+    $cache_key = "forum_stats_" . $forum_id;
+    $cache_file = __DIR__ . "/../../cache/" . $cache_key . ".json";
+    $cache_ttl = 300; // 5 minutes cache time
+    
+    // Create cache directory if it doesn't exist
+    $cache_dir = dirname($cache_file);
+    if (!is_dir($cache_dir)) {
+        @mkdir($cache_dir, 0755, true);
+    }
+    
+    // Check if cache exists and is still valid
+    if (file_exists($cache_file)) {
+        $cache_time = filemtime($cache_file);
+        if ((time() - $cache_time) < $cache_ttl) {
+            $cached_data = json_decode(file_get_contents($cache_file), true);
+            if ($cached_data) {
+                return $cached_data;
+            }
+        }
+    }
+    
+    // Compute fresh statistics
+    $stats = forum_compute_stats($forum_id);
+    
+    // Save to cache
+    file_put_contents($cache_file, json_encode($stats));
+    
+    return $stats;
+}
+
+/**
+ * Compute forum statistics
+ * @param int $forum_id Forum ID (0 for global stats)
+ * @return array Statistics array
+ */
+function forum_compute_stats(int $forum_id = 0): array {
+    global $conn;
+    
+    if ($forum_id > 0) {
+        // Stats for specific forum
+        $stmt = $conn->prepare('SELECT COUNT(*) FROM forum_topics WHERE forum_id = :fid');
+        $stmt->execute([':fid' => $forum_id]);
+        $topics = (int)$stmt->fetchColumn();
+        
+        $stmt = $conn->prepare('SELECT COUNT(*) FROM forum_posts p JOIN forum_topics t ON p.topic_id = t.id WHERE t.forum_id = :fid');
+        $stmt->execute([':fid' => $forum_id]);
+        $posts = (int)$stmt->fetchColumn();
+        
+        $stmt = $conn->prepare('SELECT MAX(p.created_at) FROM forum_posts p JOIN forum_topics t ON p.topic_id = t.id WHERE t.forum_id = :fid');
+        $stmt->execute([':fid' => $forum_id]);
+        $last_post = $stmt->fetchColumn();
+        
+        return [
+            'topics' => $topics,
+            'posts' => $posts,
+            'last_post' => $last_post ?: 'No posts yet'
+        ];
+    } else {
+        // Global stats
+        $stmt = $conn->query('SELECT COUNT(*) FROM forum_topics');
+        $topics = (int)$stmt->fetchColumn();
+        
+        $stmt = $conn->query('SELECT COUNT(*) FROM forum_posts');
+        $posts = (int)$stmt->fetchColumn();
+        
+        $stmt = $conn->query('SELECT COUNT(DISTINCT user_id) FROM forum_posts');
+        $active_users = (int)$stmt->fetchColumn();
+        
+        $stmt = $conn->query('SELECT MAX(created_at) FROM forum_posts');
+        $last_post = $stmt->fetchColumn();
+        
+        return [
+            'topics' => $topics,
+            'posts' => $posts,
+            'active_users' => $active_users,
+            'last_post' => $last_post ?: 'No posts yet'
+        ];
+    }
+}
+
+/**
+ * Clear forum statistics cache
+ * @param int $forum_id Forum ID (0 for all caches)
+ */
+function forum_clear_stats_cache(int $forum_id = 0): void {
+    $cache_dir = __DIR__ . "/../../cache/";
+    
+    if ($forum_id > 0) {
+        // Clear specific forum cache
+        $cache_file = $cache_dir . "forum_stats_" . $forum_id . ".json";
+        @unlink($cache_file);
+    } else {
+        // Clear all forum stats caches
+        $pattern = $cache_dir . "forum_stats_*.json";
+        foreach (glob($pattern) as $file) {
+            @unlink($file);
+        }
+    }
+}
+
 ?>
