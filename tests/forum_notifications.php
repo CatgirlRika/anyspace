@@ -12,13 +12,13 @@ $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 global $conn;
 
 $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT)');
-$conn->exec('CREATE TABLE forum_topics (id INTEGER PRIMARY KEY AUTOINCREMENT, locked INTEGER DEFAULT 0)');
+$conn->exec('CREATE TABLE forum_topics (id INTEGER PRIMARY KEY AUTOINCREMENT, forum_id INTEGER, title TEXT, locked INTEGER DEFAULT 0)');
 $conn->exec('CREATE TABLE forum_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, topic_id INTEGER, user_id INTEGER, body TEXT, created_at DATETIME)');
 $conn->exec('CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, post_id INTEGER, is_read INTEGER DEFAULT 0, created_at DATETIME)');
 $conn->exec('CREATE TABLE topic_subscriptions (user_id INTEGER, topic_id INTEGER, PRIMARY KEY(user_id, topic_id))');
 
 $conn->exec("INSERT INTO users (username) VALUES ('owner'), ('replier'), ('mentioned')");
-$conn->exec("INSERT INTO forum_topics (id, locked) VALUES (1,0)");
+$conn->exec("INSERT INTO forum_topics (id, forum_id, title, locked) VALUES (1, 1, 'Test Topic', 0)");
 $conn->exec("INSERT INTO forum_posts (topic_id, user_id, body, created_at) VALUES (1,1,'first',datetime('now'))");
 
 forum_add_post(1,2,'reply to @mentioned');

@@ -7,6 +7,9 @@ require_once(__DIR__ . '/subscriptions.php');
 require_once(__DIR__ . '/mod_log.php');
 require_once(__DIR__ . '/word_filter.php');
 require_once(__DIR__ . '/forum.php');
+require_once(__DIR__ . '/permissions.php');
+require_once(__DIR__ . '/rate_limit.php');
+require_once(__DIR__ . '/audit_log.php');
 require_once(__DIR__ . '/../../lib/upload.php');
 
 function forum_add_post(int $topic_id, int $user_id, string $body)
@@ -20,6 +23,16 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
     
     if (empty(trim($body))) {
         return ['error' => 'Post body cannot be empty'];
+    }
+    
+    // Rate limiting check (except for moderators and admins)
+    $role = forum_user_role();
+    if ($role === 'member' || $role === 'guest') {
+        if (forum_rate_limit_exceeded($user_id)) {
+            $remaining = forum_rate_limit_time_remaining($user_id);
+            forum_log_security_event('rate_limit_exceeded', $user_id, "Topic: $topic_id, Remaining: {$remaining}s");
+            return ['error' => 'Rate limit exceeded. Please wait ' . $remaining . ' seconds before posting again.'];
+        }
     }
     
     // Check if topic exists and is not locked
@@ -41,6 +54,11 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
     if (!empty($matches)) {
         $insert = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at, deleted) VALUES (:tid, :uid, :body, CURRENT_TIMESTAMP, 1)');
         $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $sanitizedBody]);
+        $postId = (int)$conn->lastInsertId();
+        
+        // Log filtered post
+        forum_log_security_event('filtered_post_created', $user_id, "Post: $postId, Topic: $topic_id, Filtered words: " . implode(', ', $matches));
+        
         // Clear cache when post is added
         forum_clear_stats_cache($forum_id);
         forum_clear_stats_cache(0); // Clear global cache too
@@ -49,6 +67,9 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
     $insert = $conn->prepare('INSERT INTO forum_posts (topic_id, user_id, body, created_at) VALUES (:tid, :uid, :body, CURRENT_TIMESTAMP)');
     $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $sanitizedBody]);
     $postId = (int)$conn->lastInsertId();
+
+    // Log successful post creation
+    forum_log_activity('post_created', $user_id, "Post: $postId, Topic: $topic_id, Forum: $forum_id");
 
     // Clear cache when post is added
     forum_clear_stats_cache($forum_id);

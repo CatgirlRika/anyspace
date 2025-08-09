@@ -25,11 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $body = $_POST['body'] ?? '';
     if ($body !== '') {
         $result = forum_add_post($topicId, $_SESSION['userId'], $body);
-        if (isset($result['id']) && isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
-            uploadAttachment($result['id'], $_FILES['attachment']);
+        if (isset($result['error'])) {
+            $error = $result['error'];
+        } elseif (isset($result['warning'])) {
+            $error = $result['warning'] . ' (filtered words: ' . implode(', ', $result['filtered']) . ')';
+        } elseif (isset($result['id'])) {
+            if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+                uploadAttachment($result['id'], $_FILES['attachment']);
+            }
+            header('Location: post.php?id=' . $topicId);
+            exit;
         }
-        header('Location: post.php?id=' . $topicId);
-        exit;
     } else {
         $error = 'Message cannot be empty.';
     }

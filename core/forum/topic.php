@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../helper.php');
 require_once(__DIR__ . '/mod_log.php');
 require_once(__DIR__ . '/word_filter.php');
 require_once(__DIR__ . '/forum.php');
+require_once(__DIR__ . '/audit_log.php');
 
 function forum_log_action(string $message): void {
     $logFile = __DIR__ . '/../../admin_logs.txt';
@@ -16,6 +17,7 @@ function topic_lock(int $topic_id, int $by_user_id): void {
     $stmt = $conn->prepare('UPDATE forum_topics SET locked = 1 WHERE id = :id');
     $stmt->execute([':id' => $topic_id]);
     forum_log_action("User {$by_user_id} locked topic {$topic_id}");
+    forum_log_moderation('topic_locked', $by_user_id, 'topic', $topic_id);
     logModAction($by_user_id, 'lock', 'topic', $topic_id);
 }
 
@@ -24,6 +26,7 @@ function topic_unlock(int $topic_id, int $by_user_id): void {
     $stmt = $conn->prepare('UPDATE forum_topics SET locked = 0 WHERE id = :id');
     $stmt->execute([':id' => $topic_id]);
     forum_log_action("User {$by_user_id} unlocked topic {$topic_id}");
+    forum_log_moderation('topic_unlocked', $by_user_id, 'topic', $topic_id);
     logModAction($by_user_id, 'unlock', 'topic', $topic_id);
 }
 
