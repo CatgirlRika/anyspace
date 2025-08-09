@@ -9,4 +9,31 @@ public/media/music/*.mp3
 public/media/music/*.mp3.sfk
 !public/media/music/default.mp3
 
+# IDE and editor files
 .vscode
+.idea/
+*.swp
+*.swo
+*~
+
+# Core configuration and logs
+core/config.php
+admin_logs.txt
+
+# Test databases and temporary files
+tests/*.db
+tests/*.sqlite
+*.tmp
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# User uploads
+public/uploads/*

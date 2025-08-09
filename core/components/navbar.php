@@ -46,7 +46,8 @@ if (isset($_SESSION['userId'])) {
     </div>
     <ul class="links">
       <?php
-      $currentUrl = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+      $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+      $currentUrl = parse_url($requestUri, PHP_URL_PATH);
       $currentPage = basename($currentUrl);
 
       $isHomePage = in_array($currentPage, array('index.php', 'home.php'));

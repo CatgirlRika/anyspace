@@ -2,3 +2,5 @@
 2025-08-09T14:40:44+00:00 User 2 deleted post 2
 2025-08-09T14:40:45+00:00 Report 1 resolved with action delete
 2025-08-09T14:40:45+00:00 User 2 locked topic 1
+2025-08-09T14:48:22+00:00 User 2 deleted post 2
+2025-08-09T14:49:30+00:00 User 2 deleted post 2

@@ -1,7 +1,9 @@
 <?php
 // Don't delete this
 define("DEBUG", true);
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (DEBUG == true) {
     ini_set('display_errors', 1);
