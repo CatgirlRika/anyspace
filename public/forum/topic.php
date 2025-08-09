@@ -9,6 +9,16 @@ require_once("../../core/forum/polls.php");
 require_once("../../core/helper.php");
 
 $forumId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// Handle AJAX preview request
+if (isset($_GET['preview']) && isset($_GET['topic_id'])) {
+    $topicId = (int)$_GET['topic_id'];
+    $preview = forum_get_topic_preview($topicId);
+    header('Content-Type: application/json');
+    echo json_encode($preview);
+    exit;
+}
+
 forum_require_permission($forumId, 'can_view');
 
 $perms = forum_fetch_permissions($forumId);
@@ -97,7 +107,13 @@ $pageCSS = "../static/css/forum.css";
         <?php $linkId = $t['moved_to'] ? $t['moved_to'] : $t['id']; ?>
         <tr>
             <td class="icon-cell"><img src="../static/icons/comment.png" alt="Topic icon" loading="lazy"></td>
-            <td><a href="post.php?id=<?= $linkId ?>" aria-label="View topic <?= htmlspecialchars($t['title']) ?>" role="link"><?= htmlspecialchars($t['title']) ?></a>
+            <td><a href="post.php?id=<?= $linkId ?>" 
+                   aria-label="View topic <?= htmlspecialchars($t['title']) ?>" 
+                   role="link" 
+                   class="topic-link" 
+                   data-topic-id="<?= $t['id'] ?>">
+                   <?= htmlspecialchars($t['title']) ?>
+                </a>
                 <?php if (isset($_SESSION['userId'])): ?>
                 <form method="post" action="report.php" style="display:inline">
     <?= csrf_token_input(); ?>
@@ -151,4 +167,55 @@ $pageCSS = "../static/css/forum.css";
     </form>
     <?php endif; ?>
 </div>
+
+<!-- Topic Preview JavaScript -->
+<div id="topic-preview" class="topic-preview-popup" style="display: none;"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const preview = document.getElementById('topic-preview');
+    const topicLinks = document.querySelectorAll('.topic-link');
+    let previewTimeout;
+    
+    topicLinks.forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            const topicId = this.dataset.topicId;
+            clearTimeout(previewTimeout);
+            
+            previewTimeout = setTimeout(() => {
+                fetch(`topic.php?preview=1&topic_id=${topicId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data) {
+                            preview.innerHTML = `
+                                <div class="preview-header">
+                                    <strong>By: ${data.username}</strong>
+                                </div>
+                                <div class="preview-body">
+                                    ${data.body}
+                                </div>
+                            `;
+                            
+                            const rect = link.getBoundingClientRect();
+                            preview.style.left = (rect.right + 10) + 'px';
+                            preview.style.top = rect.top + 'px';
+                            preview.style.display = 'block';
+                        }
+                    })
+                    .catch(error => console.error('Preview error:', error));
+            }, 500); // 500ms delay
+        });
+        
+        link.addEventListener('mouseleave', function() {
+            clearTimeout(previewTimeout);
+            preview.style.display = 'none';
+        });
+    });
+    
+    // Hide preview when moving mouse over it
+    preview.addEventListener('mouseenter', function() {
+        this.style.display = 'none';
+    });
+});
+</script>
+
 <?php require("../footer.php"); ?>
