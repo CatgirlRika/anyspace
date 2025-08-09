@@ -132,7 +132,25 @@ function printPerson($userId) {
 }
 
 
+// Helper functions for group system compatibility
+function getID($username, $conn) {
+    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        return $result['id'];
+    }
+    return null;
+}
 
-
+function getPFP($username, $conn) {
+    $stmt = $conn->prepare("SELECT pfp FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        return $result['pfp'];
+    }
+    return 'default.jpg';
+}
 
 ?>
