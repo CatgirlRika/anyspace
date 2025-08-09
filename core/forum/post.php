@@ -11,9 +11,26 @@ require_once(__DIR__ . '/../../lib/upload.php');
 function forum_add_post(int $topic_id, int $user_id, string $body)
 {
     global $conn;
+    
+    // Input validation
+    if ($topic_id <= 0 || $user_id <= 0) {
+        return ['error' => 'Invalid topic or user ID'];
+    }
+    
+    if (empty(trim($body))) {
+        return ['error' => 'Post body cannot be empty'];
+    }
+    
+    // Check if topic exists and is not locked
     $stmt = $conn->prepare('SELECT locked FROM forum_topics WHERE id = :id');
     $stmt->execute([':id' => $topic_id]);
-    $locked = (int)$stmt->fetchColumn();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$result) {
+        return ['error' => 'Topic not found'];
+    }
+    
+    $locked = (int)$result['locked'];
     if ($locked === 1) {
         return ['error' => 'Topic is locked'];
     }
@@ -28,8 +45,24 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
     $insert->execute([':tid' => $topic_id, ':uid' => $user_id, ':body' => $sanitizedBody]);
     $postId = (int)$conn->lastInsertId();
 
+    // Send notifications to relevant users
+    forum_send_post_notifications($topic_id, $user_id, $postId, $sanitizedBody);
+
+    return ['success' => true, 'id' => $postId];
+}
+
+/**
+ * Send notifications for a new forum post
+ * @param int $topic_id Topic ID
+ * @param int $user_id User who created the post
+ * @param int $postId Post ID
+ * @param string $body Post content for @ mention parsing
+ */
+function forum_send_post_notifications($topic_id, $user_id, $postId, $body) {
+    global $conn;
     $notified = [];
 
+    // Notify topic owner
     $ownerStmt = $conn->prepare('SELECT user_id FROM forum_posts WHERE topic_id = :tid ORDER BY id ASC LIMIT 1');
     $ownerStmt->execute([':tid' => $topic_id]);
     $topicOwner = (int)$ownerStmt->fetchColumn();
@@ -38,7 +71,8 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
         $notified[] = $topicOwner;
     }
 
-    if (preg_match_all('/@([A-Za-z0-9_]+)/', $sanitizedBody, $matches)) {
+    // Notify mentioned users
+    if (preg_match_all('/@([A-Za-z0-9_]+)/', $body, $matches)) {
         $usernames = array_unique($matches[1]);
         if ($usernames) {
             $placeholders = implode(',', array_fill(0, count($usernames), '?'));
@@ -55,6 +89,7 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
         }
     }
 
+    // Notify subscribers
     $subStmt = $conn->prepare('SELECT user_id FROM topic_subscriptions WHERE topic_id = :tid');
     $subStmt->execute([':tid' => $topic_id]);
     $subs = $subStmt->fetchAll(PDO::FETCH_COLUMN);
@@ -65,8 +100,6 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
             $notified[] = $uid;
         }
     }
-
-    return ['success' => true, 'id' => $postId];
 }
 
 function forum_get_posts(int $topic_id, bool $include_deleted = false): array

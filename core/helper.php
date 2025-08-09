@@ -1,4 +1,13 @@
 <?php 
+/**
+ * Helper functions for AnySpace application
+ * Provides authentication, CSRF protection, and input validation
+ */
+
+/**
+ * Check if user is logged in and redirect to login if not
+ * Also checks if user is banned and logs them out if so
+ */
 function login_check() {
     if (!isset($_SESSION['user'])) {
         header("Location: /login.php");
@@ -14,6 +23,9 @@ function login_check() {
     }
 }
 
+/**
+ * Restrict access to admin users only
+ */
 function admin_only() {
     if (!isset($_SESSION['userId']) || (defined('ADMIN_USER') && $_SESSION['userId'] != ADMIN_USER)) {
         header("Location: /admin/login.php?msg=" . urlencode('Admin access required'));
@@ -21,9 +33,35 @@ function admin_only() {
     }
 }
 
+/**
+ * Centralized error logging and display function
+ * @param string $message Error message
+ * @param string $level Error level (info, warning, error)
+ * @param bool $display Whether to display the error to user
+ */
+function handle_error($message, $level = 'error', $display = false) {
+    error_log("[$level] $message");
+    
+    if ($display && defined('DEBUG') && DEBUG) {
+        echo "<div class='error $level'>" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "</div>";
+    }
+}
+
+/**
+ * Generate CSRF token for form protection
+ * Compatible with PHP 5.3+ with fallbacks for older random functions
+ * @return string CSRF token
+ */
 function csrf_token() {
     if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        if (function_exists('random_bytes')) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        } elseif (function_exists('openssl_random_pseudo_bytes')) {
+            $_SESSION['csrf_token'] = bin2hex(openssl_random_pseudo_bytes(32));
+        } else {
+            // Fallback for older PHP versions
+            $_SESSION['csrf_token'] = bin2hex(uniqid(mt_rand(), true));
+        }
     }
     return $_SESSION['csrf_token'];
 }
@@ -33,8 +71,13 @@ function csrf_token_input() {
 }
 
 function csrf_verify() {
-    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    if (!isset($_SERVER['REQUEST_METHOD'])) {
+        return; // Skip verification if request method is not available
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             die('Invalid CSRF token');
         }
         unset($_SESSION['csrf_token']);
@@ -42,10 +85,19 @@ function csrf_verify() {
 }
 csrf_verify();
 
+/**
+ * Validate and sanitize HTML content for user posts
+ * Removes dangerous scripts and tags while preserving safe formatting
+ * @param string $validate HTML content to validate
+ * @return string Sanitized HTML content
+ */
 function validateContentHTML($validate) {
+    if (empty($validate)) {
+        return '';
+    }
+    
     // Whitelisted tags
     $allowedTags = '<a><b><big><blockquote><blink><br><center><code><del><details><div><em><font><h1><h2><h3><h4><h5><h6><hr><i><iframe><img><li><mark><marquee><ol><p><pre><small><span><strong><style><sub><summary><sup><table><td><th><time><tr><u><ul>';
-
 
     // Remove script tags
     $validated = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $validate);
@@ -56,8 +108,8 @@ function validateContentHTML($validate) {
     // Remove any remaining PHP short tags
     $validated = preg_replace('/<\?(?!php)(.*?)\?>/is', '', $validated);
     
-    // Remove behavior: url()
-    $validated = str_replace("behavior: url", "", $validated);
+    // Remove behavior: url() and similar dangerous CSS
+    $validated = str_replace(array("behavior: url", "javascript:", "vbscript:", "data:"), "", $validated);
     
     // Remove any remaining HTML tags except the allowed ones
     $validated = strip_tags($validated, $allowedTags);
@@ -65,7 +117,17 @@ function validateContentHTML($validate) {
     return $validated;
 }
 
+/**
+ * Validate and sanitize HTML for user profile layouts
+ * More restrictive than content validation to prevent layout abuse
+ * @param string $html HTML content to validate
+ * @return string Sanitized HTML content
+ */
 function validateLayoutHTML($html) {
+    if (empty($html)) {
+        return '';
+    }
+    
     $allowedTags = [
         'style', 'img', 'div', 'iframe', 'a', 'h1', 'h2', 'h3', 'p', 'ul',
         'ol', 'li', 'blockquote', 'code', 'em', 'strong', 'br'
@@ -74,7 +136,15 @@ function validateLayoutHTML($html) {
 
     libxml_use_internal_errors(true);
     $dom = new DOMDocument();
-    $dom->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    
+    // Suppress warnings and handle encoding properly
+    $loadResult = @$dom->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    
+    if (!$loadResult) {
+        error_log('Failed to parse HTML in validateLayoutHTML');
+        return strip_tags($html); // Fallback to simple strip_tags
+    }
+    
     $xpath = new DOMXPath($dom);
 
     // Remove disallowed tags and attributes
