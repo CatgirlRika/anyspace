@@ -19,12 +19,102 @@ body {
     color: #fff;
 }
 
+/* Forum category sections */
+.forum-category-section {
+    margin-bottom: 2em;
+}
+
+.forum-category-section h2 {
+    background: linear-gradient(to right, var(--logo-blue), var(--light-orange));
+    color: white;
+    padding: 10px;
+    margin: 0 0 10px 0;
+    border-radius: 5px;
+}
+
+.forum-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.forum-item {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    padding: 15px;
+    transition: background-color 0.2s;
+}
+
+.forum-item:hover {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.forum-item h3 {
+    margin: 0 0 5px 0;
+    color: var(--logo-blue);
+}
+
+.forum-item h3 a {
+    color: var(--logo-blue);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.forum-item h3 a:hover {
+    text-decoration: underline;
+}
+
+.forum-description {
+    margin: 5px 0;
+    color: #666;
+    font-size: 11pt;
+}
+
+.forum-stats {
+    margin-top: 10px;
+    font-size: 10pt;
+    color: #888;
+}
+
+/* Search form */
+.forum-search {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.forum-search input[type="text"] {
+    padding: 8px;
+    border: 1px solid var(--dark-gray);
+    border-radius: 3px;
+    font-size: 11pt;
+    flex: 1;
+    max-width: 300px;
+}
+
+.forum-search button {
+    padding: 8px 15px;
+    background: linear-gradient(to bottom, var(--logo-blue), var(--darker-blue));
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11pt;
+}
+
+.forum-search button:hover {
+    opacity: 0.9;
+}
+
 /* Generic forum tables */
 .forum-table,
 .post-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1em;
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .forum-table th,
@@ -33,6 +123,14 @@ body {
 .post-table td {
     padding: 8px;
     border: 1px solid var(--dark-gray);
+    text-align: left;
+}
+
+.forum-table th,
+.post-table th {
+    background: linear-gradient(to bottom, var(--logo-blue), var(--darker-blue));
+    color: white;
+    font-weight: bold;
 }
 
 .forum-table tr:nth-child(even),
