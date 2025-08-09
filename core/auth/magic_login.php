@@ -4,8 +4,35 @@
  * Provides passwordless login via email links
  */
 
-require_once __DIR__ . '/../conn.php';
-require_once __DIR__ . '/../email_config.php';
+// Only require dependencies if $conn is not already defined (for testing)
+if (!isset($conn)) {
+    require_once __DIR__ . '/../conn.php';
+    require_once __DIR__ . '/../email_config.php';
+}
+
+/**
+ * Get database-appropriate datetime functions
+ * @return array with 'now' and 'interval' functions
+ */
+function getDatabaseDateTimeFunctions() {
+    global $conn;
+    $driver = $conn->getAttribute(PDO::ATTR_DRIVER_NAME);
+    
+    if ($driver === 'sqlite') {
+        return [
+            'now' => "datetime('now')",
+            'interval' => function($minutes) { return "datetime('now', '-{$minutes} minutes')"; },
+            'future' => function($minutes) { return "datetime('now', '+{$minutes} minutes')"; }
+        ];
+    } else {
+        // MySQL
+        return [
+            'now' => 'NOW()',
+            'interval' => function($minutes) { return "DATE_SUB(NOW(), INTERVAL {$minutes} MINUTE)"; },
+            'future' => function($minutes) { return "DATE_ADD(NOW(), INTERVAL {$minutes} MINUTE)"; }
+        ];
+    }
+}
 
 /**
  * Generate a secure random token for magic login
@@ -46,7 +73,9 @@ function createMagicLoginToken($email) {
     }
     
     // Rate limiting: Check for recent tokens (prevent spam)
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM login_tokens WHERE user_id = ? AND created_at > DATE_SUB(NOW(), INTERVAL 5 MINUTE)");
+    $dtFuncs = getDatabaseDateTimeFunctions();
+    $intervalFunc = $dtFuncs['interval'];
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM login_tokens WHERE user_id = ? AND created_at > " . $intervalFunc(5));
     $stmt->execute([$user['id']]);
     $recentTokens = $stmt->fetchColumn();
     
@@ -93,11 +122,13 @@ function validateMagicLoginToken($token) {
     }
     
     // Find the token and associated user
+    $dtFuncs = getDatabaseDateTimeFunctions();
+    $nowFunc = $dtFuncs['now'];
     $stmt = $conn->prepare("
         SELECT lt.*, u.id as user_id, u.username, u.rank 
         FROM login_tokens lt 
         JOIN users u ON lt.user_id = u.id 
-        WHERE lt.token = ? AND lt.used_at IS NULL AND lt.expires_at > NOW()
+        WHERE lt.token = ? AND lt.used_at IS NULL AND lt.expires_at > {$nowFunc}
     ");
     $stmt->execute([$token]);
     $tokenData = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -107,7 +138,7 @@ function validateMagicLoginToken($token) {
     }
     
     // Mark token as used
-    $stmt = $conn->prepare("UPDATE login_tokens SET used_at = NOW() WHERE token = ?");
+    $stmt = $conn->prepare("UPDATE login_tokens SET used_at = {$nowFunc} WHERE token = ?");
     $stmt->execute([$token]);
     
     return [
@@ -171,7 +202,9 @@ function sendMagicLoginEmail($email, $username, $token) {
 function cleanupExpiredTokens() {
     global $conn;
     
-    $stmt = $conn->prepare("DELETE FROM login_tokens WHERE expires_at < NOW() OR used_at IS NOT NULL");
+    $dtFuncs = getDatabaseDateTimeFunctions();
+    $nowFunc = $dtFuncs['now'];
+    $stmt = $conn->prepare("DELETE FROM login_tokens WHERE expires_at < {$nowFunc} OR used_at IS NOT NULL");
     $stmt->execute();
     
     return $stmt->rowCount();

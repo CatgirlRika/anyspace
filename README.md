@@ -44,7 +44,7 @@ system.
 - [x] Authentication
   - [x] Login/Logout
   - [x] Registration
-  - [ ] Password Reset
+  - [x] Magic Login (passwordless login via email)
   - [ ] Email Verification
 - [x] Blog
 - [x] Bulletins
