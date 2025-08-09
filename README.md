@@ -3,12 +3,24 @@ AnySpace is an Open Source Social Network platform similar to MySpace circa 2005
 
 Designed to be lightweight, user-friendly, and customizable, allowing users to express themselves just like in the old days but with the peace of mind that modern security practices bring.
 
+## Features
+
 - **Profiles:** Customizable user profiles with options for background images, music, and integrated layout support.
 - **Blogging:** A blogging platform for users to share thoughts, stories, and updates.
 - **Messaging:** Private and secure messaging between users.
 - **Friends:** Connect with others, manage friendship requests, and explore user profiles.
 - **Groups:** Create and join interest-based groups for discussions and events.
 - **Customization:** Extensive customization options for user profiles and blogs.
+
+### 🔒 Enterprise-Grade Security
+- **Multi-Layer Authentication** - Enhanced password security with complexity validation
+- **Magic Login System** - Passwordless login via secure email links
+- **Advanced Input Sanitization** - Comprehensive XSS protection using DOMDocument
+- **CSRF Protection** - Built-in token-based CSRF protection for all forms
+- **Rate Limiting** - Intelligent rate limiting per endpoint and IP address
+- **Security Audit Logging** - Real-time security monitoring and event logging
+- **Session Security** - Secure session management with database persistence
+- **Security Headers** - Full complement of security headers (CSP, HSTS, etc.)
 
 ## Prerequisites
 - PHP >= 5.3
@@ -19,6 +31,14 @@ Designed to be lightweight, user-friendly, and customizable, allowing users to e
 
 1. Clone repo and transfer files to webserver. Webserver should serve files in `public` directory. (Example Apache and Nginx configurations are provided in the repo)
 2. Navigate to you webserver to create config.php and setup the database. The `core` directory will need to be writable by the webserver user.
+3. **Run the security migration** to set up enhanced security features:
+   ```bash
+   php core/security_migration.php
+   ```
+4. **Test security features** (optional but recommended):
+   ```bash
+   php scripts/security-test.php http://your-domain.com
+   ```
 
 `pfp` and `music` folders need r/w/x permissions for the webserver user. 
 
@@ -31,6 +51,28 @@ post_max_size = 15M
 max_execution_time = 60
 max_input_time = 120
 memory_limit = 128M
+```
+
+## Security
+
+AnySpace now includes comprehensive security features designed to protect against common web vulnerabilities:
+
+- **Password Complexity**: Enforces strong passwords with multiple character types
+- **Rate Limiting**: Prevents brute force attacks on login and registration
+- **Input Sanitization**: Advanced HTML sanitization prevents XSS attacks  
+- **CSRF Protection**: All forms protected against cross-site request forgery
+- **Security Headers**: Comprehensive security headers (CSP, HSTS, X-Frame-Options, etc.)
+- **Audit Logging**: Real-time security event monitoring and logging
+- **Magic Login**: Secure passwordless authentication via email links
+
+For detailed security information, see [SECURITY.md](docs/SECURITY.md).
+
+## Testing
+
+Run the security test suite to verify all security features are working:
+
+```bash
+php scripts/security-test.php http://your-domain.com
 ```
 
 ### Admin Panel

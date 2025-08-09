@@ -1,5 +1,6 @@
 <?php
-header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline';");
+// Enhanced security headers are set in helper.php via security.php
+require_once("../core/helper.php");
 ?>
 <!DOCTYPE html>
 <html>
