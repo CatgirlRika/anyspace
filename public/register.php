@@ -1,94 +1,51 @@
 <?php
 require("../core/conn.php"); // Ensure this returns a PDO connection ($conn)
 require_once("../core/settings.php");
-require_once("../core/security.php");
 require_once("../core/site/friend.php");
 require("../lib/password.php");
-
-// Initialize security components
-$securityLogger = new SecurityAuditLogger($conn);
-$rateLimiter = new RateLimiter($conn);
 
 $message = ''; // Variable to hold messages for the user
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($_POST['password']) && !empty($_POST['username']) && !empty($_POST['confirm'])) {
-        // Get client IP for rate limiting
-        $clientIP = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
-        
-        // Check rate limiting for registration
-        $rateCheck = $rateLimiter->checkRateLimit($clientIP, 'register');
-        if (!$rateCheck['allowed']) {
-            $message = "<small>Too many registration attempts. Please try again later.</small>";
+        if ($_POST['password'] !== $_POST['confirm'] || strlen($_POST['username']) > 21) {
+            $message = "<small>Passwords do not match up or username is too long.</small>";
         } else {
-            // Validate password complexity
-            $passwordValidation = validatePasswordComplexity($_POST['password']);
-            if (!$passwordValidation['isValid']) {
-                $message = "<small>Password requirements not met:<br>" . implode("<br>", $passwordValidation['errors']) . "</small>";
-            } elseif ($_POST['password'] !== $_POST['confirm'] || strlen($_POST['username']) > 21) {
-                $message = "<small>Passwords do not match up or username is too long.</small>";
+            // Check for existing email only
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->execute(array($_POST['email']));
+            if ($stmt->fetch()) {
+                $message .= "<small>There's already a user with that same email!</small><br>";
+                $emailcheck = false;
             } else {
-                // Sanitize input
+                $emailcheck = true;
+            }
+
+            if ($emailcheck) {
+                $interests = array(
+                    "General" => "",
+                    "Music" => "",
+                    "Movies" => "",
+                    "Television" => "",
+                    "Books" => "",
+                    "Heroes" => ""
+                );
+                $jsonInterests = json_encode($interests);
+
+                $stmt = $conn->prepare("INSERT INTO users (username, email, password, date, interests) VALUES (?, ?, ?, NOW(), ?)");
                 $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-                $username = InputSanitizer::sanitizeHTML($_POST['username'], array(), array());
-                
-                // Validate email format
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $message = "<small>Invalid email format.</small>";
-                } else {
-                    // Check for existing email only
-                    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-                    $stmt->execute(array($email));
-                    if ($stmt->fetch()) {
-                        $message .= "<small>There's already a user with that same email!</small><br>";
-                        $emailcheck = false;
-                    } else {
-                        $emailcheck = true;
-                    }
+                $username = htmlspecialchars($_POST['username']);
+                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                $stmt->execute(array($username, $email, $password, $jsonInterests));
 
-                    if ($emailcheck) {
-                        $interests = array(
-                            "General" => "",
-                            "Music" => "",
-                            "Movies" => "",
-                            "Television" => "",
-                            "Books" => "",
-                            "Heroes" => ""
-                        );
-                        $jsonInterests = json_encode($interests);
+                $newUserId = $conn->lastInsertId();
 
-                        $stmt = $conn->prepare("INSERT INTO users (username, email, password, date, interests, password_changed_at) VALUES (?, ?, ?, NOW(), ?, NOW())");
-                        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                        $stmt->execute(array($username, $email, $password, $jsonInterests));
-
-                        $newUserId = $conn->lastInsertId();
-
-                        // Log successful registration
-                        $securityLogger->logEvent(
-                            SecurityAuditLogger::AUTH_SUCCESS,
-                            SecurityAuditLogger::RISK_LOW,
-                            $newUserId,
-                            array('action' => 'register', 'email' => $email, 'username' => $username)
-                        );
-
-                        autoAddFriend($newUserId);
-                        $_SESSION['user'] = $username;
-                        $_SESSION['userId'] = $newUserId;
-                        header("Location: manage.php");
-                        exit;
-                    } else {
-                        // Record failed registration attempt
-                        $rateLimiter->recordAttempt($clientIP, 'register', false);
-                        
-                        $securityLogger->logEvent(
-                            SecurityAuditLogger::AUTH_FAILURE,
-                            SecurityAuditLogger::RISK_LOW,
-                            null,
-                            array('action' => 'register', 'email' => $email, 'reason' => 'Email already exists')
-                        );
-                    }
-                }
+                autoAddFriend($newUserId);
+                $_SESSION['user'] = $username;
+                $_SESSION['userId'] = $newUserId;
+                header("Location: manage.php");
+                exit;
             }
         }
     } else {
