@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . "/../../core/conn.php";
+require_once __DIR__ . "/../../core/config.php"; // Load config before settings
 require_once __DIR__ . "/../../core/settings.php";
 require_once __DIR__ . "/../../core/forum/category.php";
 require_once __DIR__ . "/../../core/forum/forum.php";
