@@ -70,7 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
                             </tbody>
                         </table>
                     </form>
-                    <a class="forgot" href="/reset">Forgot your password?</a>
+                    <div class="auth-options">
+                        <a class="forgot" href="/reset">✨ Magic Login (no password needed)</a>
+                        <br>
+                        <small>Or use the form above if you remember your password</small>
+                    </div>
                 </div>
             </div>
         </main>
