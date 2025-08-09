@@ -1,10 +1,7 @@
 <?php
 require("../../core/conn.php");
 require_once("../../core/settings.php");
- 97xjcb-codex/create-messages-table-and-related-features
 require_once("../../core/helper.php");
-=======
- main
 require("../../core/messages/pm.php");
 
 login_check();

@@ -5,11 +5,6 @@ require("../../core/config.php");
 require_once("../../core/forum/category.php");
 require_once("../../core/forum/forum.php");
 admin_only();
-=======
- su0k9s-codex/explain-codebase-structure-and-key-concepts
-require_once("../../core/forum/category.php");
-require_once("../../core/forum/forum.php");
-admin_only();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add forum
