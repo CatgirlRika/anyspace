@@ -485,3 +485,36 @@ CREATE TABLE IF NOT EXISTS `login_tokens` (
   KEY `expires_at` (`expires_at`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `group_events`
+--
+CREATE TABLE IF NOT EXISTS `group_events` (
+  `id` int(11) NOT NULL auto_increment,
+  `group_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `event_date` datetime NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`group_id`),
+  FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+--
+-- Table structure for table `group_memberships`
+--
+CREATE TABLE IF NOT EXISTS `group_memberships` (
+  `id` int(11) NOT NULL auto_increment,
+  `group_id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `joined_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `role` varchar(50) NOT NULL DEFAULT 'member',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `group_user_unique` (`group_id`, `username`),
+  KEY `group_id` (`group_id`),
+  FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -1,33 +1,37 @@
 <?php
     require("../../core/conn.php");
-    require_once("../core/settings.php");
+    require_once("../../core/settings.php");
+    require_once("../../core/site/user.php");
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="css/header.css">
-        <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="../static/css/header.css">
+        <link rel="stylesheet" href="../static/css/base.css">
     </head>
     <body>
         <?php
-            require("../core/components/navbar.php");
+            require("../../core/components/navbar.php");
         ?>
         <div class="container">
             <?php
                 if(@$_POST) {
-                    $stmt = $conn->prepare("INSERT INTO `groups` (name, description, author, date) VALUES (?, ?, ?, now())");
-                    $stmt->bind_param("sss", $name, $text, $_SESSION['user']);
                     $text = str_replace(PHP_EOL, "<br>", $_POST['desc']);
                     $name = htmlspecialchars($_POST['groupname']);
-                    $stmt->execute();
-                    $stmt->close();            
-
+                    
+                    $stmt = $conn->prepare("INSERT INTO `groups` (name, description, author, date) VALUES (?, ?, ?, datetime('now'))");
+                    $stmt->execute([$name, $text, $_SESSION['user']]);
+                    $group_id = $conn->lastInsertId();
+                    
+                    // Add creator as first member
+                    $stmt = $conn->prepare("INSERT INTO `group_memberships` (group_id, username, role) VALUES (?, ?, 'owner')");
+                    $stmt->execute([$group_id, $_SESSION['user']]);
+                    
                     $stmt = $conn->prepare("UPDATE users SET currentgroup = ? WHERE username = ?");
-                    $stmt->bind_param("ss", $groupname, $_SESSION['user']);
-                    $groupname = htmlspecialchars($_POST['groupname']);
-                    $stmt->execute();
-                    $stmt->close();  
-                    header("Location: groups.php");              
+                    $stmt->execute([$name, $_SESSION['user']]);
+                    
+                    header("Location: viewgroup.php?id=" . $group_id);
+                    exit;             
                 }
             ?>
             <form method="post" enctype="multipart/form-data">
