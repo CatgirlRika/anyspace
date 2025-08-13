@@ -9,6 +9,16 @@ This guide explains how to set up AnySpace for development. It uses short steps 
 - A web server (Apache or Nginx)
 - Git
 
+## Zero-Setup Docker
+
+If you have Docker installed, you can start everything with one command:
+
+```bash
+docker compose up
+```
+
+This runs a PHP web server and MySQL using the defaults from `.env`.
+
 ## Shared Hosting Quick Install
 
 These steps show how to set up AnySpace on a typical shared host with tools like cPanel, DirectAdmin, or ISPConfig.

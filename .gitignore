@@ -41,3 +41,6 @@ public/uploads/*
 # Cache directory
 cache/*
 *.db
+
+# Local environment
+.env
