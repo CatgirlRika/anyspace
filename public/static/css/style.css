@@ -17,8 +17,16 @@
     --light-green: #E6F8DD;
     --medium-green: #A0C99C;
     --dark-green: #059669;
-    accent-color: #1D4ED8;
-    accent-color: var(--logo-blue);
+    --background-color: #e5e5e5;
+    --text-color: #000000;
+    --accent-color: var(--logo-blue);
+    accent-color: var(--accent-color);
+}
+
+body.dark-mode {
+    --background-color: #1a1a1a;
+    --text-color: #f5f5f5;
+    --accent-color: #93c5fd;
 }
 
 * {
@@ -36,7 +44,8 @@ html, body {
 
 body {
     font-family: verdana, arial, sans-serif, helvetica;
-    background-color: #e5e5e5;
+    background-color: var(--background-color);
+    color: var(--text-color);
     /*font-size: 10pt;*/
     margin: 0;
 }
@@ -47,8 +56,7 @@ details summary {
 }
 
 a {
-    color: #1E40AF;
-    color: var(--darker-blue);
+    color: var(--accent-color);
     text-decoration: none;
 }
 
@@ -103,7 +111,7 @@ nav {
 }
 
 nav .top {
-    background: var(--logo-blue);
+    background: var(--accent-color);
     padding: 15px 10px 14px 10px;
     display: flex;
     align-items: flex-start;
@@ -854,7 +862,7 @@ table.details-table {
     background: #BFDBFE;
     background: var(--even-lighter-blue);
     color: #1D4ED8;
-    color: var(--logo-blue);
+    color: var(--accent-color);
     font-weight: bold;
     width: 33%;
 }
@@ -1923,7 +1931,7 @@ div.wysiwyg {
 
 .sticker-banner {
     background: #1D4ED8;
-    background: var(--logo-blue);
+    background: var(--accent-color);
     padding: 2px 0 0 5px;
     cursor: pointer;
     margin: 0 0 10px 0;
@@ -2066,7 +2074,7 @@ div.wysiwyg {
     width: 300px;
     max-width: 100%;
     background: #1D4ED8;
-    background: var(--logo-blue);
+    background: var(--accent-color);
     color: white;
     font-weight: bold;
     font-size: 2em;
@@ -2478,7 +2486,7 @@ blink {
 
 #captcha .heading {
     background: #1D4ED8;
-    background: var(--logo-blue);
+    background: var(--accent-color);
     padding: 2px 7px;
     color: white;
     width: 100%;
