@@ -57,8 +57,26 @@ function fetchPFP($id) {
     $stmt->execute(array(':id' => $id));
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if (count($result) === 0) return 'error';
-    $pfp = $result[0]['pfp']; 
+    $pfp = $result[0]['pfp'];
     return $pfp;
+}
+
+function fetchColorScheme($id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT color_scheme FROM users WHERE id = :id");
+    $stmt->execute(array(':id' => $id));
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (count($result) === 0) return 'light';
+    return $result[0]['color_scheme'];
+}
+
+function fetchFontSize($id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT font_size FROM users WHERE id = :id");
+    $stmt->execute(array(':id' => $id));
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (count($result) === 0) return 'normal';
+    return $result[0]['font_size'];
 }
 
 function fetchUserStatus($id) {

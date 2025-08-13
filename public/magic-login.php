@@ -21,6 +21,13 @@ if (empty($token)) {
         $_SESSION['user'] = $user['username'];
         $_SESSION['userId'] = $user['id'];
         $_SESSION['rank'] = $user['rank'];
+        $pref = $conn->prepare("SELECT color_scheme, font_size FROM users WHERE id = ?");
+        $pref->execute([$user['id']]);
+        $p = $pref->fetch(PDO::FETCH_ASSOC);
+        if ($p) {
+            $_SESSION['color_scheme'] = $p['color_scheme'];
+            $_SESSION['font_size'] = $p['font_size'];
+        }
         
         $message = $result['message'];
         $messageClass = 'success';

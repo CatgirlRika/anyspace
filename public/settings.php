@@ -10,28 +10,40 @@ login_check();
 
 $userId = $_SESSION['userId'];
 
-if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_POST['password-confirm'])) {
-    $oldPassword = $_POST['password-old'];
-    $newPassword = $_POST['password-new'];
-    $confirmPassword = $_POST['password-confirm'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_POST['password-confirm'])) {
+        $oldPassword = $_POST['password-old'];
+        $newPassword = $_POST['password-new'];
+        $confirmPassword = $_POST['password-confirm'];
 
-    $currentUserPassword = fetchUserPassword($userId); 
-    $currentUserPassword = $currentUserPassword['password']; 
+        $currentUserPassword = fetchUserPassword($userId);
+        $currentUserPassword = $currentUserPassword['password'];
 
-    if (password_verify($oldPassword, $currentUserPassword)) {
-        if ($newPassword === $confirmPassword) {
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        if (password_verify($oldPassword, $currentUserPassword)) {
+            if ($newPassword === $confirmPassword) {
+                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-            changePassword($userId, $hashedPassword); 
+                changePassword($userId, $hashedPassword);
 
-            echo "Password updated successfully.";
+                echo "Password updated successfully.";
+            } else {
+                echo "New passwords do not match.";
+            }
         } else {
-            echo "New passwords do not match.";
+            echo "Old password is incorrect.";
         }
-    } else {
-        echo "Old password is incorrect.";
     }
+
+    $colorScheme = isset($_POST['color_scheme']) ? $_POST['color_scheme'] : 'light';
+    $fontSize = isset($_POST['font_size']) ? $_POST['font_size'] : 'normal';
+    $stmt = $conn->prepare("UPDATE users SET color_scheme = ?, font_size = ? WHERE id = ?");
+    $stmt->execute(array($colorScheme, $fontSize, $userId));
+    $_SESSION['color_scheme'] = $colorScheme;
+    $_SESSION['font_size'] = $fontSize;
 }
+
+$currentScheme = fetchColorScheme($userId);
+$currentFont = fetchFontSize($userId);
 
 ?>
 <?php require("header.php"); ?>
@@ -123,9 +135,17 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
         <h4>Display Options</h4>
       </div>
       <div class="inner">
-        <label><input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode"> Dark mode</label>
+        <label for="color_scheme">Color Scheme:</label>
+        <select id="color_scheme" name="color_scheme">
+          <option value="light" <?= $currentScheme === 'light' ? 'selected' : '' ?>>Light</option>
+          <option value="dark" <?= $currentScheme === 'dark' ? 'selected' : '' ?>>Dark</option>
+        </select>
         <br>
-        <label><input type="checkbox" id="largeTextToggle" aria-label="Enable larger text"> Larger text</label>
+        <label for="font_size">Font Size:</label>
+        <select id="font_size" name="font_size">
+          <option value="normal" <?= $currentFont === 'normal' ? 'selected' : '' ?>>Normal</option>
+          <option value="large" <?= $currentFont === 'large' ? 'selected' : '' ?>>Large</option>
+        </select>
       </div>
     </div>
 
@@ -156,29 +176,6 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
           -->
     <button type="submit" name="submit">Save All</button>
   </form>
-  <script>
-    const darkToggle=document.getElementById('darkModeToggle');
-    const textToggle=document.getElementById('largeTextToggle');
-    const body=document.body;
-    const darkStored=localStorage.getItem('darkMode')==='true';
-    const textStored=localStorage.getItem('largeText')==='true';
-    if(darkStored){
-      body.classList.add('dark-mode');
-      darkToggle.checked=true;
-    }
-    if(textStored){
-      body.classList.add('large-text');
-      textToggle.checked=true;
-    }
-    darkToggle.addEventListener('change',()=>{
-      body.classList.toggle('dark-mode',darkToggle.checked);
-      localStorage.setItem('darkMode',darkToggle.checked);
-    });
-    textToggle.addEventListener('change',()=>{
-      body.classList.toggle('large-text',textToggle.checked);
-      localStorage.setItem('largeText',textToggle.checked);
-    });
-  </script>
   <br>
   <h4 style="margin-bottom: 5px;">More Options</h4>
   <!--

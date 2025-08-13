@@ -245,6 +245,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `views` int(11) NOT NULL default '0',
   `lastactive` datetime NOT NULL,
   `lastlogon` datetime NOT NULL,
+  `color_scheme` varchar(20) NOT NULL default 'light',
+  `font_size` varchar(20) NOT NULL default 'normal',
   `banned_until` datetime DEFAULT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

@@ -3,10 +3,34 @@ require_once __DIR__ . "/../forum/permissions.php";
 if (isset($_SESSION['userId'])) {
     require_once __DIR__ . "/../messages/pm.php";
     $unreadMessages = pm_unread_count($_SESSION['userId']);
+    if (!isset($_SESSION['color_scheme']) || !isset($_SESSION['font_size'])) {
+        global $conn;
+        if (isset($conn)) {
+            try {
+                $stmt = $conn->prepare("SELECT color_scheme, font_size FROM users WHERE id = ?");
+                $stmt->execute(array($_SESSION['userId']));
+                $prefs = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($prefs) {
+                    $_SESSION['color_scheme'] = $prefs['color_scheme'];
+                    $_SESSION['font_size'] = $prefs['font_size'];
+                }
+            } catch (PDOException $e) {
+                // Table doesn't have preference columns; ignore
+            }
+        }
+    }
 } else {
     $unreadMessages = 0;
 }
 ?>
+<script>
+(function(){
+    var colorScheme = <?= json_encode($_SESSION['color_scheme'] ?? 'light'); ?>;
+    var fontSize = <?= json_encode($_SESSION['font_size'] ?? 'normal'); ?>;
+    if (colorScheme === 'dark') document.body.classList.add('dark-mode');
+    if (fontSize === 'large') document.body.classList.add('large-text');
+})();
+</script>
 <!-- BEGIN HEADER -->
 <header class="main-header">
   <nav class="">

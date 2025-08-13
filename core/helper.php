@@ -204,6 +204,17 @@ function validateLayoutHTML($html) {
     return $safe;
 }
 
+function get_theme_classes() {
+    $classes = array();
+    if (isset($_SESSION['color_scheme']) && $_SESSION['color_scheme'] === 'dark') {
+        $classes[] = 'dark-mode';
+    }
+    if (isset($_SESSION['font_size']) && $_SESSION['font_size'] === 'large') {
+        $classes[] = 'large-text';
+    }
+    return implode(' ', $classes);
+}
+
 // thanks dzhaugasharov https://gist.github.com/afsalrahim/bc8caf497a4b54c5d75d
 function replaceBBcodes($text) {
     $text = htmlspecialchars($text);
