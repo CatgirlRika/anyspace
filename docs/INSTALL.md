@@ -14,8 +14,6 @@ This guide explains how to set up AnySpace for development. It uses short steps 
 These steps show how to set up AnySpace on a typical shared host with tools like cPanel, DirectAdmin, or ISPConfig.
 
 1. **Download the ZIP**
-   - Visit the [latest release](https://github.com/animusdev/anyspace/releases) and click **Source code (zip)**.
-   - ![Download ZIP button on GitHub](https://docs.github.com/assets/images/help/repository/zip-file-download.png)
 2. **Upload and extract**
    - In your hosting panel, open the file manager and upload the ZIP. Then extract it, or use SFTP to upload the files.
    - Help guides:
