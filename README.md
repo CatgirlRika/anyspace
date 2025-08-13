@@ -62,6 +62,7 @@ system.
   - [x] Content Filtering
   - [x] Audit Logging
   - [x] Statistics Caching
+  - [x] Reactions & Polls
 - [x] Friend System
 - [x] Group System
 - [x] Layout sharing feature
@@ -72,6 +73,8 @@ system.
 - [x] User Search
 - [x] User Profiles
 - [x] Custom HTML/CSS Profile Layouts
+
+For detailed forum documentation, see [docs/forum/README.md](docs/forum/README.md).
 
 ## Screenshot
 

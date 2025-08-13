@@ -24,6 +24,8 @@ This module provides a complete, production-ready discussion board with hierarch
 - **Notifications**: Real-time notifications for replies and mentions
 - **Subscriptions**: Topic subscription system
 - **File Attachments**: Support for file uploads on posts
+- **Post Reactions**: Like/dislike system for posts
+- **Topic Polls**: Built-in polling for topics
 - **Rich Content**: HTML content support with safe sanitization
 
 ### ✅ Moderation Tools
@@ -103,6 +105,8 @@ The schema extends `schema.sql` with production-ready tables:
 * **Notifications** – Alerts for replies and @mentions
 * **Subscriptions** – Topic following with notifications
 * **File Uploads** – Attachment support for posts
+* **Reactions** – Like/dislike on posts
+* **Polls** – Built-in topic polls
 * **Responsive UI** – Mobile-friendly interface
 
 ### Moderation Features
