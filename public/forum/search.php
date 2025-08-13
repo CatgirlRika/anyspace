@@ -2,13 +2,14 @@
 require __DIR__ . "/../../core/conn.php";
 require_once __DIR__ . "/../../core/settings.php";
 require_once __DIR__ . "/../../core/forum/forum.php";
+require_once __DIR__ . "/../../core/forum/permissions.php";
 
 $pageCSS = "../static/css/forum.css";
 
 $query = isset($_GET['q']) ? trim($_GET['q']) : '';
 $results = [];
 if ($query !== '') {
-    $results = searchTopics($query);
+    $results = searchTopics($query, forum_user_role());
 }
 ?>
 <?php require __DIR__ . "/../header.php"; ?>

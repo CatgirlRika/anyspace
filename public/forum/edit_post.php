@@ -27,19 +27,21 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     login_check();
     $body = $_POST['body'] ?? '';
-    $stmt = $conn->prepare('UPDATE forum_posts SET body = :body WHERE id = :id');
-    $stmt->execute([':body' => $body, ':id' => $postId]);
-
-    if (!empty($_POST['delete_attachments'])) {
-        foreach ((array)$_POST['delete_attachments'] as $aid) {
-            forum_delete_attachment((int)$aid);
+    $result = forum_edit_post($postId, (int)$_SESSION['userId'], $body);
+    if (isset($result['error'])) {
+        $error = $result['error'];
+    } else {
+        if (!empty($_POST['delete_attachments'])) {
+            foreach ((array)$_POST['delete_attachments'] as $aid) {
+                forum_delete_attachment((int)$aid);
+            }
         }
+        if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+            uploadAttachment($postId, $_FILES['attachment']);
+        }
+        header('Location: post.php?id=' . (int)$post['topic_id']);
+        exit;
     }
-    if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
-        uploadAttachment($postId, $_FILES['attachment']);
-    }
-    header('Location: post.php?id=' . (int)$post['topic_id']);
-    exit;
 }
 
 $attachments = forum_get_attachments($postId);
