@@ -64,6 +64,17 @@ header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style
 </head>
 
 <body>
+    <script>
+        (function(){
+            const body=document.body;
+            if(localStorage.getItem('darkMode')==='true'){
+                body.classList.add('dark-mode');
+            }
+            if(localStorage.getItem('largeText')==='true'){
+                body.classList.add('large-text');
+            }
+        })();
+    </script>
     <div class="master-container">
         <?php require_once __DIR__ . "/../core/components/navbar.php"; ?>
         <main>
