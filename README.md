@@ -143,7 +143,8 @@ Each script uses an SQLite database and prints its status to the console.
 
 [MySpace](myspace.com) for making a great social network during my childhood and inspiration <br>
 [superswan](https://github.com/superswan) for making AnySpace <br>
-[SpaceHey](https://spacehey.com) for being a chill place to hang! An is a great guy! <br>
+[SpaceHey](https://spacehey.com) for being a chill place to hang! <br>
+[An](https://spacehey.com/an) for also creating SpaceHey <br>
 [This spacemy.xyz codebase](https://github.com/Ahe4d/spacemy.xyz) <br>
 [Trumbowyg](https://github.com/Alex-D/Trumbowyg)<br>
 [@wittenbrock](https://github.com/wittenbrock/toms-myspace-page) - Tom's MySpace page!
