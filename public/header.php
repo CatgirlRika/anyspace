@@ -4,6 +4,15 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../core/helper.php';
+require_once __DIR__ . '/../core/conn.php';
+require_once __DIR__ . '/../core/site/user.php';
+
+$defaultColors = array('accent_color' => '#003399', 'background_color' => '#e5e5e5', 'text_color' => '#000000');
+if (isset($_SESSION['userId'])) {
+    $userColors = fetchUserColors($_SESSION['userId']);
+    $defaultColors = array_merge($defaultColors, $userColors);
+}
+$bodyStyle = '--accent-color: ' . $defaultColors['accent_color'] . '; --background-color: ' . $defaultColors['background_color'] . '; --text-color: ' . $defaultColors['text_color'] . ';';
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,7 +76,7 @@ require_once __DIR__ . '/../core/helper.php';
     </style>
 </head>
 
-<body class="<?= get_theme_classes(); ?>">
+<body class="<?= get_theme_classes(); ?>" style="<?= htmlspecialchars($bodyStyle, ENT_QUOTES) ?>">
     <div class="master-container">
         <?php require_once __DIR__ . "/../core/components/navbar.php"; ?>
         <main>

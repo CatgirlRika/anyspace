@@ -40,10 +40,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute(array($colorScheme, $fontSize, $userId));
     $_SESSION['color_scheme'] = $colorScheme;
     $_SESSION['font_size'] = $fontSize;
+
+    $accentColor = isset($_POST['accent_color']) ? $_POST['accent_color'] : '#003399';
+    $backgroundColor = isset($_POST['background_color']) ? $_POST['background_color'] : '#e5e5e5';
+    $textColor = isset($_POST['text_color']) ? $_POST['text_color'] : '#000000';
+
+    // basic validation for hex colors
+    foreach (['accentColor' => &$accentColor, 'backgroundColor' => &$backgroundColor, 'textColor' => &$textColor] as $var => &$color) {
+        if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color)) {
+            $color = $var === 'accentColor' ? '#003399' : ($var === 'backgroundColor' ? '#e5e5e5' : '#000000');
+        }
+    }
+    saveUserColors($userId, $accentColor, $backgroundColor, $textColor);
+    $_SESSION['accent_color'] = $accentColor;
+    $_SESSION['background_color'] = $backgroundColor;
+    $_SESSION['text_color'] = $textColor;
 }
 
 $currentScheme = fetchColorScheme($userId);
 $currentFont = fetchFontSize($userId);
+$currentColors = fetchUserColors($userId);
 
 ?>
 <?php require("header.php"); ?>
@@ -146,6 +162,15 @@ $currentFont = fetchFontSize($userId);
           <option value="normal" <?= $currentFont === 'normal' ? 'selected' : '' ?>>Normal</option>
           <option value="large" <?= $currentFont === 'large' ? 'selected' : '' ?>>Large</option>
         </select>
+        <br>
+        <label for="accent_color">Accent Color:</label>
+        <input type="color" id="accent_color" name="accent_color" value="<?= htmlspecialchars($currentColors['accent_color'], ENT_QUOTES) ?>">
+        <br>
+        <label for="background_color">Background Color:</label>
+        <input type="color" id="background_color" name="background_color" value="<?= htmlspecialchars($currentColors['background_color'], ENT_QUOTES) ?>">
+        <br>
+        <label for="text_color">Text Color:</label>
+        <input type="color" id="text_color" name="text_color" value="<?= htmlspecialchars($currentColors['text_color'], ENT_QUOTES) ?>">
       </div>
     </div>
 

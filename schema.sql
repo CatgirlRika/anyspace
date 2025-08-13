@@ -423,6 +423,7 @@ CREATE TABLE IF NOT EXISTS `forum_user_settings` (
   `background_image_url` varchar(255) DEFAULT NULL,
   `background_color` varchar(7) DEFAULT NULL,
   `text_color` varchar(7) DEFAULT NULL,
+  `accent_color` varchar(7) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

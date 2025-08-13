@@ -79,6 +79,37 @@ function fetchFontSize($id) {
     return $result[0]['font_size'];
 }
 
+function fetchUserColors($id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT accent_color, background_color, text_color FROM forum_user_settings WHERE user_id = :id");
+    $stmt->execute(array(':id' => $id));
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $defaults = array(
+        'accent_color' => '#003399',
+        'background_color' => '#e5e5e5',
+        'text_color' => '#000000'
+    );
+    if (!$result) {
+        return $defaults;
+    }
+    return array(
+        'accent_color' => $result['accent_color'] ?: $defaults['accent_color'],
+        'background_color' => $result['background_color'] ?: $defaults['background_color'],
+        'text_color' => $result['text_color'] ?: $defaults['text_color']
+    );
+}
+
+function saveUserColors($id, $accent, $background, $text) {
+    global $conn;
+    $stmt = $conn->prepare("INSERT INTO forum_user_settings (user_id, accent_color, background_color, text_color) VALUES (:id, :accent, :background, :text) ON DUPLICATE KEY UPDATE accent_color = VALUES(accent_color), background_color = VALUES(background_color), text_color = VALUES(text_color)");
+    $stmt->execute(array(
+        ':id' => $id,
+        ':accent' => $accent,
+        ':background' => $background,
+        ':text' => $text
+    ));
+}
+
 function fetchUserStatus($id) {
     global $conn;
     try {
