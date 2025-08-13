@@ -15,6 +15,7 @@ $conn->exec('CREATE TABLE forum_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, top
 $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, rank INTEGER, username TEXT, email TEXT, password TEXT, banned_until TEXT)');
 $conn->exec('CREATE TABLE mod_log (id INTEGER PRIMARY KEY AUTOINCREMENT, moderator_id INTEGER, action TEXT, target_type TEXT, target_id INTEGER, timestamp TEXT DEFAULT CURRENT_TIMESTAMP)');
 $conn->exec('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_id INTEGER, receiver_id INTEGER, subject TEXT, body TEXT, sent_at TEXT, read_at TEXT DEFAULT NULL, sender_deleted INTEGER DEFAULT 0, receiver_deleted INTEGER DEFAULT 0)');
+$conn->exec('CREATE TABLE forum_user_settings (user_id INTEGER PRIMARY KEY, accent_color TEXT, background_color TEXT, text_color TEXT)');
 
 global $conn;
 
