@@ -5,6 +5,7 @@ require_once("../../core/site/user.php");
 require_once("../../core/site/blog.php");
 require_once("../../core/site/comment.php");
 
+$rssLinkTag = '<link rel="alternate" type="application/rss+xml" title="Blog RSS" href="/blog/rss.php">';
 $blogEntries = fetchAllBlogEntries();
 $highlightedEntry = 11;
 
@@ -73,7 +74,7 @@ $highlightedEntry = 11;
         </div>
       </div>
       <hr>
-      <h3>Latest Blog Entries</h3>
+      <h3>Latest Blog Entries <a href="/blog/rss.php">RSS</a></h3>
       <div class="blog-entries">
         <?php foreach ($blogEntries as $entry): ?>
           <?php $countTotalComments = count(fetchBlogComments($entry['id'])); ?>
