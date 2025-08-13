@@ -12,6 +12,7 @@ $userId = $_SESSION['userId'];
 // Page is used as a single entry point for friends actions
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';
 
 
 if (!empty($action)) {
@@ -35,10 +36,14 @@ if (!empty($action)) {
 
 
 // Fetch pending and accepted friends
-$acceptedFriends = array_merge(
-    fetchFriends($conn, 'ACCEPTED', 'receiver', $id),
-    fetchFriends($conn, 'ACCEPTED', 'sender', $id)
-);
+if ($searchTerm !== '') {
+    $friends = searchFriends($conn, $id, $searchTerm);
+} else {
+    $friends = array_merge(
+        fetchFriends($conn, 'ACCEPTED', 'receiver', $id),
+        fetchFriends($conn, 'ACCEPTED', 'sender', $id)
+    );
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -62,9 +67,9 @@ $acceptedFriends = array_merge(
                         <?= htmlspecialchars(fetchName($id)) ?>'s Profile
                     </a></p>
                 <br>
-                <form metrhod="get">
-                    <input type="hidden" name="id" value="">
-                    <input type="text" name="q" value="" autocomplete="off" autofocus required>
+                <form method="get">
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
+                    <input type="text" name="q" value="<?= htmlspecialchars($searchTerm) ?>" autocomplete="off" autofocus required>
                     <button type="submit">Search</button>
                 </form>
                 <br>
@@ -75,10 +80,10 @@ $acceptedFriends = array_merge(
                     </div>
                     <div class="inner">
                         <?php
-                        if (empty($acceptedFriends)) {
+                        if (empty($friends)) {
                             echo "<div>This user has no friends...</div>";
                         } else {
-                            foreach ($acceptedFriends as $friend) {
+                            foreach ($friends as $friend) {
                                 $friendId = $id === $friend['sender'] ? $friend['receiver'] : $friend['sender'];
                                 if ($friendId == $id) {
                                     $friendId = $friend['receiver'];

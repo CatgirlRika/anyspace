@@ -112,3 +112,22 @@ function checkFriendPending($userId, $profileId) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return ($row['count'] > 0);
 }
+
+function searchFriends(PDO $pdo, int $userId, string $term): array
+{
+    $term = trim($term);
+    if ($term === '') {
+        return array();
+    }
+
+    $sql = "SELECT f.* FROM friends f
+            JOIN users u ON (u.id = CASE WHEN f.sender = :userId THEN f.receiver ELSE f.sender END)
+            WHERE (f.sender = :userId OR f.receiver = :userId) AND f.status = 'ACCEPTED' AND u.username LIKE :term";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+    $stmt->bindValue(':term', '%' . $term . '%', PDO::PARAM_STR);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
