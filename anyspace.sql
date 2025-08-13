@@ -151,6 +151,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `lastactive` datetime NOT NULL,
   `lastlogon` datetime NOT NULL,
   `banned_until` datetime DEFAULT NULL,
+  `color_scheme` varchar(20) NOT NULL default 'light',
+  `font_size` varchar(20) NOT NULL default 'normal',
   `bio` varchar(500) NOT NULL default '',
   `interests` varchar(500) NOT NULL default ' ',
   `css` blob NOT NULL,
