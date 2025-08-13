@@ -49,7 +49,12 @@ if (!isset($_SESSION['user'])) {
                     echo "<td><a href='../profile.php?id=" . getID($row['author'], $conn) . "'>" . htmlspecialchars($row['author']) . "</a></td>";
                     echo "<td>" . $row['member_count'] . "</td>";
                     echo "<td>" . date('M j, Y', strtotime($row['date'])) . "</td>";
-                    echo "<td><a href='joingroup.php?id=" . $row['id'] . "'>Join</a> | <a href='viewgroup.php?id=" . $row['id'] . "'>View</a></td>";
+                    echo "<td>";
+                    echo "<form method='post' action='joingroup.php' style='display:inline;'>";
+                    echo csrf_token_input();
+                    echo "<input type='hidden' name='group_id' value='" . $row['id'] . "'>";
+                    echo "<button type='submit'>Join</button>";
+                    echo "</form> | <a href='viewgroup.php?id=" . $row['id'] . "'>View</a></td>";
                     echo "</tr>";
                 }
                 
