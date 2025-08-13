@@ -65,12 +65,22 @@ header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style
 
 <body>
     <script>
-        (function(){
-            const body=document.body;
-            if(localStorage.getItem('darkMode')==='true'){
+        (function () {
+            const body = document.body;
+
+            let darkMode = localStorage.getItem('darkMode');
+            if (darkMode === null) {
+                darkMode = <?= isset($_COOKIE['darkMode']) ? json_encode($_COOKIE['darkMode']) : 'null'; ?>;
+            }
+            if (darkMode === 'true' || darkMode === true) {
                 body.classList.add('dark-mode');
             }
-            if(localStorage.getItem('largeText')==='true'){
+
+            let largeText = localStorage.getItem('largeText');
+            if (largeText === null) {
+                largeText = <?= isset($_COOKIE['largeText']) ? json_encode($_COOKIE['largeText']) : 'null'; ?>;
+            }
+            if (largeText === 'true' || largeText === true) {
                 body.classList.add('large-text');
             }
         })();
