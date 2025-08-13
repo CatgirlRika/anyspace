@@ -16,6 +16,12 @@ echo "✓ Member management with profile pictures\n";
 echo "✓ Owner and member roles\n";
 echo "✓ Group discovery and browsing\n\n";
 
+echo "Sample group:\n";
+echo "Name: Music Lovers\n";
+echo "Description: Share your favorite tunes and discover new artists.\n";
+echo "Upcoming Event: Weekly Listening Party - Saturdays at 8 PM\n";
+echo "Members: Alice, Bob, Charlie\n\n";
+
 echo "File structure:\n";
 echo "public/groups/\n";
 echo "├── groups.php (main groups listing)\n";
