@@ -4,8 +4,8 @@
 body {
     font-family: Verdana, Arial, sans-serif;
     font-size: 12pt;
-    background-color: var(--light-gray);
-    color: #000000;
+    background-color: var(--background-color);
+    color: var(--text-color);
     background-image: repeating-linear-gradient(
         45deg,
         var(--lighter-blue) 0 20px,
@@ -13,9 +13,13 @@ body {
     );
 }
 
+a {
+    color: var(--accent-color);
+}
+
 .forum-header,
 .forum-post {
-    background-image: linear-gradient(to bottom, var(--logo-blue), var(--light-orange));
+    background-image: linear-gradient(to bottom, var(--accent-color), var(--light-orange));
     color: #fff;
 }
 
@@ -25,7 +29,7 @@ body {
 }
 
 .forum-category-section h2 {
-    background: linear-gradient(to right, var(--logo-blue), var(--light-orange));
+    background: linear-gradient(to right, var(--accent-color), var(--light-orange));
     color: white;
     padding: 10px;
     margin: 0 0 10px 0;
@@ -52,11 +56,11 @@ body {
 
 .forum-item h3 {
     margin: 0 0 5px 0;
-    color: var(--logo-blue);
+    color: var(--accent-color);
 }
 
 .forum-item h3 a {
-    color: var(--logo-blue);
+    color: var(--accent-color);
     text-decoration: none;
     font-weight: bold;
 }
@@ -96,7 +100,7 @@ body {
 
 .forum-search button {
     padding: 8px 15px;
-    background: linear-gradient(to bottom, var(--logo-blue), var(--darker-blue));
+    background: linear-gradient(to bottom, var(--accent-color), var(--darker-blue));
     color: white;
     border: none;
     border-radius: 3px;
@@ -128,7 +132,7 @@ body {
 
 .forum-table th,
 .post-table th {
-    background: linear-gradient(to bottom, var(--logo-blue), var(--darker-blue));
+    background: linear-gradient(to bottom, var(--accent-color), var(--darker-blue));
     color: white;
     font-weight: bold;
 }
@@ -210,8 +214,9 @@ button:focus {
 }
 
 body.dark-mode {
-    background-color: #1a1a1a;
-    color: #e5e5e5;
+    --background-color: #1a1a1a;
+    --text-color: #e5e5e5;
+    --accent-color: #93c5fd;
     background-image: none;
 }
 
@@ -275,7 +280,7 @@ body.large-text {
 }
 
 .reply-submit {
-    background: linear-gradient(to bottom, var(--logo-blue), var(--darker-blue));
+    background: linear-gradient(to bottom, var(--accent-color), var(--darker-blue));
     color: white;
     border: 1px solid var(--dark-gray);
     padding: 8px 16px;
@@ -285,7 +290,7 @@ body.large-text {
 }
 
 .reply-submit:hover {
-    background: linear-gradient(to bottom, var(--darker-blue), var(--logo-blue));
+    background: linear-gradient(to bottom, var(--darker-blue), var(--accent-color));
 }
 
 .reply-clear {
