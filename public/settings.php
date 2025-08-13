@@ -123,7 +123,9 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
         <h4>Display Options</h4>
       </div>
       <div class="inner">
-        <label><input type="checkbox" id="accessibilityToggle" aria-label="Enable dark mode and larger text"> Dark mode / larger text</label>
+        <label><input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode"> Dark mode</label>
+        <br>
+        <label><input type="checkbox" id="largeTextToggle" aria-label="Enable larger text"> Larger text</label>
       </div>
     </div>
 
@@ -155,17 +157,26 @@ if (isset($_POST['password-old']) && isset($_POST['password-new']) && isset($_PO
     <button type="submit" name="submit">Save All</button>
   </form>
   <script>
-    const toggle=document.getElementById('accessibilityToggle');
+    const darkToggle=document.getElementById('darkModeToggle');
+    const textToggle=document.getElementById('largeTextToggle');
     const body=document.body;
-    const stored=localStorage.getItem('accessibilityMode')==='true';
-    if(stored){
-      body.classList.add('dark-mode','large-text');
-      toggle.checked=true;
+    const darkStored=localStorage.getItem('darkMode')==='true';
+    const textStored=localStorage.getItem('largeText')==='true';
+    if(darkStored){
+      body.classList.add('dark-mode');
+      darkToggle.checked=true;
     }
-    toggle.addEventListener('change',()=>{
-      body.classList.toggle('dark-mode',toggle.checked);
-      body.classList.toggle('large-text',toggle.checked);
-      localStorage.setItem('accessibilityMode',toggle.checked);
+    if(textStored){
+      body.classList.add('large-text');
+      textToggle.checked=true;
+    }
+    darkToggle.addEventListener('change',()=>{
+      body.classList.toggle('dark-mode',darkToggle.checked);
+      localStorage.setItem('darkMode',darkToggle.checked);
+    });
+    textToggle.addEventListener('change',()=>{
+      body.classList.toggle('large-text',textToggle.checked);
+      localStorage.setItem('largeText',textToggle.checked);
     });
   </script>
   <br>
