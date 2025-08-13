@@ -25,6 +25,7 @@ $conn->exec('CREATE TABLE forum_permissions (forum_id INTEGER, role TEXT, can_vi
 $conn->exec('CREATE TABLE forum_moderators (forum_id INTEGER, user_id INTEGER)');
 $conn->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT)');
 $conn->exec('CREATE TABLE topic_subscriptions (user_id INTEGER, topic_id INTEGER, PRIMARY KEY(user_id, topic_id))');
+$conn->exec('CREATE TABLE bad_words (word TEXT)');
 $conn->exec("INSERT INTO forum_permissions (forum_id, role, can_view, can_post, can_moderate) VALUES (1, 'member', 1, 1, 0)");
 $conn->exec("INSERT INTO forum_permissions (forum_id, role, can_view, can_post, can_moderate) VALUES (1, 'guest', 1, 0, 0)");
 $conn->exec("INSERT INTO forum_moderators (forum_id, user_id) VALUES (1, 2)");
@@ -52,12 +53,26 @@ if ($count == 2) {
 // Edit the second post
 
 echo "Edit post...\n";
-$conn->exec("UPDATE forum_posts SET body = 'Edited post' WHERE id = 2");
+forum_edit_post(2, 1, "Edited <b>post</b><script>alert('x')</script>");
 $body = $conn->query('SELECT body FROM forum_posts WHERE id = 2')->fetchColumn();
-if ($body === 'Edited post') {
+if ($body === 'Edited <b>post</b>') {
     echo "Post edited\n";
 } else {
     echo "Post edit failed\n";
+    unlink($dbFile);
+    exit(1);
+}
+
+// Filtered edit on first post
+
+echo "Filter post...\n";
+$conn->exec("INSERT INTO bad_words (word) VALUES ('badword')");
+forum_edit_post(1, 1, 'badword');
+$deleted = $conn->query('SELECT deleted FROM forum_posts WHERE id = 1')->fetchColumn();
+if ((int)$deleted === 1) {
+    echo "Post filtered\n";
+} else {
+    echo "Post filter failed\n";
     unlink($dbFile);
     exit(1);
 }

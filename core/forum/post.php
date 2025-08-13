@@ -81,6 +81,48 @@ function forum_add_post(int $topic_id, int $user_id, string $body)
     return ['success' => true, 'id' => $postId];
 }
 
+function forum_edit_post(int $post_id, int $user_id, string $body)
+{
+    global $conn;
+
+    if ($post_id <= 0 || $user_id <= 0) {
+        return ['error' => 'Invalid post or user ID'];
+    }
+
+    if (empty(trim($body))) {
+        return ['error' => 'Post body cannot be empty'];
+    }
+
+    // Fetch topic and forum for logging context
+    $stmt = $conn->prepare('SELECT p.topic_id, t.forum_id FROM forum_posts p JOIN forum_topics t ON p.topic_id = t.id WHERE p.id = :id');
+    $stmt->execute([':id' => $post_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return ['error' => 'Post not found'];
+    }
+    $topic_id = (int)$row['topic_id'];
+    $forum_id = (int)$row['forum_id'];
+
+    $matches = isFiltered($body);
+    $sanitizedBody = validateContentHTML($body);
+
+    if (!empty($matches)) {
+        $update = $conn->prepare('UPDATE forum_posts SET body = :body, deleted = 1, deleted_by = :uid, deleted_at = NOW() WHERE id = :id');
+        $update->execute([':body' => $sanitizedBody, ':uid' => $user_id, ':id' => $post_id]);
+        forum_log_security_event('filtered_post_edited', $user_id, "Post: $post_id, Topic: $topic_id, Filtered words: " . implode(', ', $matches));
+        forum_log_activity('post_edited', $user_id, "Post: $post_id, Topic: $topic_id, Forum: $forum_id");
+        forum_log_action("User {$user_id} edited post {$post_id}");
+        return ['warning' => 'Post contains filtered words', 'filtered' => $matches];
+    }
+
+    $update = $conn->prepare('UPDATE forum_posts SET body = :body WHERE id = :id');
+    $update->execute([':body' => $sanitizedBody, ':id' => $post_id]);
+    forum_log_activity('post_edited', $user_id, "Post: $post_id, Topic: $topic_id, Forum: $forum_id");
+    forum_log_action("User {$user_id} edited post {$post_id}");
+
+    return ['success' => true];
+}
+
 /**
  * Send notifications for a new forum post
  * @param int $topic_id Topic ID
