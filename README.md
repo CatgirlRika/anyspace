@@ -73,6 +73,7 @@ system.
 - [x] Layout sharing feature
 - [x] Private Messaging
 - [x] Report System
+- [x] Editable static pages (homepage, about)
 - [x] Session Management
 - [x] User Browser
 - [x] User Search
