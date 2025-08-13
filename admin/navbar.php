@@ -45,6 +45,8 @@
 
       $navItems = array(
         'General' => 'index.php',
+        'Pages' => 'pages.php',
+        'Questions' => 'questions.php',
         'Users' => 'users.php',
         'Search' => 'search.php',
         'Reports' => 'reports.php',

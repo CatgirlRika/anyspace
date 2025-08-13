@@ -3,12 +3,18 @@ require("../core/conn.php"); // Ensure this returns a PDO connection ($conn)
 require_once("../core/settings.php");
 require_once("../core/site/friend.php");
 require("../lib/password.php");
+require_once("../core/site/questions.php");
 
 $message = ''; // Variable to hold messages for the user
-
+$antispam_question = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!empty($_POST['password']) && !empty($_POST['username']) && !empty($_POST['confirm'])) {
+    $qid = isset($_SESSION['signup_qid']) ? (int)$_SESSION['signup_qid'] : null;
+    $answerOk = $qid === null || check_signup_answer($qid, $_POST['antispam_answer'] ?? '');
+
+    if (!$answerOk) {
+        $message = "<small>Incorrect anti-spam answer.</small>";
+    } elseif (!empty($_POST['password']) && !empty($_POST['username']) && !empty($_POST['confirm'])) {
         if ($_POST['password'] !== $_POST['confirm'] || strlen($_POST['username']) > 21) {
             $message = "<small>Passwords do not match up or username is too long.</small>";
         } else {
@@ -51,6 +57,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $message = "<small>Please fill in all required fields.</small>";
     }
+
+    $q = get_random_signup_question();
+    if ($q) {
+        $_SESSION['signup_qid'] = $q['id'];
+        $antispam_question = $q['q'];
+    }
+} else {
+    $q = get_random_signup_question();
+    if ($q) {
+        $_SESSION['signup_qid'] = $q['id'];
+        $antispam_question = $q['q'];
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -91,7 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input required placeholder="Username" type="text" name="username"><br>
                     <input required placeholder="E-Mail" type="email" name="email"><br>
                     <input required placeholder="Password" type="password" name="password"><br>
-                    <input required placeholder="Confirm Password" type="password" name="confirm"><br><br>
+                    <input required placeholder="Confirm Password" type="password" name="confirm"><br>
+                    <?php if ($antispam_question): ?>
+                    <label><?= htmlspecialchars($antispam_question); ?></label><br>
+                    <input required type="text" name="antispam_answer"><br>
+                    <?php endif; ?>
+                    <br>
                     <input type="submit" value="Register">
                 </form>
             </div>

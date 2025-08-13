@@ -73,6 +73,8 @@ system.
 - [x] Layout sharing feature
 - [x] Private Messaging
 - [x] Report System
+- [x] Editable static pages (homepage, about)
+- [x] Anti-spam questions for registration
 - [x] Session Management
 - [x] User Browser
 - [x] User Search
