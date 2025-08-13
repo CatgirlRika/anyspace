@@ -9,6 +9,29 @@ This guide explains how to set up AnySpace for development. It uses short steps 
 - A web server (Apache or Nginx)
 - Git
 
+## Shared Hosting Quick Install
+
+These steps show how to set up AnySpace on a typical shared host with tools like cPanel, DirectAdmin, or ISPConfig.
+
+1. **Download the ZIP**
+   - Visit the [latest release](https://github.com/animusdev/anyspace/releases) and click **Source code (zip)**.
+   - ![Download ZIP button on GitHub](https://docs.github.com/assets/images/help/repository/zip-file-download.png)
+2. **Upload and extract**
+   - In your hosting panel, open the file manager and upload the ZIP. Then extract it, or use SFTP to upload the files.
+   - Help guides:
+     - [cPanel File Manager](https://docs.cpanel.net/cpanel/files/file-manager/)
+     - [DirectAdmin File Manager](https://docs.directadmin.com/userguide/files/file-manager.html)
+     - [ISPConfig File Upload](https://www.howtoforge.com/ispconfig-file-upload/)
+3. **Create a MySQL database**
+   - Use your panel's database tool to make a new database, user, and password. Write them down; you'll need them later.
+   - Helpful links:
+     - [cPanel MySQL Database Wizard](https://docs.cpanel.net/cpanel/databases/mysql-database-wizard/)
+     - [DirectAdmin MySQL](https://docs.directadmin.com/userguide/databases/mysql.html)
+     - [ISPConfig MySQL](https://www.howtoforge.com/ispconfig-creating-a-mysql-database/)
+4. **Run the installer**
+   - Go to `http://your-site/public/install.php` in your web browser.
+   - Fill in the database details and follow the on-screen steps to finish.
+
 ## Quick Start
 
 1. **Clone the repo**
