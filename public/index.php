@@ -7,6 +7,7 @@ if (!file_exists("../core/config.php")) {
 require("../core/conn.php");
 require("../core/settings.php");
 require("../core/site/user.php");
+require("../core/site/page.php");
 require("../lib/password.php");
 
 if (isset($_SESSION['user'])) {
@@ -143,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
                 <!-- MOTD -->
                 <div class="col right">
                     <div class="welcome">
-                        <p>Did you know...? AnySpace is OpenSource!</p>
+                        <p><?= get_page_content('home_welcome'); ?></p>
                     </div>
                     <div class="box">
                         <!-- Login/Signup Form -->
