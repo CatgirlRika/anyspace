@@ -2,10 +2,12 @@
 
 ## Installation
 1. Upload the repository to your server and point the web server's document root to the `public/` directory.
-2. Create a MySQL database and import `schema.sql`.
-3. Copy `core/config.example.php` to `core/config.php` and adjust database credentials and site settings.
-4. Ensure the web server user has write permission to `core/`, `public/media/pfp/`, and `public/media/music/`.
-5. Visit your site to finish setup and create the first administrator account.
+2. Ensure the web server user has write permission to `core/`, `public/media/pfp/`, and `public/media/music/`.
+3. Visit `/install.php` in your browser to run the installation wizard. It will configure the database, generate `core/config.php`, and create the first administrator account.
+
+Advanced users can alternatively:
+- Create a MySQL database and import `schema.sql`.
+- Copy `core/config.php.example` to `core/config.php` and adjust database credentials and site settings.
 
 ## Hosting Recommendations
 AnySpace runs on standard PHP/MySQL hosting. Below are suggested providers ordered from budget friendly to more pricey with notes on why you might choose each.
@@ -21,7 +23,7 @@ AnySpace runs on standard PHP/MySQL hosting. Below are suggested providers order
 - **Amazon Lightsail** – priciest here but integrates with the AWS ecosystem and offers scalability for large deployments.
 
 1. Clone repo and transfer files to webserver. Webserver should serve files in `public` directory. (Example Apache and Nginx configurations are provided in the repo)
-2. Navigate to you webserver to create config.php and setup the database. The `core` directory will need to be writable by the webserver user.
+2. Visit `/install.php` on your webserver to generate `config.php` and set up the database. The `core` directory will need to be writable by the webserver user.
 
 `pfp` and `music` folders need r/w/x permissions for the webserver user. 
 
