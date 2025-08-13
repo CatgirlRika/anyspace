@@ -90,3 +90,24 @@
 2025-08-09T18:47:16+00:00 User 2 locked topic 1
 [2025-08-09 18:47:16] [info] User 2 from unknown: MODERATION: topic_locked - Target: topic#1 (UA: unknown)
 [2025-08-09 18:47:16] [warning] User 1 from unknown: SECURITY: filtered_post_created - Post: 2, Topic: 1, Filtered words: badword (UA: unknown)
+[2025-08-13 02:44:14] [info] User 2 from unknown: post_created - Post: 2, Topic: 1, Forum: 1 (UA: unknown)
+2025-08-13T02:44:14+00:00 User 42 locked topic 1
+[2025-08-13 02:44:14] [info] User 42 from unknown: MODERATION: topic_locked - Target: topic#1 (UA: unknown)
+[2025-08-13 02:44:14] [info] User 2 from unknown: post_created - Post: 2, Topic: 1, Forum: 1 (UA: unknown)
+[2025-08-13 02:44:15] [info] User 1 from unknown: post_created - Post: 2, Topic: 1, Forum: 1 (UA: unknown)
+[2025-08-13 02:44:15] [info] User 1 from unknown: post_edited - Post: 2, Topic: 1, Forum: 1 (UA: unknown)
+2025-08-13T02:44:15+00:00 User 1 edited post 2
+[2025-08-13 02:44:15] [warning] User 1 from unknown: SECURITY: filtered_post_edited - Post: 1, Topic: 1, Filtered words: badword (UA: unknown)
+[2025-08-13 02:44:15] [info] User 1 from unknown: post_edited - Post: 1, Topic: 1, Forum: 1 (UA: unknown)
+2025-08-13T02:44:15+00:00 User 1 edited post 1
+2025-08-13T02:44:15+00:00 User 2 deleted post 2
+[2025-08-13 02:44:15] [info] User 1 from unknown: post_created - Post: 1, Topic: 1, Forum: 1 (UA: unknown)
+[2025-08-13 02:44:15] [info] User 1 from unknown: post_created - Post: 2, Topic: 1, Forum: 1 (UA: unknown)
+[2025-08-13 02:44:15] [info] User 1 from unknown: post_created - Post: 3, Topic: 1, Forum: 1 (UA: unknown)
+[2025-08-13 02:44:15] [warning] User 1 from unknown: SECURITY: rate_limit_exceeded - Topic: 1, Remaining: 60s (UA: unknown)
+[2025-08-13 02:44:15] [info] User 1 from unknown: post_created - Post: 4, Topic: 1, Forum: 1 (UA: unknown)
+2025-08-13T02:44:15+00:00 Report 1 resolved with action delete
+[2025-08-13 02:44:15] [info] User 3 from unknown: post_created - Post: 2, Topic: 1, Forum: 1 (UA: unknown)
+2025-08-13T02:44:15+00:00 User 2 locked topic 1
+[2025-08-13 02:44:15] [info] User 2 from unknown: MODERATION: topic_locked - Target: topic#1 (UA: unknown)
+[2025-08-13 02:44:16] [warning] User 1 from unknown: SECURITY: filtered_post_created - Post: 2, Topic: 1, Filtered words: badword (UA: unknown)

@@ -1,5 +1,7 @@
 # AnySpace Installation & Hosting Guide
 
+AnySpace includes a production-ready forum module. See [docs/forum/README.md](docs/forum/README.md) for details on features and deployment.
+
 ## Installation
 1. Upload the repository to your server and point the web server's document root to the `public/` directory.
 2. Create a MySQL database and import `schema.sql`.

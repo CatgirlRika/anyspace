@@ -73,6 +73,10 @@ system.
 - [x] User Profiles
 - [x] Custom HTML/CSS Profile Layouts
 
+### Forum Module
+
+The built-in forum system is production-ready and supports categories, topics, moderation tools, notifications, file attachments, and more. For detailed setup and usage instructions, see [docs/forum/README.md](docs/forum/README.md).
+
 ## Screenshot
 
 ![screenshot](public/docs/screenshot.png)

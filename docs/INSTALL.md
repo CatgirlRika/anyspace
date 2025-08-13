@@ -51,7 +51,7 @@ php tests/forum_delete.php
 - Blog, bulletins, and comments
 - Friend system
 - User profiles with custom HTML/CSS
-- Forum module
+- Forum module (production-ready discussion board with moderation, notifications, and file attachments; see [forum/README.md](forum/README.md))
 
 ## Still in Progress
 
