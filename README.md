@@ -1,11 +1,15 @@
 # AnySpace Installation & Hosting Guide
 
 ## Installation
-1. Upload the repository to your server and point the web server's document root to the `public/` directory.
-2. Ensure the web server user has write permission to `core/`, `public/media/pfp/`, and `public/media/music/`.
-3. Visit `/install.php` in your browser to run the installation wizard. It will configure the database, generate `core/config.php`, and create the first administrator account.
+1. **Download the ZIP** of this repository and upload it to your server.
+2. Point the web server's document root to the `public/` directory.
+3. Ensure the web server user has write permission to `core/`, `public/media/pfp/`, and `public/media/music/`.
+4. Visit `/install.php` in your browser to run the installation wizard. It will configure the database, generate `core/config.php`, and create the first administrator account.
+
+_No command line needed—see the [Beginner Guide](docs/INSTALL.md) for a step-by-step walkthrough._
 
 Advanced users can alternatively:
+- Clone the repository instead of downloading a ZIP.
 - Create a MySQL database and import `schema.sql`.
 - Copy `core/config.php.example` to `core/config.php` and adjust database credentials and site settings.
 
@@ -21,11 +25,6 @@ AnySpace runs on standard PHP/MySQL hosting. Below are suggested providers order
 - **DigitalOcean Droplet (Basic)** – inexpensive entry VPS giving you full server control for custom configurations.
 - **Linode 4GB** – more RAM/CPU and reliable network; good for medium communities or multiple services.
 - **Amazon Lightsail** – priciest here but integrates with the AWS ecosystem and offers scalability for large deployments.
-
-1. Clone repo and transfer files to webserver. Webserver should serve files in `public` directory. (Example Apache and Nginx configurations are provided in the repo)
-2. Visit `/install.php` on your webserver to generate `config.php` and set up the database. The `core` directory will need to be writable by the webserver user.
-
-`pfp` and `music` folders need r/w/x permissions for the webserver user. 
 
 It's recommended to set the following in your `php.ini`
 
