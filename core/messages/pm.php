@@ -37,9 +37,13 @@ function pm_mark_read(int $message_id, int $user_id): void
 function pm_unread_count(int $user_id): int
 {
     global $conn;
-    $stmt = $conn->prepare('SELECT COUNT(*) FROM messages WHERE receiver_id = :uid AND read_at IS NULL');
-    $stmt->execute([':uid' => $user_id]);
-    return (int)$stmt->fetchColumn();
+    try {
+        $stmt = $conn->prepare('SELECT COUNT(*) FROM messages WHERE receiver_id = :uid AND read_at IS NULL');
+        $stmt->execute([':uid' => $user_id]);
+        return (int)$stmt->fetchColumn();
+    } catch (PDOException $e) {
+        return 0;
+    }
 }
 
 ?>

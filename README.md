@@ -20,7 +20,7 @@ Designed to be lightweight, user-friendly, and customizable, allowing users to e
 1. Clone repo and transfer files to webserver. Webserver should serve files in `public` directory. (Example Apache and Nginx configurations are provided in the repo)
 2. Navigate to you webserver to create config.php and setup the database. The `core` directory will need to be writable by the webserver user.
 
-`pfp` and `music` folders need r/w/x permissions for the webserver user. 
+`pfp` and `music` folders need r/w/x permissions for the webserver user.
 
 It's recommended to set the following in your `php.ini`
 
@@ -33,10 +33,26 @@ max_input_time = 120
 memory_limit = 128M
 ```
 
+## Hosting Recommendations
+
+AnySpace runs on standard PHP/MySQL hosting. Below are suggested providers ordered from budget friendly to more pricey with notes on why you might choose each.
+
+### Shared Hosting
+- **Namecheap Stellar** – low monthly cost and supports PHP & MySQL, ideal for experimenting or small friend groups.
+- **Bluehost Basic** – a bit more expensive but offers better support and one-click SSL certificates for small communities.
+- **SiteGround StartUp** – higher price but strong performance and security features, useful when traffic begins to grow.
+
+### VPS Hosting
+- **DigitalOcean Droplet (Basic)** – inexpensive entry VPS giving you full server control for custom configurations.
+- **Linode 4GB** – more RAM/CPU and reliable network; good for medium communities or multiple services.
+- **Amazon Lightsail** – priciest here but integrates with the AWS ecosystem and offers scalability for large deployments.
+
+Choose a provider that matches your budget and expected community size. Shared hosting is easy to manage but has limited resources, while VPS hosting requires server administration skills in exchange for greater flexibility and performance.
+
 ### Admin Panel
 The admin panel should not be made available to the public. The id of the admin user can be set in `config.php`, by
 default it is set to user with id 1. Future plans include multi-user access to the admin panel using a permissions
-system.  
+system.
 
 ## Features
 
