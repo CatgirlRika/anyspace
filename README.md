@@ -6,7 +6,7 @@
 3. Ensure the web server user has write permission to `core/`, `public/media/pfp/`, and `public/media/music/`.
 4. Visit `/install.php` in your browser to run the installation wizard. It will configure the database, generate `core/config.php`, and create the first administrator account.
 
-_No command line needed—see the [Beginner Guide](docs/INSTALL.md) for a step-by-step walkthrough._
+_No command line needed see the [Beginner Guide](docs/INSTALL.md) for a step-by-step walkthrough._
 
 Advanced users can alternatively:
 - Clone the repository instead of downloading a ZIP.
