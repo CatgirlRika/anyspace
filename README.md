@@ -1,21 +1,24 @@
-# AnySpace 
-AnySpace is an Open Source Social Network platform similar to MySpace circa 2005-2007, designed with self-hosting in mind. A homage to the golden era of social networking, bringing back the simplicity and charm of early social media platforms with a focus on privacy, user experience, and community 
+# AnySpace Installation & Hosting Guide
 
-Designed to be lightweight, user-friendly, and customizable, allowing users to express themselves just like in the old days but with the peace of mind that modern security practices bring.
+## Installation
+1. Upload the repository to your server and point the web server's document root to the `public/` directory.
+2. Create a MySQL database and import `schema.sql`.
+3. Copy `core/config.example.php` to `core/config.php` and adjust database credentials and site settings.
+4. Ensure the web server user has write permission to `core/`, `public/media/pfp/`, and `public/media/music/`.
+5. Visit your site to finish setup and create the first administrator account.
 
-- **Profiles:** Customizable user profiles with options for background images, music, and integrated layout support.
-- **Blogging:** A blogging platform for users to share thoughts, stories, and updates.
-- **Messaging:** Private and secure messaging between users.
-- **Friends:** Connect with others, manage friendship requests, and explore user profiles.
-- **Groups:** Create and join interest-based groups for discussions and events.
-- **Customization:** Extensive customization options for user profiles and blogs.
+## Hosting Recommendations
+AnySpace runs on standard PHP/MySQL hosting. Below are suggested providers ordered from budget friendly to more pricey with notes on why you might choose each.
 
-## Prerequisites
-- PHP >= 5.3
-- MySQL >= 5.0 or compatible database
-- Web Server (Apache/Nginx)
+### Shared Hosting
+- **Namecheap Stellar** – low monthly cost and supports PHP & MySQL, ideal for experimenting or small friend groups.
+- **Bluehost Basic** – a bit more expensive but offers better support and one‑click SSL certificates for small communities.
+- **SiteGround StartUp** – higher price but strong performance and security features, useful when traffic begins to grow.
 
-## Install
+### VPS Hosting
+- **DigitalOcean Droplet (Basic)** – inexpensive entry VPS giving you full server control for custom configurations.
+- **Linode 4GB** – more RAM/CPU and reliable network; good for medium communities or multiple services.
+- **Amazon Lightsail** – priciest here but integrates with the AWS ecosystem and offers scalability for large deployments.
 
 1. Clone repo and transfer files to webserver. Webserver should serve files in `public` directory. (Example Apache and Nginx configurations are provided in the repo)
 2. Navigate to you webserver to create config.php and setup the database. The `core` directory will need to be writable by the webserver user.
