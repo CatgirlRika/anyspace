@@ -141,7 +141,7 @@ Each script uses an SQLite database and prints its status to the console.
 
 ## Credits
 
-[MySpace](myspace.com) for making a great social network during my childhood and inspiration <br>
+[MySpace](https://myspace.com/) for making a great social network during my childhood and inspiration <br>
 [superswan](https://github.com/superswan) for making AnySpace <br>
 [SpaceHey](https://spacehey.com) for being a chill place to hang! <br>
 [An](https://spacehey.com/an) for also creating SpaceHey <br>
