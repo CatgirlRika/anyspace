@@ -8,9 +8,39 @@ if (file_exists("../core/config.php")) {
     exit;
 }
 
+$requirementsErrors = [];
+
+// Required PHP extensions
+$requiredExtensions = [
+    'pdo' => 'PDO',
+    'pdo_mysql' => 'PDO MySQL',
+    'fileinfo' => 'fileinfo'
+];
+foreach ($requiredExtensions as $ext => $name) {
+    if (!extension_loaded($ext)) {
+        $requirementsErrors[] = "PHP extension {$name} is required.";
+    }
+}
+
+// Directories that must be writable
+$requiredDirs = [
+    __DIR__ . '/../core' => 'core/',
+    __DIR__ . '/media/pfp' => 'public/media/pfp/',
+    __DIR__ . '/media/music' => 'public/media/music/'
+];
+foreach ($requiredDirs as $path => $label) {
+    if (!is_dir($path)) {
+        $requirementsErrors[] = "Directory {$label} is missing.";
+    } elseif (!is_writable($path)) {
+        $requirementsErrors[] = "Directory {$label} is not writable.";
+    }
+}
+
+$requirementsMet = empty($requirementsErrors);
+
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($requirementsMet && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $dbHost = trim($_POST['host']);
     $dbName = trim($_POST['dbname']);
     $dbUser = trim($_POST['username']);
@@ -113,12 +143,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="success">
                         <h3>Installation Successful!</h3>
-                        <p>Your AnySpace installation is complete. You can now:</p>
+                        <p>Your AnySpace installation is complete. Next steps:</p>
                         <ul>
+                            <li><strong>Delete the install.php file.</strong></li>
                             <li><a href="//<?php echo htmlspecialchars($domainName); ?>">Visit homepage</a></li>
                             <li><a href="//<?php echo htmlspecialchars($domainName); ?>/admin/">Access the admin panel</a></li>
                         </ul>
-                        <p><strong>For security, please delete the install.php file.</strong></p>
                     </div>
                 </body>
                 </html>
@@ -157,9 +187,20 @@ $adminEmailValue = htmlspecialchars($_POST['adminEmail'] ?? '');
 </head>
 <body>
     <h1>AnySpace Installation</h1>
+    <?php if (!$requirementsMet): ?>
+        <div class="error">
+            <p>Please fix the following issues before continuing:</p>
+            <ul>
+                <?php foreach ($requirementsErrors as $msg): ?>
+                    <li><?= htmlspecialchars($msg); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
     <?php if ($error): ?>
         <div class="error"><?= htmlspecialchars($error); ?></div>
     <?php endif; ?>
+    <?php if ($requirementsMet): ?>
     <form method="POST">
         <?= csrf_token_input(); ?>
         <div class="section">
@@ -208,6 +249,7 @@ $adminEmailValue = htmlspecialchars($_POST['adminEmail'] ?? '');
 
         <input type="submit" value="Install AnySpace">
     </form>
+    <?php endif; ?>
 </body>
 </html>
 
