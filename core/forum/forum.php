@@ -62,10 +62,22 @@ function forum_delete_forum(int $id): void {
     $stmt->execute([':id' => $id]);
 }
 
-function searchTopics(string $query): array {
+function searchTopics(string $query, ?string $role = null): array {
     global $conn;
-    $stmt = $conn->prepare('SELECT DISTINCT t.id, t.title FROM forum_topics t LEFT JOIN forum_posts p ON t.id = p.topic_id WHERE t.title LIKE :search OR p.body LIKE :search ORDER BY t.id DESC');
-    $stmt->execute([':search' => "%" . $query . "%"]);
+
+    if ($role === null) {
+        require_once __DIR__ . '/permissions.php';
+        $role = forum_user_role();
+    }
+
+    if (in_array($role, ['admin', 'global_mod'], true)) {
+        $stmt = $conn->prepare('SELECT DISTINCT t.id, t.title FROM forum_topics t LEFT JOIN forum_posts p ON t.id = p.topic_id WHERE t.title LIKE :search OR p.body LIKE :search ORDER BY t.id DESC');
+        $stmt->execute([':search' => "%" . $query . "%"]);
+    } else {
+        $stmt = $conn->prepare('SELECT DISTINCT t.id, t.title FROM forum_topics t LEFT JOIN forum_posts p ON t.id = p.topic_id JOIN forum_permissions fp ON t.forum_id = fp.forum_id AND fp.role = :role AND fp.can_view = 1 WHERE t.title LIKE :search OR p.body LIKE :search ORDER BY t.id DESC');
+        $stmt->execute([':search' => "%" . $query . "%", ':role' => $role]);
+    }
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
